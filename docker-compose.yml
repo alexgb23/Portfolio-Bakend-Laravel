@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+    # --- BACKEND ---
+    backend:
+        build: .
+        container_name: portfolio_backend
+        ports:
+            - "8081:80"
+        volumes:
+            - .:/var/www/html
+        dns:
+            - 8.8.8.8
+            - 8.8.4.4
+        environment:
+            - DB_CONNECTION=${DB_CONNECTION}
+            - DB_HOST=${DB_HOST}
+            - DB_PORT=${DB_PORT}
+            - DB_DATABASE=${DB_DATABASE}
+            - DB_USERNAME=${DB_USERNAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_SSLMODE=require
+
+        command: >
+            sh -c "chown -R www-data:www-data /var/www/html &&
+                   chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache || true &&
+                   apache2-foreground"
