@@ -63,17 +63,22 @@ class ProjectSeeder extends Seeder
         ];
 
         foreach ($projects as $project) {
-            $exists = DB::table('projects')
-                ->where('title', $project['title'])
-                ->exists();
+            $existing = DB::table('projects')
+                ->where('slug', $project['slug'])
+                ->first();
 
-            DB::table('projects')->updateOrInsert(
-                ['title' => $project['title']],
-                array_merge($project, [
+            if ($existing) {
+                DB::table('projects')
+                    ->where('id', $existing->id)
+                    ->update(array_merge($project, [
+                        'updated_at' => $now,
+                    ]));
+            } else {
+                DB::table('projects')->insert(array_merge($project, [
+                    'created_at' => $now,
                     'updated_at' => $now,
-                    'created_at' => $exists ? DB::raw('created_at') : $now,
-                ])
-            );
+                ]));
+            }
         }
     }
 }

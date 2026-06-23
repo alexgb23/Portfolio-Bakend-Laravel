@@ -60,21 +60,23 @@ class MetricSeeder extends Seeder
         ];
 
         foreach ($metrics as $metric) {
-            $exists = DB::table('metrics')
+            $existing = DB::table('metrics')
                 ->where('room', $metric['room'])
                 ->where('parameter', $metric['parameter'])
-                ->exists();
+                ->first();
 
-            DB::table('metrics')->updateOrInsert(
-                [
-                    'room' => $metric['room'],
-                    'parameter' => $metric['parameter'],
-                ],
-                array_merge($metric, [
+            if ($existing) {
+                DB::table('metrics')
+                    ->where('id', $existing->id)
+                    ->update(array_merge($metric, [
+                        'updated_at' => $now,
+                    ]));
+            } else {
+                DB::table('metrics')->insert(array_merge($metric, [
+                    'created_at' => $now,
                     'updated_at' => $now,
-                    'created_at' => $exists ? DB::raw('created_at') : $now,
-                ])
-            );
+                ]));
+            }
         }
     }
 }

@@ -11,20 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('metrics', function (Blueprint $table) {
-            // Contexto y origen
-            $table->string('display_name')->nullable()->after('parameter');
-            $table->string('category')->nullable()->after('display_name');
-            $table->string('source_system')->nullable()->after('category');
+        Schema::create('metrics', function (Blueprint $table) {
+            $table->id();
 
-            // Estado y tiempo
-            $table->string('status')->default('normal')->after('unit');
-            $table->timestamp('recorded_at')->nullable()->after('status');
+            $table->string('room');
+            $table->string('parameter');
+            $table->string('display_name')->nullable();
+            $table->string('category')->nullable();
+            $table->string('source_system')->nullable();
 
-            // Presentación
-            $table->text('notes')->nullable()->after('recorded_at');
-            $table->boolean('is_featured')->default(false)->after('notes');
-            $table->unsignedInteger('sort_order')->default(0)->after('is_featured');
+            $table->float('value');
+            $table->string('unit');
+
+            $table->string('status')->default('normal');
+            $table->timestamp('recorded_at')->nullable();
+
+            $table->text('notes')->nullable();
+            $table->boolean('is_featured')->default(false);
+            $table->unsignedInteger('sort_order')->default(0);
+
+            $table->timestamps();
         });
     }
 
@@ -33,17 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('metrics', function (Blueprint $table) {
-            $table->dropColumn([
-                'display_name',
-                'category',
-                'source_system',
-                'status',
-                'recorded_at',
-                'notes',
-                'is_featured',
-                'sort_order',
-            ]);
-        });
+        Schema::dropIfExists('metrics');
     }
 };

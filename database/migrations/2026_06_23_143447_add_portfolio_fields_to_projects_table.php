@@ -11,19 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->string('slug')->unique()->nullable()->after('title');
-            $table->string('short_description', 280)->nullable()->after('description');
-            $table->string('stack_summary')->nullable()->after('technologies');
+        Schema::create('projects', function (Blueprint $table) {
+            $table->id();
 
-            $table->string('image_url')->nullable()->after('stack_summary');
-            $table->string('project_url')->nullable()->after('image_url');
-            $table->string('repo_url')->nullable()->after('project_url');
+            $table->string('title');
+            $table->string('slug')->unique()->nullable();
+            $table->text('description');
+            $table->string('short_description', 280)->nullable();
+            $table->string('technologies');
+            $table->string('stack_summary')->nullable();
 
-            $table->string('status')->default('published')->after('repo_url');
-            $table->boolean('is_featured')->default(false)->after('status');
-            $table->boolean('is_published')->default(true)->after('is_featured');
-            $table->unsignedInteger('sort_order')->default(0)->after('is_published');
+            $table->string('image_url')->nullable();
+            $table->string('project_url')->nullable();
+            $table->string('repo_url')->nullable();
+
+            $table->string('status')->default('published');
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_published')->default(true);
+            $table->unsignedInteger('sort_order')->default(0);
+
+            $table->timestamps();
         });
     }
 
@@ -32,19 +39,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropColumn([
-                'slug',
-                'short_description',
-                'stack_summary',
-                'image_url',
-                'project_url',
-                'repo_url',
-                'status',
-                'is_featured',
-                'is_published',
-                'sort_order',
-            ]);
-        });
+        Schema::dropIfExists('projects');
     }
 };

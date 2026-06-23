@@ -98,17 +98,22 @@ class NodeSeeder extends Seeder
         ];
 
         foreach ($nodes as $node) {
-            $exists = DB::table('nodes')
+            $existing = DB::table('nodes')
                 ->where('node_name', $node['node_name'])
-                ->exists();
+                ->first();
 
-            DB::table('nodes')->updateOrInsert(
-                ['node_name' => $node['node_name']],
-                array_merge($node, [
+            if ($existing) {
+                DB::table('nodes')
+                    ->where('id', $existing->id)
+                    ->update(array_merge($node, [
+                        'updated_at' => $now,
+                    ]));
+            } else {
+                DB::table('nodes')->insert(array_merge($node, [
+                    'created_at' => $now,
                     'updated_at' => $now,
-                    'created_at' => $exists ? DB::raw('created_at') : $now,
-                ])
-            );
+                ]));
+            }
         }
     }
 }
