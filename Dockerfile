@@ -32,5 +32,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 80
 
-# 8. Al arrancar, ejecuta las migraciones automáticas y enciende Apache
-CMD php artisan migrate --force && apache2-foreground
+# 8. Al arrancar, enciende Apache directamente de forma segura
+CMD ["apache2-foreground"]
