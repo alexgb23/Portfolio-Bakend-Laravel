@@ -7,13 +7,16 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class PortfolioHomeResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'profile' => $this->resource['profile']
+                ? new ProfileSettingResource($this->resource['profile'])
+                : null,
+
+            'skills' => SkillResource::collection($this->resource['skills'] ?? collect()),
+
+            'projects' => ProjectCardResource::collection($this->resource['projects'] ?? collect()),
+        ];
     }
 }

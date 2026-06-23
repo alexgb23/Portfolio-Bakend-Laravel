@@ -13,15 +13,19 @@ class PortfolioController extends Controller
 {
     public function getHomeData(Request $request): PortfolioHomeResource
     {
-        $profile = ProfileSetting::query()->orderBy('id')->first();
+        $profile = ProfileSetting::query()
+            ->orderBy('id')
+            ->first();
 
         $skills = Skill::query()
-            ->where('is_active', true)
+            ->where('is_visible', true)
+            ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->get();
 
         $projects = Project::query()
-            ->where('is_active', true)
+            ->where('is_published', true)
+            ->where('status', 'published')
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->limit(6)

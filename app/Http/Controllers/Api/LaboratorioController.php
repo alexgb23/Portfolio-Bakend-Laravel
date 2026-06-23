@@ -13,6 +13,19 @@ class LaboratorioController extends Controller
     public function index(Request $request)
     {
         $items = LaboratoryItem::query()
+            ->select([
+                'id',
+                'name',
+                'slug',
+                'item_type',
+                'category',
+                'location_name',
+                'status',
+                'description',
+                'is_featured',
+                'is_visible',
+                'sort_order',
+            ])
             ->where('is_visible', true)
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')

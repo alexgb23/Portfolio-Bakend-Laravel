@@ -12,7 +12,9 @@ class LaboratoryItemSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('laboratory_items')->insert([
+        $now = now();
+
+        $items = [
             [
                 'name' => 'Automatización doméstica',
                 'slug' => 'automatizacion-domestica',
@@ -25,8 +27,6 @@ class LaboratoryItemSeeder extends Seeder
                 'is_featured' => true,
                 'is_visible' => true,
                 'sort_order' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'name' => 'Observabilidad del laboratorio',
@@ -40,8 +40,6 @@ class LaboratoryItemSeeder extends Seeder
                 'is_featured' => true,
                 'is_visible' => true,
                 'sort_order' => 2,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'name' => 'Home Assistant',
@@ -55,8 +53,6 @@ class LaboratoryItemSeeder extends Seeder
                 'is_featured' => true,
                 'is_visible' => true,
                 'sort_order' => 3,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'name' => 'Pipeline de IA local',
@@ -70,8 +66,6 @@ class LaboratoryItemSeeder extends Seeder
                 'is_featured' => true,
                 'is_visible' => true,
                 'sort_order' => 4,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'name' => 'Research API Lab',
@@ -85,9 +79,17 @@ class LaboratoryItemSeeder extends Seeder
                 'is_featured' => false,
                 'is_visible' => true,
                 'sort_order' => 5,
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
-        ]);
+        ];
+
+        foreach ($items as $item) {
+            DB::table('laboratory_items')->updateOrInsert(
+                ['slug' => $item['slug']],
+                array_merge($item, [
+                    'updated_at' => $now,
+                    'created_at' => $now,
+                ])
+            );
+        }
     }
 }

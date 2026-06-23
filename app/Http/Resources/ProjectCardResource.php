@@ -7,13 +7,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectCardResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'short_description' => $this->short_description,
+            'stack_summary' => $this->stack_summary,
+            'technologies' => $this->technologies,
+            'image_url' => $this->image_url,
+            'project_url' => $this->project_url,
+            'repo_url' => $this->repo_url,
+            'is_featured' => $this->is_featured,
+        ];
     }
 }
