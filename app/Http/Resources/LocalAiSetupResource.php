@@ -5,24 +5,24 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProjectResource extends JsonResource
+class LocalAiSetupResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
+            'name' => $this->name,
             'slug' => $this->slug,
-            'short_description' => $this->short_description,
+            'provider' => $this->provider,
+            'model_name' => $this->model_name,
+            'model_size' => $this->model_size,
+            'base_url' => $this->base_url,
+            'interface_name' => $this->interface_name,
             'description' => $this->description,
-            'technologies' => $this->technologies,
-            'stack_summary' => $this->stack_summary,
-            'image_url' => $this->image_url,
-            'project_url' => $this->project_url,
-            'repo_url' => $this->repo_url,
+            'hardware_notes' => $this->hardware_notes,
             'status' => $this->status,
             'is_featured' => (bool) $this->is_featured,
-            'is_published' => (bool) $this->is_published,
+            'is_visible' => (bool) $this->is_visible,
             'sort_order' => $this->sort_order,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

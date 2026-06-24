@@ -9,18 +9,46 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ServerController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\LaboratorioController;
+use App\Http\Controllers\Api\HomeAssistantInstanceController;
+use App\Http\Controllers\Api\LocalAiSetupController;
+use App\Http\Controllers\Api\AiStudyCaseController;
+use App\Http\Controllers\Api\ClusterController;
+
 
 // Públicas
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/projects', [ProjectController::class, 'index']);
+Route::get('/projects/{id}', [ProjectController::class, 'show']);
+
 Route::get('/nodes', [NodeController::class, 'index']);
+Route::get('/nodes/{id}', [NodeController::class, 'show']);
+
 Route::get('/servers', [ServerController::class, 'index']);
+Route::get('/servers/{id}', [ServerController::class, 'show']);
+
 Route::get('/metrics', [MetricController::class, 'index']);
+Route::get('/metrics/{id}', [MetricController::class, 'show']);
 
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
+
 Route::get('/laboratorio', [LaboratorioController::class, 'index']);
 Route::get('/laboratorio/{id}', [LaboratorioController::class, 'show']);
+
+Route::get('/home-assistant', [HomeAssistantInstanceController::class, 'index']);
+Route::get('/home-assistant/{id}', [HomeAssistantInstanceController::class, 'show']);
+
+Route::get('/local-ai-setups', [LocalAiSetupController::class, 'index']);
+Route::get('/local-ai-setups/{id}', [LocalAiSetupController::class, 'show']);
+
+Route::get('/ai-study-cases', [AiStudyCaseController::class, 'index']);
+Route::get('/ai-study-cases/{id}', [AiStudyCaseController::class, 'show']);
+
+Route::get('/clusters', [ClusterController::class, 'index']);
+Route::get('/clusters/{id}', [ClusterController::class, 'show']);
+
+
+
 
 // Privadas
 Route::middleware('auth:sanctum')->group(function () {

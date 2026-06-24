@@ -5,23 +5,23 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MetricResource extends JsonResource
+class AiStudyCaseResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'room' => $this->room,
-            'parameter' => $this->parameter,
-            'display_name' => $this->display_name,
+            'title' => $this->title,
+            'slug' => $this->slug,
             'category' => $this->category,
-            'source_system' => $this->source_system,
-            'value' => $this->value,
-            'unit' => $this->unit,
+            'technology_stack' => $this->technology_stack,
+            'context' => $this->context,
+            'challenge' => $this->challenge,
+            'solution' => $this->solution,
+            'results' => $this->results,
             'status' => $this->status,
-            'recorded_at' => $this->recorded_at,
-            'notes' => $this->notes,
             'is_featured' => (bool) $this->is_featured,
+            'is_visible' => (bool) $this->is_visible,
             'sort_order' => $this->sort_order,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

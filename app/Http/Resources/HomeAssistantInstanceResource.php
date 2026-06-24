@@ -5,26 +5,25 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NodeResource extends JsonResource
+class HomeAssistantInstanceResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'node_name' => $this->node_name,
+            'name' => $this->name,
+            'slug' => $this->slug,
+            'version' => $this->version,
             'location_name' => $this->location_name,
-            'type' => $this->type,
-            'source_system' => $this->source_system,
-            'protocol' => $this->protocol,
-            'current_value' => $this->current_value,
-            'unit' => $this->unit,
-            'ip_address' => $this->ip_address,
+            'access_url' => $this->access_url,
+            'description' => $this->description,
             'status' => $this->status,
-            'last_seen_at' => $this->last_seen_at,
-            'is_active' => (bool) $this->is_active,
-            'notes' => $this->notes,
             'is_featured' => (bool) $this->is_featured,
+            'is_visible' => (bool) $this->is_visible,
             'sort_order' => $this->sort_order,
+            'use_cases' => HomeAssistantUseCaseResource::collection(
+                $this->whenLoaded('useCases')
+            ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
