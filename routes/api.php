@@ -13,6 +13,10 @@ use App\Http\Controllers\Api\HomeAssistantInstanceController;
 use App\Http\Controllers\Api\LocalAiSetupController;
 use App\Http\Controllers\Api\AiStudyCaseController;
 use App\Http\Controllers\Api\ClusterController;
+use App\Http\Controllers\Api\ContactMessageController;
+use App\Http\Controllers\Api\LabCapabilityController;
+use App\Http\Controllers\Api\ResearchSourceController;
+
 
 
 // Públicas
@@ -47,7 +51,13 @@ Route::get('/ai-study-cases/{id}', [AiStudyCaseController::class, 'show']);
 Route::get('/clusters', [ClusterController::class, 'index']);
 Route::get('/clusters/{id}', [ClusterController::class, 'show']);
 
+Route::get('/lab-capabilities', [LabCapabilityController::class, 'index']);
+Route::get('/lab-capabilities/{id}', [LabCapabilityController::class, 'show']);
 
+Route::get('/research-sources', [ResearchSourceController::class, 'index']);
+Route::get('/research-sources/{id}', [ResearchSourceController::class, 'show']);
+
+Route::post('/contact-messages', [ContactMessageController::class, 'store']);
 
 
 // Privadas
