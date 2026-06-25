@@ -9,6 +9,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -57,23 +58,13 @@ class HomeAssistantUseCasesRelationManager extends RelationManager
                     ->default('active')
                     ->native(false),
 
-                Select::make('is_featured')
+                Toggle::make('is_featured')
                     ->label('Destacado')
-                    ->options([
-                        1 => 'Sí',
-                        0 => 'No',
-                    ])
-                    ->default(0)
-                    ->native(false),
+                    ->default(false),
 
-                Select::make('is_visible')
+                Toggle::make('is_visible')
                     ->label('Visible')
-                    ->options([
-                        1 => 'Sí',
-                        0 => 'No',
-                    ])
-                    ->default(1)
-                    ->native(false),
+                    ->default(true),
 
                 Textarea::make('description')
                     ->label('Descripción')
