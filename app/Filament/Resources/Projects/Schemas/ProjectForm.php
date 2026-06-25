@@ -35,7 +35,7 @@ class ProjectForm
                         Textarea::make('short_description')
                             ->label('Descripción corta')
                             ->rows(3)
-                            ->maxLength(255),
+                            ->maxLength(280),
 
                         Textarea::make('description')
                             ->label('Descripción')

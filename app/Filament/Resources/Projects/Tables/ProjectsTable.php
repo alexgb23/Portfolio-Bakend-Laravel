@@ -30,6 +30,7 @@ class ProjectsTable
                     ->label('Descripción corta')
                     ->limit(40)
                     ->searchable(),
+                    
 
                 TextColumn::make('technologies')
                     ->label('Tecnologías')

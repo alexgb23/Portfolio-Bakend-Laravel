@@ -21,4 +21,10 @@ class Project extends Model
         'is_published',
         'sort_order',
     ];
+
+    protected $casts = [
+        'is_featured' => 'boolean',
+        'is_published' => 'boolean',
+        'sort_order' => 'integer',
+    ];
 }
