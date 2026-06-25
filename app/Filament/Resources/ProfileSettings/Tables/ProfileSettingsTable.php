@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ProfileSettings\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -16,30 +17,67 @@ class ProfileSettingsTable
         return $table
             ->columns([
                 TextColumn::make('full_name')
-                    ->searchable(),
+                    ->label('Nombre completo')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('display_name')
-                    ->searchable(),
+                    ->label('Nombre visible')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('headline')
-                    ->searchable(),
+                    ->label('Headline')
+                    ->searchable()
+                    ->limit(50),
+
                 TextColumn::make('subheadline')
-                    ->searchable(),
+                    ->label('Subheadline')
+                    ->searchable()
+                    ->limit(50)
+                    ->toggleable(),
+
                 TextColumn::make('location')
-                    ->searchable(),
+                    ->label('Ubicación')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('email_public')
-                    ->searchable(),
+                    ->label('Email')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('website_url')
-                    ->searchable(),
+                    ->label('Web')
+                    ->limit(35)
+                    ->url(fn ($record) => $record->website_url, shouldOpenInNewTab: true)
+                    ->toggleable(),
+
                 TextColumn::make('resume_url')
-                    ->searchable(),
+                    ->label('CV')
+                    ->limit(35)
+                    ->url(fn ($record) => $record->resume_url, shouldOpenInNewTab: true)
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('status_label')
-                    ->searchable(),
+                    ->label('Estado')
+                    ->badge()
+                    ->toggleable(),
+
                 IconColumn::make('is_active')
-                    ->boolean(),
+                    ->label('Activo')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -49,6 +87,7 @@ class ProfileSettingsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

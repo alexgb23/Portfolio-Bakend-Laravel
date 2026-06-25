@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SocialLinks\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -14,29 +15,60 @@ class SocialLinksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
             ->columns([
-                TextColumn::make('platform')
-                    ->searchable(),
-                TextColumn::make('icon_key')
-                    ->searchable(),
                 TextColumn::make('label')
-                    ->searchable(),
+                    ->label('Etiqueta')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
+                TextColumn::make('platform')
+                    ->label('Plataforma')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->label('Título')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('text')
-                    ->searchable(),
+                    ->label('Texto')
+                    ->limit(40)
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('icon_key')
+                    ->label('Icono')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('url')
-                    ->searchable(),
+                    ->label('URL')
+                    ->limit(35)
+                    ->url(fn ($record) => $record->url, shouldOpenInNewTab: true)
+                    ->toggleable(),
+
+                IconColumn::make('is_visible')
+                    ->label('Visible')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('sort_order')
+                    ->label('Orden')
                     ->numeric()
                     ->sortable(),
-                IconColumn::make('is_visible')
-                    ->boolean(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -46,6 +78,7 @@ class SocialLinksTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

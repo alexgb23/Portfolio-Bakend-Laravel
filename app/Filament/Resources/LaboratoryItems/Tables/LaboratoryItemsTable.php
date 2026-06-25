@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LaboratoryItems\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -14,31 +15,76 @@ class LaboratoryItemsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Slug')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('item_type')
-                    ->searchable(),
+                    ->label('Tipo')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('category')
-                    ->searchable(),
+                    ->label('Categoría')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('location_name')
-                    ->searchable(),
+                    ->label('Ubicación')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->label('Estado')
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'gray',
+                        'testing' => 'warning',
+                        'maintenance' => 'info',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    }),
+
+                TextColumn::make('description')
+                    ->label('Descripción')
+                    ->limit(45)
+                    ->toggleable(),
+
                 IconColumn::make('is_featured')
-                    ->boolean(),
+                    ->label('Destacado')
+                    ->boolean()
+                    ->sortable(),
+
                 IconColumn::make('is_visible')
-                    ->boolean(),
+                    ->label('Visible')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('sort_order')
+                    ->label('Orden')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -48,6 +94,7 @@ class LaboratoryItemsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
