@@ -5,6 +5,7 @@ namespace App\Filament\Resources\HomeAssistantInstances;
 use App\Filament\Resources\HomeAssistantInstances\Pages\CreateHomeAssistantInstance;
 use App\Filament\Resources\HomeAssistantInstances\Pages\EditHomeAssistantInstance;
 use App\Filament\Resources\HomeAssistantInstances\Pages\ListHomeAssistantInstances;
+use App\Filament\Resources\HomeAssistantInstances\RelationManagers\HomeAssistantUseCasesRelationManager;
 use App\Filament\Resources\HomeAssistantInstances\Schemas\HomeAssistantInstanceForm;
 use App\Filament\Resources\HomeAssistantInstances\Tables\HomeAssistantInstancesTable;
 use App\Models\HomeAssistantInstance;
@@ -35,7 +36,7 @@ class HomeAssistantInstanceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            HomeAssistantUseCasesRelationManager::class,
         ];
     }
 

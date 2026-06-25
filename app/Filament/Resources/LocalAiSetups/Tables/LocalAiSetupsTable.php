@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\LocalAiSetups\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -14,35 +15,81 @@ class LocalAiSetupsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Slug')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('provider')
-                    ->searchable(),
+                    ->label('Proveedor')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('model_name')
-                    ->searchable(),
+                    ->label('Modelo')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('model_size')
-                    ->searchable(),
-                TextColumn::make('base_url')
-                    ->searchable(),
+                    ->label('Tamaño')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('interface_name')
-                    ->searchable(),
+                    ->label('Interfaz')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('base_url')
+                    ->label('Endpoint')
+                    ->limit(35)
+                    ->url(fn ($record) => $record->base_url, shouldOpenInNewTab: true)
+                    ->toggleable(),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->label('Estado')
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'inactive' => 'gray',
+                        'testing' => 'warning',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    }),
+
                 IconColumn::make('is_featured')
-                    ->boolean(),
+                    ->label('Destacado')
+                    ->boolean()
+                    ->sortable(),
+
                 IconColumn::make('is_visible')
-                    ->boolean(),
+                    ->label('Visible')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('sort_order')
+                    ->label('Orden')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -52,6 +99,7 @@ class LocalAiSetupsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

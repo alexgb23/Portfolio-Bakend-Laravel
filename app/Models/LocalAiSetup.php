@@ -25,5 +25,6 @@ class LocalAiSetup extends Model
     protected $casts = [
         'is_featured' => 'boolean',
         'is_visible' => 'boolean',
+        'sort_order' => 'integer',
     ];
 }

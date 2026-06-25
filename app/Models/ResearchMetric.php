@@ -22,6 +22,7 @@ class ResearchMetric extends Model
     protected $casts = [
         'measured_on' => 'date',
         'is_featured' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public function source(): BelongsTo

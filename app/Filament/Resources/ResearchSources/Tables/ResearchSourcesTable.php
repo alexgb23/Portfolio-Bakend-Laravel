@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ResearchSources\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -14,40 +15,90 @@ class ResearchSourcesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->label('Título')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Slug')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('source_type')
-                    ->searchable(),
+                    ->label('Tipo')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('author_name')
-                    ->searchable(),
+                    ->label('Autor')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('publisher_name')
-                    ->searchable(),
+                    ->label('Publisher')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('topic')
+                    ->label('Tema')
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('published_on')
+                    ->label('Publicado')
                     ->date()
                     ->sortable(),
+
                 TextColumn::make('url')
-                    ->searchable(),
+                    ->label('URL')
+                    ->limit(35)
+                    ->url(fn ($record) => $record->url, shouldOpenInNewTab: true)
+                    ->toggleable(),
+
                 TextColumn::make('reference_code')
-                    ->searchable(),
-                TextColumn::make('topic')
-                    ->searchable(),
+                    ->label('Referencia')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->label('Estado')
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'draft' => 'warning',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    }),
+
                 IconColumn::make('is_featured')
-                    ->boolean(),
+                    ->label('Destacado')
+                    ->boolean()
+                    ->sortable(),
+
                 IconColumn::make('is_visible')
-                    ->boolean(),
+                    ->label('Visible')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('sort_order')
+                    ->label('Orden')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -57,6 +108,7 @@ class ResearchSourcesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

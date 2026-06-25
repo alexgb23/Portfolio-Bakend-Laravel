@@ -29,6 +29,7 @@ class ResearchSource extends Model
         'published_on' => 'date',
         'is_featured' => 'boolean',
         'is_visible' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public function metrics(): HasMany

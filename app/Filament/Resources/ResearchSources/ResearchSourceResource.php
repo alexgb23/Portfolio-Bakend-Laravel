@@ -5,6 +5,7 @@ namespace App\Filament\Resources\ResearchSources;
 use App\Filament\Resources\ResearchSources\Pages\CreateResearchSource;
 use App\Filament\Resources\ResearchSources\Pages\EditResearchSource;
 use App\Filament\Resources\ResearchSources\Pages\ListResearchSources;
+use App\Filament\Resources\ResearchSources\RelationManagers\ResearchMetricsRelationManager;
 use App\Filament\Resources\ResearchSources\Schemas\ResearchSourceForm;
 use App\Filament\Resources\ResearchSources\Tables\ResearchSourcesTable;
 use App\Models\ResearchSource;
@@ -35,7 +36,7 @@ class ResearchSourceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ResearchMetricsRelationManager::class,
         ];
     }
 

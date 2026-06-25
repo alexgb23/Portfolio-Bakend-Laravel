@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AiStudyCases\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
@@ -14,29 +15,70 @@ class AiStudyCasesTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('sort_order')
             ->columns([
                 TextColumn::make('title')
-                    ->searchable(),
+                    ->label('Título')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
                 TextColumn::make('slug')
-                    ->searchable(),
+                    ->label('Slug')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('category')
-                    ->searchable(),
+                    ->label('Categoría')
+                    ->badge()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('technology_stack')
-                    ->searchable(),
+                    ->label('Stack')
+                    ->searchable()
+                    ->limit(35)
+                    ->toggleable(),
+
+                TextColumn::make('challenge')
+                    ->label('Reto')
+                    ->limit(45)
+                    ->toggleable(),
+
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->label('Estado')
+                    ->badge()
+                    ->sortable()
+                    ->color(fn (string $state): string => match ($state) {
+                        'published' => 'success',
+                        'draft' => 'warning',
+                        'archived' => 'danger',
+                        default => 'gray',
+                    }),
+
                 IconColumn::make('is_featured')
-                    ->boolean(),
+                    ->label('Destacado')
+                    ->boolean()
+                    ->sortable(),
+
                 IconColumn::make('is_visible')
-                    ->boolean(),
+                    ->label('Visible')
+                    ->boolean()
+                    ->sortable(),
+
                 TextColumn::make('sort_order')
+                    ->label('Orden')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -46,6 +88,7 @@ class AiStudyCasesTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
