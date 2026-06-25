@@ -29,6 +29,9 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.
 # 6. Instalar dependencias Composer
 RUN composer install --no-interaction --optimize-autoloader
 
+# 6.1 Publicar assets de Filament y limpiar cachés
+RUN php artisan filament:upgrade && php artisan optimize:clear
+
 # 7. Asignar permisos requeridos a las carpetas de caché
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
