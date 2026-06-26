@@ -62,6 +62,8 @@ Route::get('/research-sources/{id}', [ResearchSourceController::class, 'show']);
 Route::post('/contact-messages', [ContactMessageController::class, 'store']);
 
 
+
+
 // Privadas
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/verify-auth', function (Request $request) {
