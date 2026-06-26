@@ -1,58 +1,35 @@
 <?php
 
-namespace App\Filament\Resources\ProfileSettings;
+namespace App\Http\Resources;
 
-use App\Filament\Resources\ProfileSettings\Pages\CreateProfileSetting;
-use App\Filament\Resources\ProfileSettings\Pages\EditProfileSetting;
-use App\Filament\Resources\ProfileSettings\Pages\ListProfileSettings;
-use App\Filament\Resources\ProfileSettings\Schemas\ProfileSettingForm;
-use App\Filament\Resources\ProfileSettings\Tables\ProfileSettingsTable;
-use App\Models\ProfileSetting;
-use BackedEnum;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Table;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProfileSettingResource extends Resource
+class ProfileSettingResource extends JsonResource
 {
-    protected static ?string $model = ProfileSetting::class;
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
-
-    protected static ?string $recordTitleAttribute = 'full_name';
-
-    protected static string|\UnitEnum|null $navigationGroup = 'Profile';
-
-    protected static ?string $navigationLabel = 'Profile Settings';
-
-    protected static ?string $modelLabel = 'Profile Setting';
-
-    protected static ?string $pluralModelLabel = 'Profile Settings';
-
-    protected static ?int $navigationSort = 1;
-
-    public static function form(Schema $schema): Schema
-    {
-        return ProfileSettingForm::configure($schema);
-    }
-
-    public static function table(Table $table): Table
-    {
-        return ProfileSettingsTable::configure($table);
-    }
-
-    public static function getRelations(): array
-    {
-        return [];
-    }
-
-    public static function getPages(): array
+    public function toArray(Request $request): array
     {
         return [
-            'index' => ListProfileSettings::route('/'),
-            'create' => CreateProfileSetting::route('/create'),
-            'edit' => EditProfileSetting::route('/{record}/edit'),
+            'id' => $this->id,
+            'full_name' => $this->full_name,
+            'display_name' => $this->display_name,
+            'headline' => $this->headline,
+            'subheadline' => $this->subheadline,
+            'bio_short' => $this->bio_short,
+            'bio_long' => $this->bio_long,
+            'location' => $this->location,
+            'email_public' => $this->email_public,
+            'website_url' => $this->website_url,
+            'resume_url' => $this->resume_url,
+            'status_label' => $this->status_label,
+            'is_active' => $this->is_active,
+            'hero_kicker' => $this->hero_kicker,
+            'hero_title_prefix' => $this->hero_title_prefix,
+            'hero_title_highlight' => $this->hero_title_highlight,
+            'hero_title_suffix' => $this->hero_title_suffix,
+            'hero_stack_badge' => $this->hero_stack_badge,
+            'about_title' => $this->about_title,
+            'about_intro' => $this->about_intro,
         ];
     }
 }
