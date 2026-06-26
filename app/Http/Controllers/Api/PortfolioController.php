@@ -52,15 +52,15 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
-        // $highlights = ProfileHighlight::query()
-        //     ->visible()
-        //     ->ordered()
-        //     ->get();
+        $highlights = ProfileHighlight::query()
+            ->visible()
+            ->ordered()
+            ->get();
 
-        // $expertise = ProfileExpertise::query()
-        //     ->visible()
-        //     ->ordered()
-        //     ->get();
+        $expertise = ProfileExpertise::query()
+            ->visible()
+            ->ordered()
+            ->get();
 
         return new PortfolioHomeResource([
             'profile' => $profile,
