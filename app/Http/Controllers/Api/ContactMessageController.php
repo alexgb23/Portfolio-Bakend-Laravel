@@ -28,22 +28,28 @@ class ContactMessageController extends Controller
             'status' => 'new',
         ]);
 
+        $mailSent = false;
+
         try {
             Mail::to('alexandergalvez880208@gmail.com')
-                ->queue(new ContactMessageReceived($message));
+                ->send(new ContactMessageReceived($message));
+
+            $mailSent = true;
         } catch (\Throwable $e) {
-            Log::error('Error encolando correo de contacto', [
+            Log::error('Error enviando correo de contacto', [
                 'contact_message_id' => $message->id,
                 'error' => $e->getMessage(),
             ]);
         }
 
         return response()->json([
-            'message' => 'Mensaje enviado correctamente',
+            'message' => $mailSent
+                ? 'Mensaje enviado correctamente'
+                : 'Mensaje guardado correctamente. El correo no pudo enviarse en este momento.',
             'data' => [
                 'id' => $message->id,
                 'status' => $message->status,
-                'queued' => true,
+                'mail_sent' => $mailSent,
             ],
         ], 201);
     }
