@@ -32,8 +32,7 @@ class ContactMessageController extends Controller
 
         try {
             Mail::to('alexandergalvez880208@gmail.com')
-                Mail::to('alexandergalvez880208@gmail.com')
-                    ->queue(new ContactMessageReceived($message));
+                ->send(new ContactMessageReceived($message));
 
             $mailSent = true;
         } catch (\Throwable $e) {
