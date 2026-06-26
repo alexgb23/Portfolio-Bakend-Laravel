@@ -28,25 +28,18 @@ class ContactMessageController extends Controller
             'status' => 'new',
         ]);
 
-        try {
-            Mail::to('practicadomede@gmail.com')
-                ->send(new ContactMessageReceived($message));
-        } catch (\Throwable $e) {
-            Log::error('Error enviando correo de contacto', [
-                'contact_message_id' => $message->id,
-                'error' => $e->getMessage(),
-                'exception' => get_class($e),
-                'code' => $e->getCode(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]);
-
-            return response()->json([
-                'message' => 'Mensaje guardado, pero el correo falló.',
-                'error' => $e->getMessage(),
-                'exception' => get_class($e),
-            ], 500);
-        }
+   try {
+    Mail::to('alexandergalvez880208@gmail.com')
+        ->send(new ContactMessageReceived($message));
+} catch (\Throwable $e) {
+    \Log::error('Mail failed', [
+        'error' => $e->getMessage(),
+        'class' => get_class($e),
+    ]);
+}
+return response()->json([
+    'message' => 'Mensaje enviado correctamente.',
+], 201);
 
         return response()->json([
             'message' => 'Mensaje enviado correctamente',
