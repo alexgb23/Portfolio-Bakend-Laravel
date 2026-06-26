@@ -11,10 +11,10 @@ class ResearchSourceController extends Controller
     public function index()
     {
         $items = ResearchSource::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->active()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return ResearchSourceResource::collection($items);
@@ -23,9 +23,9 @@ class ResearchSourceController extends Controller
     public function show(string $id): ResearchSourceResource
     {
         $item = ResearchSource::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->with('metrics')
+            ->visible()
+            ->active()
+            ->with("metrics")
             ->findOrFail($id);
 
         return new ResearchSourceResource($item);

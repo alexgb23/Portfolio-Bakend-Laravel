@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ServerController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\LaboratorioController;
+use App\Http\Controllers\Api\LaboratoryHomeController;
 use App\Http\Controllers\Api\HomeAssistantInstanceController;
 use App\Http\Controllers\Api\LocalAiSetupController;
 use App\Http\Controllers\Api\AiStudyCaseController;
@@ -36,6 +37,7 @@ Route::get('/metrics/{id}', [MetricController::class, 'show']);
 
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
 
+Route::get('/laboratorio/home', [LaboratoryHomeController::class, 'index']);
 Route::get('/laboratorio', [LaboratorioController::class, 'index']);
 Route::get('/laboratorio/{id}', [LaboratorioController::class, 'show']);
 

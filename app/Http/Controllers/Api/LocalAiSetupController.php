@@ -11,10 +11,10 @@ class LocalAiSetupController extends Controller
     public function index()
     {
         $items = LocalAiSetup::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->active()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return LocalAiSetupResource::collection($items);
@@ -23,8 +23,8 @@ class LocalAiSetupController extends Controller
     public function show(string $id): LocalAiSetupResource
     {
         $item = LocalAiSetup::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
+            ->visible()
+            ->active()
             ->findOrFail($id);
 
         return new LocalAiSetupResource($item);

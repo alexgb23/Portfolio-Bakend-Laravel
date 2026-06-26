@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ClusterServer extends Model
 {
-    protected $table = 'cluster_server';
+    protected $table = "cluster_server";
 
     protected $fillable = [
-        'cluster_id',
-        'server_id',
-        'node_role',
-        'sort_order',
+        "cluster_id",
+        "server_id",
+        "node_role",
+        "sort_order",
     ];
 
     protected $casts = [
-        'sort_order' => 'integer',
+        "sort_order" => "integer",
     ];
 
     public function cluster(): BelongsTo
@@ -28,5 +29,10 @@ class ClusterServer extends Model
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy("sort_order")->orderBy("id");
     }
 }

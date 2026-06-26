@@ -7,6 +7,7 @@ use App\Http\Resources\PortfolioHomeResource;
 use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\Skill;
+use App\Models\SocialLink;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
@@ -14,27 +15,46 @@ class PortfolioController extends Controller
     public function getHomeData(Request $request): PortfolioHomeResource
     {
         $profile = ProfileSetting::query()
-            ->orderBy('id')
+            ->active()
+            ->orderBy("id")
             ->first();
 
         $skills = Skill::query()
-            ->where('is_visible', true)
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         $projects = Project::query()
-            ->where('is_published', true)
-            ->where('status', 'published')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->published()
+            ->featured()
+            ->ordered()
             ->limit(6)
             ->get();
 
+        if ($projects->count() < 6) {
+            $missing = 6 - $projects->count();
+
+            $extraProjects = Project::query()
+                ->published()
+                ->where("is_featured", false)
+                ->ordered()
+                ->limit($missing)
+                ->get();
+
+            $projects = $projects->concat($extraProjects)->values();
+        }
+
+        $socialLinks = SocialLink::query()
+            ->visible()
+            ->ordered()
+            ->get();
+
         return new PortfolioHomeResource([
-            'profile' => $profile,
-            'skills' => $skills,
-            'projects' => $projects,
+            "profile" => $profile,
+            "skills" => $skills,
+            "projects" => $projects,
+            "social_links" => $socialLinks,
         ]);
     }
 }

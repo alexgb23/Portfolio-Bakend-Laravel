@@ -10,17 +10,15 @@ class HomeAssistantUseCaseResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'home_assistant_instance_id' => $this->home_assistant_instance_id,
-            'title' => $this->title,
-            'category' => $this->category,
-            'description' => $this->description,
-            'status' => $this->status,
-            'is_featured' => (bool) $this->is_featured,
-            'is_visible' => (bool) $this->is_visible,
-            'sort_order' => $this->sort_order,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            "id" => $this->id,
+            "home_assistant_instance_id" => $this->home_assistant_instance_id,
+            "title" => $this->title,
+            "category" => $this->category,
+            "description" => $this->description,
+            "status" => $this->status,
+            "is_featured" => (bool) $this->is_featured,
+            "is_visible" => (bool) $this->is_visible,
+            "sort_order" => (int) $this->sort_order,
         ];
     }
 }

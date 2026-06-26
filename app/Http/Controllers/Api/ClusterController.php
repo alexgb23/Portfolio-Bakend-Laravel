@@ -11,8 +11,9 @@ class ClusterController extends Controller
     public function index()
     {
         $items = Cluster::query()
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->active()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return ClusterResource::collection($items);
@@ -21,7 +22,8 @@ class ClusterController extends Controller
     public function show(string $id): ClusterResource
     {
         $item = Cluster::query()
-            ->with('servers')
+            ->active()
+            ->with("servers")
             ->findOrFail($id);
 
         return new ClusterResource($item);

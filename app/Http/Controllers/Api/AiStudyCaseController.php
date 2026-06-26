@@ -11,10 +11,9 @@ class AiStudyCaseController extends Controller
     public function index()
     {
         $items = AiStudyCase::query()
-            ->where('is_visible', true)
-            ->where('status', 'published')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return AiStudyCaseResource::collection($items);
@@ -23,8 +22,7 @@ class AiStudyCaseController extends Controller
     public function show(string $id): AiStudyCaseResource
     {
         $item = AiStudyCase::query()
-            ->where('is_visible', true)
-            ->where('status', 'published')
+            ->visible()
             ->findOrFail($id);
 
         return new AiStudyCaseResource($item);

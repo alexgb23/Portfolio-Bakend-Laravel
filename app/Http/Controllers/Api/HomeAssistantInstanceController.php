@@ -11,10 +11,10 @@ class HomeAssistantInstanceController extends Controller
     public function index()
     {
         $items = HomeAssistantInstance::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->active()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return HomeAssistantInstanceResource::collection($items);
@@ -23,9 +23,9 @@ class HomeAssistantInstanceController extends Controller
     public function show(string $id): HomeAssistantInstanceResource
     {
         $item = HomeAssistantInstance::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->with('useCases')
+            ->visible()
+            ->active()
+            ->with("useCases")
             ->findOrFail($id);
 
         return new HomeAssistantInstanceResource($item);

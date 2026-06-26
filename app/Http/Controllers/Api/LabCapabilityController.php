@@ -11,10 +11,10 @@ class LabCapabilityController extends Controller
     public function index()
     {
         $items = LabCapability::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
-            ->orderByDesc('is_featured')
-            ->orderBy('sort_order')
+            ->visible()
+            ->active()
+            ->orderByDesc("is_featured")
+            ->ordered()
             ->get();
 
         return LabCapabilityResource::collection($items);
@@ -23,8 +23,8 @@ class LabCapabilityController extends Controller
     public function show(string $id): LabCapabilityResource
     {
         $item = LabCapability::query()
-            ->where('is_visible', true)
-            ->where('status', 'active')
+            ->visible()
+            ->active()
             ->findOrFail($id);
 
         return new LabCapabilityResource($item);
