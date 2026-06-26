@@ -1,6 +1,6 @@
 FROM php:8.4-apache
 
-# 1. Instalar extensiones de PostgreSQL, intl, zip y utilidades del sistema
+# 1. Instalar extensiones y utilidades necesarias
 RUN apt-get update && apt-get install -y \
     libpq-dev \
     libicu-dev \
@@ -11,32 +11,40 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo pdo_pgsql intl zip \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Habilitar mod_rewrite de Apache para las rutas de Laravel
+# 2. Habilitar mod_rewrite de Apache
 RUN a2enmod rewrite
 
-# 3. Instalar Composer de forma global
+# 3. Instalar Composer global
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. Configurar el directorio de trabajo y copiar el código
+# 4. Directorio de trabajo
 WORKDIR /var/www/html
+
+# 5. Copiar primero archivos de Composer para aprovechar caché
+COPY composer.json composer.lock ./
+
+# 6. Instalar dependencias PHP
+RUN composer install \
+    --no-dev \
+    --no-interaction \
+    --prefer-source \
+    --optimize-autoloader
+
+# 7. Copiar el resto del proyecto
 COPY . .
 
-# 5. Redirigir el servidor Apache a la carpeta public de Laravel
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+# 8. Configurar Apache para servir /public
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
+    && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 6. Instalar dependencias Composer
-RUN composer install --no-interaction --optimize-autoloader
+# 9. Publicar assets / limpiar cachés de Filament
+RUN php artisan filament:upgrade || true
 
-# 6.1 Publicar assets de Filament y limpiar cachés
-RUN php artisan filament:upgrade
-
-# 7. Asignar permisos requeridos a las carpetas de caché
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# 10. Permisos Laravel
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 80
 
-# 8. Al arrancar, enciende Apache directamente de forma segura
 CMD ["apache2-foreground"]

@@ -30,7 +30,7 @@ class ContactMessageController extends Controller
 
         try {
             Log::info('Antes de Mail::send', ['contact_message_id' => $message->id]);
-            Mail::to('practicadomede@gmail.com')
+            Mail::to('alexandergalvez880208@gmail.com')
                 ->send(new ContactMessageReceived($message));
             Log::info('Despues de Mail::send', ['contact_message_id' => $message->id]);
         } catch (\Throwable $e) {
