@@ -18,9 +18,17 @@ class ProfileHighlightResource extends Resource
 {
     protected static ?string $model = ProfileHighlight::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedSparkles;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?string $navigationLabel = 'Profile Highlights';
+
+    protected static ?string $modelLabel = 'Profile Highlight';
+
+    protected static ?string $pluralModelLabel = 'Profile Highlights';
+
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
@@ -34,9 +42,7 @@ class ProfileHighlightResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

@@ -18,9 +18,17 @@ class ProfileExpertiseResource extends Resource
 {
     protected static ?string $model = ProfileExpertise::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    protected static ?string $navigationLabel = 'Profile Expertises';
+
+    protected static ?string $modelLabel = 'Profile Expertise';
+
+    protected static ?string $pluralModelLabel = 'Profile Expertises';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Schema $schema): Schema
     {
@@ -34,9 +42,7 @@ class ProfileExpertiseResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
