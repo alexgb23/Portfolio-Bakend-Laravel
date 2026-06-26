@@ -22,11 +22,13 @@ class ProfileExpertiseResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationLabel = 'Profile Expertises';
+    protected static ?string $navigationGroup = 'Profile';
+
+    protected static ?string $navigationLabel = 'Profile Expertise';
 
     protected static ?string $modelLabel = 'Profile Expertise';
 
-    protected static ?string $pluralModelLabel = 'Profile Expertises';
+    protected static ?string $pluralModelLabel = 'Profile Expertise';
 
     protected static ?int $navigationSort = 3;
 

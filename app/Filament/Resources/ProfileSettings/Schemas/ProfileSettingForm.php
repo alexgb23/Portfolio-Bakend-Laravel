@@ -36,6 +36,43 @@ class ProfileSettingForm
                     ])
                     ->columns(2),
 
+                Section::make('Hero')
+                    ->schema([
+                        TextInput::make('hero_kicker')
+                            ->label('Hero kicker')
+                            ->maxLength(255),
+
+                        TextInput::make('hero_stack_badge')
+                            ->label('Hero stack badge')
+                            ->maxLength(255),
+
+                        TextInput::make('hero_title_prefix')
+                            ->label('Hero title prefix')
+                            ->maxLength(255),
+
+                        TextInput::make('hero_title_highlight')
+                            ->label('Hero title highlight')
+                            ->maxLength(255),
+
+                        TextInput::make('hero_title_suffix')
+                            ->label('Hero title suffix')
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Section::make('About')
+                    ->schema([
+                        TextInput::make('about_title')
+                            ->label('About title')
+                            ->maxLength(255),
+
+                        Textarea::make('about_intro')
+                            ->label('About intro')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(2),
+
                 Section::make('Biografía')
                     ->schema([
                         Textarea::make('bio_short')

@@ -18,15 +18,19 @@ class ProfileSettingResource extends Resource
 {
     protected static ?string $model = ProfileSetting::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
 
     protected static ?string $recordTitleAttribute = 'full_name';
+
+    protected static ?string $navigationGroup = 'Profile';
 
     protected static ?string $navigationLabel = 'Profile Settings';
 
     protected static ?string $modelLabel = 'Profile Setting';
 
     protected static ?string $pluralModelLabel = 'Profile Settings';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
