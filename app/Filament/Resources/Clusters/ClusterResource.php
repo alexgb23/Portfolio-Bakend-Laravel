@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Clusters;
 use App\Filament\Resources\Clusters\Pages\CreateCluster;
 use App\Filament\Resources\Clusters\Pages\EditCluster;
 use App\Filament\Resources\Clusters\Pages\ListClusters;
+use App\Filament\Resources\Clusters\RelationManagers\ClusterServersRelationManager;
 use App\Filament\Resources\Clusters\Schemas\ClusterForm;
 use App\Filament\Resources\Clusters\Tables\ClustersTable;
 use App\Models\Cluster;
@@ -35,7 +36,7 @@ class ClusterResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ClusterServersRelationManager::class,
         ];
     }
 
