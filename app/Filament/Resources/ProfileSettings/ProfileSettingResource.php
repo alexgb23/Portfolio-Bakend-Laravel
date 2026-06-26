@@ -22,7 +22,7 @@ class ProfileSettingResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'full_name';
 
-    protected static ?string $navigationGroup = 'Profile';
+    protected static string|\UnitEnum|null $navigationGroup = 'Profile';
 
     protected static ?string $navigationLabel = 'Profile Settings';
 
@@ -47,11 +47,15 @@ class ProfileSettingResource extends Resource
         return [];
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => ListProfileSettings::route('/'),
-            'create' => CreateProfileSetting::route('/create'),
             'edit' => EditProfileSetting::route('/{record}/edit'),
         ];
     }

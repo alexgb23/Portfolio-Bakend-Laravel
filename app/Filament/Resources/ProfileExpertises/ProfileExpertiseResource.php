@@ -22,7 +22,7 @@ class ProfileExpertiseResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationGroup = 'Profile';
+    protected static string|\UnitEnum|null $navigationGroup = 'Profile';
 
     protected static ?string $navigationLabel = 'Profile Expertise';
 
