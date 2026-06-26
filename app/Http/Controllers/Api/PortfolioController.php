@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PortfolioHomeResource;
+use App\Models\ProfileExpertise;
+use App\Models\ProfileHighlight;
 use App\Models\ProfileSetting;
 use App\Models\Project;
 use App\Models\Skill;
@@ -16,12 +18,12 @@ class PortfolioController extends Controller
     {
         $profile = ProfileSetting::query()
             ->active()
-            ->orderBy("id")
+            ->orderBy('id')
             ->first();
 
         $skills = Skill::query()
             ->visible()
-            ->orderByDesc("is_featured")
+            ->orderByDesc('is_featured')
             ->ordered()
             ->get();
 
@@ -37,7 +39,7 @@ class PortfolioController extends Controller
 
             $extraProjects = Project::query()
                 ->published()
-                ->where("is_featured", false)
+                ->where('is_featured', false)
                 ->ordered()
                 ->limit($missing)
                 ->get();
@@ -50,11 +52,23 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
+        $highlights = ProfileHighlight::query()
+            ->visible()
+            ->ordered()
+            ->get();
+
+        $expertise = ProfileExpertise::query()
+            ->visible()
+            ->ordered()
+            ->get();
+
         return new PortfolioHomeResource([
-            "profile" => $profile,
-            "skills" => $skills,
-            "projects" => $projects,
-            "social_links" => $socialLinks,
+            'profile' => $profile,
+            'skills' => $skills,
+            'projects' => $projects,
+            'social_links' => $socialLinks,
+            'highlights' => $highlights,
+            'expertise' => $expertise,
         ]);
     }
 }
