@@ -20,15 +20,16 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # 4. Directorio de trabajo
 WORKDIR /var/www/html
 
-# 5. Copiar primero archivos de Composer para aprovechar caché
+# 5. Copiar primero archivos de Composer
 COPY composer.json composer.lock ./
 
-# 6. Instalar dependencias PHP
+# 6. Instalar dependencias sin scripts todavía
 RUN composer install \
     --no-dev \
     --no-interaction \
     --prefer-source \
-    --optimize-autoloader
+    --optimize-autoloader \
+    --no-scripts
 
 # 7. Copiar el resto del proyecto
 COPY . .
@@ -38,10 +39,13 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 9. Publicar assets / limpiar cachés de Filament
+# 9. Ejecutar scripts de Laravel ahora que artisan ya existe
+RUN php artisan package:discover --ansi
+
+# 10. Publicar assets de Filament
 RUN php artisan filament:upgrade || true
 
-# 10. Permisos Laravel
+# 11. Permisos Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
