@@ -22,6 +22,12 @@ class LocalAiSetupResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Local AI Setups';
+
+    protected static ?string $modelLabel = 'Local AI Setup';
+
+    protected static ?string $pluralModelLabel = 'Local AI Setups';
+
     public static function form(Schema $schema): Schema
     {
         return LocalAiSetupForm::configure($schema);

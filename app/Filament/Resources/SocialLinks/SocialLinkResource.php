@@ -22,6 +22,12 @@ class SocialLinkResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'label';
 
+    protected static ?string $navigationLabel = 'Social Links';
+
+    protected static ?string $modelLabel = 'Social Link';
+
+    protected static ?string $pluralModelLabel = 'Social Links';
+
     public static function form(Schema $schema): Schema
     {
         return SocialLinkForm::configure($schema);

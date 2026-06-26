@@ -22,6 +22,12 @@ class AiStudyCaseResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?string $navigationLabel = 'AI Study Cases';
+
+    protected static ?string $modelLabel = 'AI Study Case';
+
+    protected static ?string $pluralModelLabel = 'AI Study Cases';
+
     public static function form(Schema $schema): Schema
     {
         return AiStudyCaseForm::configure($schema);

@@ -22,6 +22,12 @@ class ServerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'hostname';
 
+    protected static ?string $navigationLabel = 'Servers';
+
+    protected static ?string $modelLabel = 'Server';
+
+    protected static ?string $pluralModelLabel = 'Servers';
+
     public static function form(Schema $schema): Schema
     {
         return ServerForm::configure($schema);

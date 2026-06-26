@@ -22,6 +22,12 @@ class LabCapabilityResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?string $navigationLabel = 'Lab Capabilities';
+
+    protected static ?string $modelLabel = 'Lab Capability';
+
+    protected static ?string $pluralModelLabel = 'Lab Capabilities';
+
     public static function form(Schema $schema): Schema
     {
         return LabCapabilityForm::configure($schema);

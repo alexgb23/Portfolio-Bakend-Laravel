@@ -23,6 +23,12 @@ class ClusterResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Clusters';
+
+    protected static ?string $modelLabel = 'Cluster';
+
+    protected static ?string $pluralModelLabel = 'Clusters';
+
     public static function form(Schema $schema): Schema
     {
         return ClusterForm::configure($schema);

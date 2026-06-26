@@ -22,6 +22,12 @@ class NodeResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'node_name';
 
+    protected static ?string $navigationLabel = 'Nodes';
+
+    protected static ?string $modelLabel = 'Node';
+
+    protected static ?string $pluralModelLabel = 'Nodes';
+
     public static function form(Schema $schema): Schema
     {
         return NodeForm::configure($schema);

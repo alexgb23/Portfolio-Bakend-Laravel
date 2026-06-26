@@ -23,6 +23,12 @@ class HomeAssistantInstanceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Home Assistant Instances';
+
+    protected static ?string $modelLabel = 'Home Assistant Instance';
+
+    protected static ?string $pluralModelLabel = 'Home Assistant Instances';
+
     public static function form(Schema $schema): Schema
     {
         return HomeAssistantInstanceForm::configure($schema);

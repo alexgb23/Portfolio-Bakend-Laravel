@@ -22,6 +22,12 @@ class LaboratoryItemResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Laboratory Items';
+
+    protected static ?string $modelLabel = 'Laboratory Item';
+
+    protected static ?string $pluralModelLabel = 'Laboratory Items';
+
     public static function form(Schema $schema): Schema
     {
         return LaboratoryItemForm::configure($schema);

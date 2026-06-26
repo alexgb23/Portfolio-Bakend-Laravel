@@ -22,6 +22,12 @@ class ResearchMetricResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'metric_name';
 
+    protected static ?string $navigationLabel = 'Research Metrics';
+
+    protected static ?string $modelLabel = 'Research Metric';
+
+    protected static ?string $pluralModelLabel = 'Research Metrics';
+
     public static function form(Schema $schema): Schema
     {
         return ResearchMetricForm::configure($schema);

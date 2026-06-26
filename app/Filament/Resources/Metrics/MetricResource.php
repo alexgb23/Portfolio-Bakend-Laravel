@@ -22,6 +22,12 @@ class MetricResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'parameter';
 
+    protected static ?string $navigationLabel = 'Metrics';
+
+    protected static ?string $modelLabel = 'Metric';
+
+    protected static ?string $pluralModelLabel = 'Metrics';
+
     public static function form(Schema $schema): Schema
     {
         return MetricForm::configure($schema);

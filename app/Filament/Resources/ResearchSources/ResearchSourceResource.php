@@ -23,6 +23,12 @@ class ResearchSourceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?string $navigationLabel = 'Research Sources';
+
+    protected static ?string $modelLabel = 'Research Source';
+
+    protected static ?string $pluralModelLabel = 'Research Sources';
+
     public static function form(Schema $schema): Schema
     {
         return ResearchSourceForm::configure($schema);

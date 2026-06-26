@@ -22,6 +22,12 @@ class ClusterServerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'server_id';
 
+    protected static ?string $navigationLabel = 'Cluster Servers';
+
+    protected static ?string $modelLabel = 'Cluster Server';
+
+    protected static ?string $pluralModelLabel = 'Cluster Servers';
+
     public static function form(Schema $schema): Schema
     {
         return ClusterServerForm::configure($schema);

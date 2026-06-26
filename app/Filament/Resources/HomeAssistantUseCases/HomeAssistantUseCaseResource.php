@@ -22,6 +22,12 @@ class HomeAssistantUseCaseResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    protected static ?string $navigationLabel = 'Home Assistant Use Cases';
+
+    protected static ?string $modelLabel = 'Home Assistant Use Case';
+
+    protected static ?string $pluralModelLabel = 'Home Assistant Use Cases';
+
     public static function form(Schema $schema): Schema
     {
         return HomeAssistantUseCaseForm::configure($schema);

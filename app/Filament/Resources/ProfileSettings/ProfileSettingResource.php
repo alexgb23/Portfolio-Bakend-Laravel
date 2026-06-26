@@ -22,6 +22,12 @@ class ProfileSettingResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'full_name';
 
+    protected static ?string $navigationLabel = 'Profile Settings';
+
+    protected static ?string $modelLabel = 'Profile Setting';
+
+    protected static ?string $pluralModelLabel = 'Profile Settings';
+
     public static function form(Schema $schema): Schema
     {
         return ProfileSettingForm::configure($schema);

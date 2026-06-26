@@ -22,6 +22,12 @@ class LaboratoryBlockResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationLabel = 'Laboratory Blocks';
+
+    protected static ?string $modelLabel = 'Laboratory Block';
+
+    protected static ?string $pluralModelLabel = 'Laboratory Blocks';
+
     public static function form(Schema $schema): Schema
     {
         return LaboratoryBlockForm::configure($schema);
