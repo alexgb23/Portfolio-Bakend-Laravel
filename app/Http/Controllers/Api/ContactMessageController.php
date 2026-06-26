@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactMessageReceived;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactMessageController extends Controller
 {
@@ -24,6 +27,16 @@ class ContactMessageController extends Controller
             'message' => $validated['message'],
             'status' => 'new',
         ]);
+
+        try {
+            Mail::to('alexandergalvez880208@gmail.com')
+                ->send(new ContactMessageReceived($message));
+        } catch (\Throwable $e) {
+            Log::error('Error enviando correo de contacto', [
+                'contact_message_id' => $message->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return response()->json([
             'message' => 'Mensaje enviado correctamente',
