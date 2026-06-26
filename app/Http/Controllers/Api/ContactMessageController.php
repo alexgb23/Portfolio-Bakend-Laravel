@@ -20,7 +20,7 @@ class ContactMessageController extends Controller
             'message' => ['required', 'string'],
         ]);
 
-        $message = ContactMessage::create([
+        $contactMessage = ContactMessage::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'subject' => $validated['subject'] ?? null,
@@ -28,25 +28,26 @@ class ContactMessageController extends Controller
             'status' => 'new',
         ]);
 
-   try {
-    Mail::to('alexandergalvez880208@gmail.com')
-        ->send(new ContactMessageReceived($message));
-} catch (\Throwable $e) {
-    \Log::error('Mail failed', [
-        'error' => $e->getMessage(),
-        'class' => get_class($e),
-    ]);
-}
-return response()->json([
-    'message' => 'Mensaje enviado correctamente.',
-], 201);
+        dispatch(function () use ($contactMessage) {
+            try {
+                Mail::to('alexandergalvez880208@gmail.com')
+                    ->send(new ContactMessageReceived($contactMessage));
+            } catch (\Throwable $e) {
+                Log::error('Mail failed after response', [
+                    'contact_message_id' => $contactMessage->id,
+                    'error' => $e->getMessage(),
+                    'class' => get_class($e),
+                ]);
+            }
+        })->afterResponse();
 
         return response()->json([
             'message' => 'Mensaje enviado correctamente',
             'data' => [
-                'id' => $message->id,
-                'status' => $message->status,
-                'mail_sent' => true,
+                'id' => $contactMessage->id,
+                'status' => $contactMessage->status,
+                'mail_sent' => false,
+                'mail_queued_after_response' => true,
             ],
         ], 201);
     }
