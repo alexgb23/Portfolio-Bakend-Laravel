@@ -29,14 +29,26 @@ class ContactMessageController extends Controller
         ]);
 
         try {
+            // Cambiado ->send() por ->sendNow() para saltarse cualquier cola obligatoriamente
             Mail::to('alexandergalvez880208@gmail.com')
-                ->send(new ContactMessageReceived($contactMessage));
+                ->sendNow(new ContactMessageReceived($contactMessage));
+
         } catch (\Throwable $e) {
-            Log::error('Mail failed', [
+            // Si el SMTP falla, Render lo registrará aquí sin congelar el Front eternamente
+            Log::error('Mail failed in production', [
                 'contact_message_id' => $contactMessage->id,
                 'error' => $e->getMessage(),
                 'class' => get_class($e),
             ]);
+
+            // Opcional: Puedes avisar al front que se guardó pero el mail falló
+            return response()->json([
+                'message' => 'Mensaje guardado, pero hubo un problema al enviar la notificación por correo.',
+                'data' => [
+                    'id' => $contactMessage->id,
+                    'status' => $contactMessage->status,
+                ],
+            ], 201);
         }
 
         return response()->json([

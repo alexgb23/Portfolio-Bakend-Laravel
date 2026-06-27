@@ -42,8 +42,15 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # 9. Ejecutar scripts de Laravel ahora que artisan ya existe
 RUN php artisan package:discover --ansi
 
-# 10. Publicar assets de Filament
-RUN php artisan filament:upgrade || true
+# 10. Publicar assets de Filament y Limpieza Total de Caché para producción
+# Esto asegura que Render asimile Resend y tu nuevo .env sin quedarse congelado
+RUN php artisan filament:upgrade || true \
+    && php artisan config:clear \
+    && php artisan cache:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
+    && php artisan config:cache \
+    && php artisan route:cache
 
 # 11. Permisos Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \

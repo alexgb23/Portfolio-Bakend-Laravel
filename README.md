@@ -1,58 +1,75 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://githubusercontent.com" width="350" alt="Laravel Logo">
 </p>
 
-## About Laravel
+# 🚀 Portfolio Backend — API REST (Laravel & Docker Native)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Este repositorio contiene el backend y la API REST que gestiona toda la información, datos dinámicos y mensajería de mi sitio web de portafolio profesional. Está diseñado bajo una arquitectura de infraestructura inmutable empaquetada al 100% en contenedores.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+🔗 **Frontend (Netlify):** [https://netlify.app](https://netlify.app)  
+🔗 **Backend API (Render):** [https://onrender.com](https://onrender.com)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Arquitectura de Despliegue Automatizado
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+El sistema utiliza servicios en la nube con capas gratuitas optimizadas y está estructurado para ejecutarse sin necesidad de mantenimiento o intervención en la shell del servidor:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+*   **Framework:** Laravel (PHP 8.4) configurado exclusivamente como API REST.
+*   **Servidor Web (Producción):** **Render** (Plan Free Web Service) configurado en modo **Docker Deployment**. Se compila de forma automatizada leyendo el `Dockerfile` del repositorio en cada *git push*.
+*   **Base de Datos:** **Neon DB** (Serverless PostgreSQL) integrada nativamente a través de la extensión `pdo_pgsql`.
+*   **Servicio de Correo:** **Resend API** configurado en envío síncrono. Viaja de forma nativa por HTTP (Puerto 443) eludiendo por completo el bloqueo estricto de puertos SMTP (25, 465, 587) que aplica Render en sus servicios gratuitos.
+*   **Administración Interna:** Filament PHP integrado para control total de contenidos.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 📋 Variables de Entorno en el Panel de Render (`Environment`)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Debido a que Render destruye y reconstruye el contenedor en cada despliegue, las siguientes llaves se configuran directamente en la sección **Environment** de la interfaz web de Render (nunca se suben al repositorio):
 
-```bash
-composer require laravel/boost --dev
+```env
+DB_CONNECTION=pgsql
+DB_HOST=ep-your-neon-domain.pooler.neon.tech
+DB_PORT=5432
+DB_DATABASE=neondb
+DB_USERNAME=alexandergalvez880208
+DB_PASSWORD=tu_contraseña_secreta_de_neon
 
-php artisan boost:install
+# Forzar envío síncrono por la ausencia de Background Workers en planes Free
+QUEUE_CONNECTION=sync
+
+# Autenticación segura basada en API HTTP (Puerto 443)
+MAIL_MAILER=resend
+RESEND_API_KEY=re_tu_llave_secreta_de_resend
+MAIL_FROM_ADDRESS=onboarding@resend.dev
+MAIL_FROM_NAME="Portfolio Alex"
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🐋 Gestión en Desarrollo Local (Docker Compose)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+En entorno local (Windows utilizando Git Bash), las dependencias y la base de datos se orquestan de forma local.
 
-## Code of Conduct
+### Levantar o actualizar el entorno local:
+```bash
+docker compose up -d --build
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Instalar nuevos paquetes dentro del contenedor activo:
+```bash
+docker exec -it portfolio_backend composer require resend/resend-laravel
+```
 
-## Security Vulnerabilities
+### Ejecutar migraciones en Neon desde tu entorno local:
+```bash
+docker exec -it portfolio_backend php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## ⚙️ Notas de Automatización e Infraestructura Inmutable
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1.  **Limpieza de Caché Automatizada:** El `Dockerfile` incluye comandos de optimización en la etapa de construcción (`php artisan config:clear`). Esto asegura que cualquier cambio en las variables de entorno de Render tome efecto inmediatamente en el servidor web Apache sin necesidad de entrar a una consola.
+2.  **Manejo de Tiempos de Espera (Netlify Timeout):** Netlify aborta peticiones que superen los **26 segundos**. Al usar el driver de Resend junto con `QUEUE_CONNECTION=sync`, Laravel delega el procesamiento del email mediante llamadas web ultrarrápidas, respondiendo al Frontend en milisegundos y previniendo caídas por *timeout*.
+3.  **Seguridad en el Flujo de Correos:** En producción el remitente se bloquea estrictamente en `onboarding@resend.dev` (exigencia de la capa gratuita de Resend). Las respuestas directas del correo se gestionan dinámicamente mediante la cabecera `replyTo` inyectada en el Mailable de Laravel con los datos capturados en el formulario.
