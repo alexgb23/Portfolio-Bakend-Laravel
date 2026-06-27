@@ -2,30 +2,31 @@
   <img src="https://githubusercontent.com" width="350" alt="Laravel Logo">
 </p>
 
-# 🚀 Portfolio Backend — API REST (Laravel & Docker Native)
+# 🚀 Infrastructure Lab & Portfolio API (Laravel & Docker Native)
 
-Este repositorio contiene el backend y la API REST que gestiona toda la información, datos dinámicos y mensajería de mi sitio web de portafolio profesional. Está diseñado bajo una arquitectura de infraestructura inmutable empaquetada al 100% en contenedores.
+Este repositorio contiene el núcleo del backend y la API REST que gestiona mi portafolio profesional y el panel de telemetría de mi **Laboratorio de Infraestructura, Automatización y Computación Edge**. Diseñado bajo una arquitectura desacoplada (*Headless*), expone datos estructurados en tiempo real sobre clusters hibridados, métricas de servidores físicos, domótica integrada e Inteligencia Artificial local.
 
 🔗 **Frontend (Netlify):** [https://netlify.app](https://netlify.app)  
 🔗 **Backend API (Render):** [https://onrender.com](https://onrender.com)
 
 ---
 
-## 🛠️ Arquitectura de Despliegue Automatizado
+## 🛠️ Arquitectura y Stack Tecnológico
 
-El sistema utiliza servicios en la nube con capas gratuitas optimizadas y está estructurado para ejecutarse sin necesidad de mantenimiento o intervención en la shell del servidor:
+La infraestructura está automatizada de extremo a extremo, optimizada para funcionar de forma autónoma en la nube sin intervención directa en la consola:
 
-*   **Framework:** Laravel (PHP 8.4) configurado exclusivamente como API REST.
-*   **Servidor Web (Producción):** **Render** (Plan Free Web Service) configurado en modo **Docker Deployment**. Se compila de forma automatizada leyendo el `Dockerfile` del repositorio en cada *git push*.
-*   **Base de Datos:** **Neon DB** (Serverless PostgreSQL) integrada nativamente a través de la extensión `pdo_pgsql`.
-*   **Servicio de Correo:** **Resend API** configurado en envío síncrono. Viaja de forma nativa por HTTP (Puerto 443) eludiendo por completo el bloqueo estricto de puertos SMTP (25, 465, 587) que aplica Render en sus servicios gratuitos.
-*   **Administración Interna:** Filament PHP integrado para control total de contenidos.
+*   **Core:** Laravel (PHP 8.4) configurado estrictamente en modo API REST de alta disponibilidad.
+*   **Contenedores:** **Docker & Docker Compose** para asegurar un entorno local idéntico al de producción.
+*   **Servidor Web (Producción):** **Render** (Plan Free) configurado mediante *Docker Deployment* nativo con despliegue continuo.
+*   **Base de Datos Relacional:** **Neon DB** (Serverless PostgreSQL) con soporte nativo `pdo_pgsql` y conexiones SSL seguras.
+*   **Mensajería y Alertas:** **Resend API** integrado sobre protocolo HTTP (Puerto 443). Esto evita los bloqueos drásticos de puertos SMTP tradicionales (25, 465, 587) aplicados en servidores en la nube gratuitos.
+*   **Gestor Administrativo:** Filament PHP para la administración inmutable de métricas, clústeres y configuraciones de IA.
 
 ---
 
-## 📋 Variables de Entorno en el Panel de Render (`Environment`)
+## 📋 Variables de Entorno Clave (`Environment`)
 
-Debido a que Render destruye y reconstruye el contenedor en cada despliegue, las siguientes llaves se configuran directamente en la sección **Environment** de la interfaz web de Render (nunca se suben al repositorio):
+Configuradas directamente en el panel web de Render (Protegidas y fuera del repositorio):
 
 ```env
 DB_CONNECTION=pgsql
@@ -34,11 +35,12 @@ DB_PORT=5432
 DB_DATABASE=neondb
 DB_USERNAME=alexandergalvez880208
 DB_PASSWORD=tu_contraseña_secreta_de_neon
+DB_SSLMODE=require
 
-# Forzar envío síncrono por la ausencia de Background Workers en planes Free
+# Forzar procesamiento inmediato por ausencia de Background Workers independientes en el plan gratis
 QUEUE_CONNECTION=sync
 
-# Autenticación segura basada en API HTTP (Puerto 443)
+# Proveedor de Correo HTTP Seguro (Puerto 443)
 MAIL_MAILER=resend
 RESEND_API_KEY=re_tu_llave_secreta_de_resend
 MAIL_FROM_ADDRESS=onboarding@resend.dev
@@ -47,29 +49,111 @@ MAIL_FROM_NAME="Portfolio Alex"
 
 ---
 
-## 🐋 Gestión en Desarrollo Local (Docker Compose)
+## 💾 Arquitectura de la Base de Datos (Modelos Técnicos)
 
-En entorno local (Windows utilizando Git Bash), las dependencias y la base de datos se orquestan de forma local.
+El esquema de base de datos relacional modela el hardware y software del laboratorio mediante las siguientes entidades clave y relaciones complejas:
 
-### Levantar o actualizar el entorno local:
+*   **`Cluster` ↔ `Server` (N:M a través de `ClusterServer`):** Relación de muchos a muchos que modela la topología de red del laboratorio. La tabla intermedia pivote almacena datos de infraestructura críticos como el rol del nodo (`node_role`) y la precedencia física (`sort_order`).
+*   **`HomeAssistantInstance` → `HomeAssistantUseCase` (1:N):** Abstracción de entornos IoT. Cada instancia centraliza múltiples casos de uso de automatización residencial y control lógico Edge filtrados dinámicamente por visibilidad y criticidad.
+*   **`AiStudyCase` & `LabCapability`:** Entidades inmutables destinadas a documentar arquitecturas de LLMs corporativos ejecutados de forma local, benchmarks de inferencia, notas técnicas y niveles de madurez operacional (`capability_level`).
+*   **`ContactMessage`:** Gestor transaccional de mensajería asíncrona optimizado con filtros condicionales nativos para lectura de registros (`scopeUnread`, `scopeRead`).
+
+---
+
+## 📌 Documentación de Endpoints (API Reference)
+
+La URL base de producción es: `https://onrender.com`
+
+### 🔒 Autenticación y Control de Sesión
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/login` | `api` | Autentica administradores y retorna el token Sanctum. |
+| `POST` | `/logout` | `api`, `auth:sanctum` | Revoca el token de la sesión actual. |
+| `GET` | `/verify-auth` | `api`, `auth:sanctum` | Valida el estado del token y retorna el perfil de usuario. |
+
+### 📊 Telemetría de Servidores, Redes y Clústeres
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/clusters` | `api` | Lista los clústeres de computación activos. |
+| `GET` | `/clusters/{id}` | `api` | Obtiene la topología detallada y servidores mapeados con su rol. |
+| `GET` | `/servers` | `api` | Retorna los servidores físicos o virtuales del laboratorio. |
+| `GET` | `/servers/{id}` | `api` | Detalle de hardware y estado de un servidor. |
+| `GET` | `/nodes` | `api` | Lista los nodos de computación distribuidos. |
+| `GET` | `/nodes/{id}` | `api` | Estado, configuración y asignación de un nodo. |
+| `GET` | `/metrics` | `api` | Métricas de rendimiento agregadas del laboratorio. |
+| `GET` | `/metrics/{id}` | `api` | Histórico de carga, CPU, RAM y almacenamiento de un recurso. |
+
+### 🤖 Inteligencia Artificial & Automatización (Edge)
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/home-assistant` | `api` | Lista las instancias de domótica e integraciones IoT activas. |
+| `GET` | `/home-assistant/{id}` | `api` | Casos de uso avanzados y automatizaciones de la instancia. |
+| `GET` | `/local-ai-setups` | `api` | Configuraciones de LLMs y modelos ejecutados de forma local. |
+| `GET` | `/local-ai-setups/{id}` | `api` | Parámetros técnicos del hardware/modelo de IA local. |
+| `GET` | `/ai-study-cases` | `api` | Casos de estudio y benchmarks de IA aplicada. |
+| `GET` | `/ai-study-cases/{id}` | `api` | Contexto, desafíos y soluciones de arquitecturas de IA. |
+
+### 🔬 Laboratorio, Proyectos y Portafolio
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/portfolio-home` | `api` | Bloque principal de datos (enlaces sociales, habilidades, destacados). |
+| `GET` | `/laboratorio/home`| `api` | Datos estructurados de presentación del Laboratorio técnico. |
+| `GET` | `/laboratorio` | `api` | Módulos e ítems de experimentación activos. |
+| `GET` | `/laboratorio/{id}`| `api` | Detalle específico de un entorno o bloque del laboratorio. |
+| `GET` | `/projects` | `api` | Catálogo de proyectos públicos desarrollados. |
+| `GET` | `/projects/{id}` | `api` | Ficha técnica y documentación de un proyecto. |
+| `GET` | `/lab-capabilities`| `api` | Lista las capacidades operacionales y de testing del laboratorio. |
+| `GET` | `/research-sources`| `api` | Fuentes de datos, papers y documentación de soporte de I+D. |
+
+### ✉️ Entrada de Datos (Contacto)
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/contact-messages`| `api` | Registra el mensaje en Postgres (Neon) y envía una notificación instantánea vía Resend. |
+
+### 📝 Operaciones CRUD de Administración (Protegidas)
+
+| Método | Endpoint | Middleware | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/projects` | `api`, `auth:sanctum` | Registra un nuevo proyecto en el portafolio. |
+| `PUT` | `/projects/{id}` | `api`, `auth:sanctum` | Actualiza la información técnica de un proyecto existente. |
+| `DELETE`| `/projects/{id}` | `api`, `auth:sanctum` | Remueve un proyecto del catálogo de forma permanente. |
+
+---
+
+## 🐋 Comandos de Control en Desarrollo Local (Docker Windows/Git Bash)
+
+Dado que las carpetas compartidas están enlazadas a tu volumen local, usa estos comandos directamente para controlar el contenedor local llamado `portfolio_backend`:
+
+### Iniciar el contenedor local (Recompilando cambios)
 ```bash
 docker compose up -d --build
 ```
 
-### Instalar nuevos paquetes dentro del contenedor activo:
+### Instalar dependencias en caliente
 ```bash
 docker exec -it portfolio_backend composer require resend/resend-laravel
 ```
 
-### Ejecutar migraciones en Neon desde tu entorno local:
+### Limpieza de caché (Ejecutar tras modificar el `.env` local)
+```bash
+docker exec -it portfolio_backend php artisan config:clear
+docker exec -it portfolio_backend php artisan cache:clear
+```
+
+### Ejecutar migraciones hacia la base de datos de desarrollo/producción
 ```bash
 docker exec -it portfolio_backend php artisan migrate
 ```
 
 ---
 
-## ⚙️ Notas de Automatización e Infraestructura Inmutable
+## ⚙️ Consideraciones de Infraestructura y Automatización Inmutable
 
-1.  **Limpieza de Caché Automatizada:** El `Dockerfile` incluye comandos de optimización en la etapa de construcción (`php artisan config:clear`). Esto asegura que cualquier cambio en las variables de entorno de Render tome efecto inmediatamente en el servidor web Apache sin necesidad de entrar a una consola.
-2.  **Manejo de Tiempos de Espera (Netlify Timeout):** Netlify aborta peticiones que superen los **26 segundos**. Al usar el driver de Resend junto con `QUEUE_CONNECTION=sync`, Laravel delega el procesamiento del email mediante llamadas web ultrarrápidas, respondiendo al Frontend en milisegundos y previniendo caídas por *timeout*.
-3.  **Seguridad en el Flujo de Correos:** En producción el remitente se bloquea estrictamente en `onboarding@resend.dev` (exigencia de la capa gratuita de Resend). Las respuestas directas del correo se gestionan dinámicamente mediante la cabecera `replyTo` inyectada en el Mailable de Laravel con los datos capturados en el formulario.
+1.  **Bloqueo de Puertos SMTP:** Render no permite tráfico SMTP saliente en capas gratuitas. La integración de la API de Resend por el puerto 443 (HTTP estándar) soluciona este problema de manera nativa sin sobrecargar el flujo de datos.
+2.  **Límite de Tiempo de Respuesta (Timeout):** Netlify aborta las peticiones tras **26 segundos**. Configurar el driver en `QUEUE_CONNECTION=sync` junto con Resend HTTP permite despachar el correo electrónico en milisegundos, respondiendo al Front inmediatamente.
+3.  **Compilación en Frío:** El archivo `Dockerfile` ejecuta limpiezas automáticas de caché en su construcción (`php artisan config:clear`) ignorando errores de base de datos a través de sentencias de escape (`|| true`). Esto garantiza construcciones estables en Render sin comprometer las credenciales dinámicas de Neon DB.
