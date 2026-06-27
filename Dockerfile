@@ -42,15 +42,13 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 # 9. Ejecutar scripts de Laravel ahora que artisan ya existe
 RUN php artisan package:discover --ansi
 
-# 10. Publicar assets de Filament y optimizar cachés aislando errores de base de datos
-# Al agregar "|| true" a cada comando, Docker ignorará la falta de conexión a Neon DB en la compilación
+# 10. Publicar assets de Filament y limpiar residuos de cache
+# Removidos config:cache y route:cache de manera definitiva para que no rompa Neon DB
 RUN php artisan filament:upgrade || true \
     && php artisan config:clear || true \
     && php artisan cache:clear || true \
     && php artisan route:clear || true \
-    && php artisan view:clear || true \
-    && php artisan config:cache || true \
-    && php artisan route:cache || true
+    && php artisan view:clear || true
 
 # 11. Permisos Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
