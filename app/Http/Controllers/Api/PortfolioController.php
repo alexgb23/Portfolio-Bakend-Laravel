@@ -7,7 +7,6 @@ use App\Http\Resources\PortfolioHomeResource;
 use App\Models\ProfileExpertise;
 use App\Models\ProfileHighlight;
 use App\Models\ProfileSetting;
-use App\Models\Project;
 use App\Models\Skill;
 use App\Models\SocialLink;
 use Illuminate\Http\Request;
@@ -27,26 +26,6 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
-        $projects = Project::query()
-            ->published()
-            ->featured()
-            ->ordered()
-            ->limit(6)
-            ->get();
-
-        if ($projects->count() < 6) {
-            $missing = 6 - $projects->count();
-
-            $extraProjects = Project::query()
-                ->published()
-                ->where('is_featured', false)
-                ->ordered()
-                ->limit($missing)
-                ->get();
-
-            $projects = $projects->concat($extraProjects)->values();
-        }
-
         $socialLinks = SocialLink::query()
             ->visible()
             ->ordered()
@@ -65,7 +44,6 @@ class PortfolioController extends Controller
         return new PortfolioHomeResource([
             'profile' => $profile,
             'skills' => $skills,
-            'projects' => $projects,
             'social_links' => $socialLinks,
             'highlights' => $highlights,
             'expertise' => $expertise,
@@ -73,29 +51,26 @@ class PortfolioController extends Controller
     }
 
     public function getHeroData(Request $request): PortfolioHomeResource
-{
-    $profile = ProfileSetting::query()
-        ->active()
-        ->orderBy('id')
-        ->first();
+    {
+        $profile = ProfileSetting::query()
+            ->active()
+            ->orderBy('id')
+            ->first();
 
-    $socialLinks = SocialLink::query()
-        ->visible()
-        ->ordered()
-        ->get();
+        $socialLinks = SocialLink::query()
+            ->visible()
+            ->ordered()
+            ->get();
 
-    $expertise = ProfileExpertise::query()
-        ->visible()
-        ->ordered()
-        ->get();
+        $expertise = ProfileExpertise::query()
+            ->visible()
+            ->ordered()
+            ->get();
 
-    return new PortfolioHomeResource([
-        'profile' => $profile,
-        'skills' => collect(),
-        'projects' => collect(),
-        'social_links' => $socialLinks,
-        'highlights' => collect(),
-        'expertise' => $expertise,
-    ]);
-}
+        return new PortfolioHomeResource([
+            'profile' => $profile,
+            'social_links' => $socialLinks,
+            'expertise' => $expertise,
+        ]);
+    }
 }
