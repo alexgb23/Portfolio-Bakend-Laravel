@@ -16,8 +16,6 @@ class PortfolioHomeResource extends JsonResource
 
             "skills" => SkillResource::collection($this->resource["skills"] ?? collect()),
 
-            "projects" => ProjectCardResource::collection($this->resource["projects"] ?? collect()),
-
             "social_links" => SocialLinkResource::collection($this->resource["social_links"] ?? collect()),
 
             "highlights" => collect($this->resource["highlights"] ?? [])->values(),
