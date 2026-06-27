@@ -96,8 +96,14 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'require'), // 👈 Asegúrate de que lea el archivo .env
+            'sslmode' => env('DB_SSLMODE', 'require'),
+
+            // ⚠️ AGREGA ESTO AQUÍ ABAJO:
+            'options' => [
+                PDO::ATTR_PERSISTENT => false,
+            ],
         ],
+
 
 
 

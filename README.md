@@ -215,3 +215,13 @@ curl -X GET http://localhost:8081/api/verify-auth \
 4. **Mitigación de cold starts en Render Free:** Dado que Render puede suspender servicios gratuitos tras unos 15 minutos sin tráfico, puede utilizarse un monitor HTTP externo, como **UptimeRobot**, apuntando a un endpoint ligero como `/health` con una frecuencia aproximada de **10 a 14 minutos**. Esta técnica reduce los arranques en frío, pero también incrementa el consumo de horas mensuales del plan gratuito.[web:527][web:546]
 
 5. **Estrategia recomendada de disponibilidad:** Si se prioriza el ahorro de horas del plan gratuito, lo recomendable es pausar el monitor y aceptar _cold starts_ ocasionales. Si se necesita disponibilidad constante, la solución estable es migrar a una instancia de pago en Render.[web:527][web:544]
+
+6. Ajuste del límite de memoria en PHP (memory_limit): Las imágenes oficiales de php:apache imponen límites estrictos de RAM que rompen procesos pesados de frameworks con paneles administrativos como Filament. Inyectar la directiva memory_limit=256M mediante un archivo .ini personalizado en el Dockerfile permite dar estabilidad a las peticiones concurrentes del backend.
+
+7. Optimización de renderizado en producción (view:cache): Sustituir comandos de limpieza como view:clear por la pre-compilación de vistas (php artisan view:cache) durante la creación de la imagen de Docker disminuye los picos de CPU y RAM, evitando procesar código Blade en tiempo real ante las visitas de los usuarios.
+
+8. Configuración de logs efímeros (LOG_CHANNEL=stderr): Almacenar registros en archivos locales (file) dentro de contenedores de Render satura la memoria interna y degrada el rendimiento. Configurar el canal de logs hacia stderr en las variables de entorno redirige el flujo de errores directamente a la consola nativa de Render en tiempo real, liberando RAM en el servidor.
+
+9. Desactivación de trazas de depuración (APP_DEBUG=false): Mantener habilitadas las herramientas de debug en producción fuerza a Laravel a guardar en memoria RAM un historial detallado de excepciones y consultas SQL de cada petición. Forzar el entorno a production y desactivar el debug previene fugas de memoria (memory leaks).
+
+10. Cierre explícito de conexiones persistentes (PDO::ATTR_PERSISTENT): Al conectar Laravel con bases de datos serverless como Neon DB, mantener hilos de conexión abiertos satura el pool de conexiones y eleva la RAM residual de Render. Definir la opción PDO::ATTR_PERSISTENT => false dentro del bloque pgsql obliga al framework a destruir el hilo con la base de datos inmediatamente después de despachar la respuesta HTTP.
