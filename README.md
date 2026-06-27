@@ -152,8 +152,47 @@ docker exec -it portfolio_backend php artisan migrate
 
 ---
 
+## 🔒 Seguridad CORS (Cross-Origin Resource Sharing)
+
+El backend implementa una política estricta de control de acceso en `config/cors.php` para mitigar ataques de inyección y uso no autorizado de la API. 
+
+*   **Orígenes Permitidos:** Únicamente tu entorno local (`http://localhost:5173`) y tu dominio de producción (`https://netlify.app`).
+*   **Cabeceras Explícitas:** Se restringen los comodines (`*`) habilitando solo cabeceras transaccionales esenciales (`Content-Type`, `Authorization`, `Accept`).
+*   **Optimización de Red (`max_age`):** Configurado a 24 horas (`86400` segundos) para almacenar en caché las peticiones de verificación previa (*Preflight OPTIONS*). Esto reduce la latencia en Netlify eliminando peticiones redundantes.
+*   **Soporte de Credenciales:** Habilitado nativamente (`supports_credentials: true`) para garantizar la correcta transmisión de cabeceras de autenticación con tokens portadores.
+
+---
+
+## 🧪 Pruebas de Integración y Seguridad (Rutas & Sanctum)
+
+Puedes verificar el estado operativo de los endpoints y las restricciones de seguridad utilizando herramientas de consola (`curl`) directamente desde la terminal de Git Bash (ajustando los JSON con comillas escapadas para Windows):
+
+### 1. Comprobación del Catálogo de Proyectos (Ruta Pública)
+```bash
+curl -X GET http://localhost:8081/api/projects \
+     -H "Accept: application/json"
+```
+
+### 2. Autenticación de Administrador y Captura de Token (Ruta Pública)
+```bash
+curl -X POST http://localhost:8081/api/login \
+     -H "Accept: application/json" \
+     -H "Content-Type: application/json" \
+     -d "{\"email\":\"alexandergalvez880208@gmail.com\", \"password\":\"tu_password_local\"}"
+```
+
+### 3. Validación de Sesión Protegida por Token (Filtro Sanctum)
+*Si no envías la cabecera con el token devuelto en el paso anterior, el servidor responderá automáticamente un código `401 Unauthorized`.*
+```bash
+curl -X GET http://localhost:8081/api/verify-auth \
+     -H "Accept: application/json" \
+     -H "Authorization: Bearer INSERTA_TU_TOKEN_AQUÍ"
+```
+
+
 ## ⚙️ Consideraciones de Infraestructura y Automatización Inmutable
 
 1.  **Bloqueo de Puertos SMTP:** Render no permite tráfico SMTP saliente en capas gratuitas. La integración de la API de Resend por el puerto 443 (HTTP estándar) soluciona este problema de manera nativa sin sobrecargar el flujo de datos.
 2.  **Límite de Tiempo de Respuesta (Timeout):** Netlify aborta las peticiones tras **26 segundos**. Configurar el driver en `QUEUE_CONNECTION=sync` junto con Resend HTTP permite despachar el correo electrónico en milisegundos, respondiendo al Front inmediatamente.
 3.  **Compilación en Frío:** El archivo `Dockerfile` ejecuta limpiezas automáticas de caché en su construcción (`php artisan config:clear`) ignorando errores de base de datos a través de sentencias de escape (`|| true`). Esto garantiza construcciones estables en Render sin comprometer las credenciales dinámicas de Neon DB.
+
