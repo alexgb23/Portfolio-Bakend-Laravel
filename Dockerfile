@@ -14,43 +14,47 @@ RUN apt-get update && apt-get install -y \
 # 2. Habilitar mod_rewrite de Apache
 RUN a2enmod rewrite
 
-# 3. Instalar Composer global
+# 3. Optimizar el límite de memoria interna de PHP en Apache
+# Esto le da un límite seguro a los scripts dentro de Render
+RUN echo "memory_limit=256M" > /usr/local/etc/php/conf.d/memory-limit.ini
+
+# 4. Instalar Composer global
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 4. Directorio de trabajo
+# 5. Directorio de trabajo
 WORKDIR /var/www/html
 
-# 5. Copiar primero archivos de Composer
+# 6. Copiar primero archivos de Composer
 COPY composer.json composer.lock ./
 
-# 6. Instalar dependencias sin scripts todavía
+# 7. CAMBIO CLAVE: Instalar dependencias optimizadas sin usar Git (--prefer-dist)
 RUN composer install \
     --no-dev \
     --no-interaction \
-    --prefer-source \
+    --prefer-dist \
     --optimize-autoloader \
     --no-scripts
 
-# 7. Copiar el resto del proyecto
+# 8. Copiar el resto del proyecto
 COPY . .
 
-# 8. Configurar Apache para servir /public
+# 9. Configurar Apache para servir /public
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
-# 9. Ejecutar scripts de Laravel ahora que artisan ya existe
+# 10. Ejecutar scripts de Laravel ahora que artisan ya existe
 RUN php artisan package:discover --ansi
 
-# 10. Publicar assets de Filament y limpiar residuos de cache
-# Removidos config:cache y route:cache de manera definitiva para que no rompa Neon DB
+# 11. Publicar assets de Filament y limpiar residuos de cache
+# Agregada optimización de vistas que reduce lecturas de disco y uso de RAM
 RUN php artisan filament:upgrade || true \
     && php artisan config:clear || true \
     && php artisan cache:clear || true \
     && php artisan route:clear || true \
-    && php artisan view:clear || true
+    && php artisan view:cache || true
 
-# 11. Permisos Laravel
+# 12. Permisos Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
