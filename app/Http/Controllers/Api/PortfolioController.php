@@ -71,4 +71,31 @@ class PortfolioController extends Controller
             'expertise' => $expertise,
         ]);
     }
+
+    public function getHeroData(Request $request): PortfolioHomeResource
+{
+    $profile = ProfileSetting::query()
+        ->active()
+        ->orderBy('id')
+        ->first();
+
+    $socialLinks = SocialLink::query()
+        ->visible()
+        ->ordered()
+        ->get();
+
+    $expertise = ProfileExpertise::query()
+        ->visible()
+        ->ordered()
+        ->get();
+
+    return new PortfolioHomeResource([
+        'profile' => $profile,
+        'skills' => collect(),
+        'projects' => collect(),
+        'social_links' => $socialLinks,
+        'highlights' => collect(),
+        'expertise' => $expertise,
+    ]);
+}
 }
