@@ -21,7 +21,7 @@ return [
 
     // 🔒 Control de Origen: Solo tu sitio oficial y tu entorno local tienen acceso
     'allowed_origins' => [
-        'https://portfolioalexsys.netlify.app',
+        'https://alex.syskovex.com',
         'http://localhost:5173',
     ],
 
