@@ -7,7 +7,7 @@
 Este repositorio contiene el núcleo del backend y la API REST que gestiona mi portafolio profesional y el panel de telemetría de mi **Laboratorio de Infraestructura, Automatización y Computación Edge**. Diseñado bajo una arquitectura desacoplada (_Headless_), expone datos estructurados en tiempo real sobre clústeres híbridos, métricas de servidores físicos, domótica integrada e inteligencia artificial local.
 
 🔗 **Frontend (Cloudfare):** [https://alex.syskovex.com/](https://alex.syskovex.com/)  
-🔗 **Backend API (Render):** [https://portfolio-backend-d4iy.onrender.com/](https://portfolio-backend-d4iy.onrender.com/)
+🔗 **Backend API (Render):** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
 
 ---
 
