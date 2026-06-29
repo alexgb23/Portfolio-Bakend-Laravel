@@ -13,7 +13,6 @@ class ProfileSettingResource extends JsonResource
             'id' => $this->id,
             'full_name' => $this->full_name,
             'display_name' => $this->display_name,
-            'bio_long' => $this->bio_long,
             'location' => $this->location,
             'email_public' => $this->email_public,
             'website_url' => $this->website_url,
