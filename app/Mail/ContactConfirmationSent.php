@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\ContactMessage; // 🌟 IMPORTANTE: Importamos el modelo
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -14,12 +15,16 @@ class ContactConfirmationSent extends Mailable
 {
     use Queueable, SerializesModels;
 
+    // 🌟 NUEVO: Declaramos la propiedad pública para la plantilla
+    public ContactMessage $contactMessage;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    // 🌟 CORRECCIÓN: Recibimos el mensaje guardado desde el controlador
+    public function __construct(ContactMessage $contactMessage)
     {
-        //
+        $this->contactMessage = $contactMessage;
     }
 
     /**
@@ -27,7 +32,7 @@ class ContactConfirmationSent extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new \Illuminate\Mail\Mailables\Envelope(
+        return new Envelope(
             subject: '✉️ Gracias por contactar con Alexander Gálvez',
         );
     }
@@ -39,6 +44,10 @@ class ContactConfirmationSent extends Mailable
     {
         return new Content(
             markdown: 'emails.contact-confirmation',
+            // 🌟 NUEVO: Pasamos la variable a la vista Markdown
+            with: [
+                'contactMessage' => $this->contactMessage,
+            ],
         );
     }
 

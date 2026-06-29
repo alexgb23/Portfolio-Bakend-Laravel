@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactMessageReceived;
+use App\Mail\ContactConfirmationSent; // 🌟 NUEVO: Importamos tu segundo correo
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -29,10 +30,14 @@ class ContactMessageController extends Controller
         ]);
 
         try {
-            // Cambiado ->send() por ->sendNow() para saltarse cualquier cola obligatoriamente
+            // 1. Correo de aviso para TI (A tu Gmail personal)
             Mail::to('alexandergalvez880208@gmail.com')
                 ->sendNow(new ContactMessageReceived($contactMessage));
 
+            // 2. 🚀 NUEVO: Correo de confirmación automático para el RECLUTADOR
+            // Se envía a la dirección de email que introdujeron en tu formulario web
+            Mail::to($contactMessage->email)
+                ->sendNow(new ContactConfirmationSent($contactMessage));
         } catch (\Throwable $e) {
             // Si el SMTP falla, Render lo registrará aquí sin congelar el Front eternamente
             Log::error('Mail failed in production', [
