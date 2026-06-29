@@ -6,7 +6,7 @@
 
 Este repositorio contiene el núcleo del backend y la API REST que gestiona mi portafolio profesional y el panel de telemetría de mi **Laboratorio de Infraestructura, Automatización y Computación Edge**. Diseñado bajo una arquitectura desacoplada (_Headless_), expone datos estructurados en tiempo real sobre clústeres híbridos, métricas de servidores físicos, domótica integrada e inteligencia artificial local.
 
-🔗 **Frontend (Netlify):** [https://portfolioalexsys.netlify.app/](https://portfolioalexsys.netlify.app/)  
+🔗 **Frontend (Cloudfare):** [https://alex.syskovex.com/](https://alex.syskovex.com/)  
 🔗 **Backend API (Render):** [https://portfolio-backend-d4iy.onrender.com/](https://portfolio-backend-d4iy.onrender.com/)
 
 ---
@@ -34,17 +34,17 @@ DB_HOST=ep-your-neon-domain.pooler.neon.tech
 DB_PORT=5432
 DB_DATABASE=neondb
 DB_USERNAME=alexandergalvez880208
-DB_PASSWORD=tu_contraseña_secreta_de_neon
+DB_PASSWORD=****************
 DB_SSLMODE=require
 
 # Forzar procesamiento inmediato por ausencia de background workers independientes en el plan gratis
 QUEUE_CONNECTION=sync
 
-# Proveedor de correo HTTP seguro (puerto 443)
+# Proveedor de correo HTTP seguro (puerto 443) https://resend.com con redireccion a Dominio propio syskovex.com
 MAIL_MAILER=resend
 RESEND_API_KEY=re_tu_llave_secreta_de_resend
-MAIL_FROM_ADDRESS=onboarding@resend.dev
-MAIL_FROM_NAME="Portfolio Alex"
+MAIL_FROM_ADDRESS=alex@syskovex.com
+MAIL_FROM_NAME="Alexander Galvez"
 ```
 
 ---
