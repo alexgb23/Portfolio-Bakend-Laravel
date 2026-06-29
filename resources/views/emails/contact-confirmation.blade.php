@@ -7,13 +7,14 @@
 
     Mientras tanto, te invito a seguir de cerca mi trabajo y conectar conmigo a través de mis redes oficiales:
 
-    <x-mail::button :url="'https://www.linkedin.com/in/alexander-galvez-benavides-450917281/'">
-        Ver Perfil en LinkedIn
-    </x-mail::button>
-
-    <x-mail::button :url="'https://github.com/alexgb23'">
-        Explorar Proyectos en GitHub
-    </x-mail::button>
+    <div style="text-align: center; margin: 25px 0;">
+        <a href="https://linkedin.com" target="_blank" style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold; margin: 5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+            Ver Perfil en LinkedIn
+        </a>
+        <a href="https://github.com" target="_blank" style="background-color: #1f2937; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-weight: bold; margin: 5px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+            Explorar Proyectos en GitHub
+        </a>
+    </div>
 
     Un cordial saludo,
 
