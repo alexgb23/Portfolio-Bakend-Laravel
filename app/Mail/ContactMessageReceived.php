@@ -20,7 +20,7 @@ class ContactMessageReceived extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nuevo mensaje desde el Portfolio de Alexander: ' . ($this->contactMessage->subject ?: 'Sin asunto'),
+            subject: 'Nuevo mensaje desde tu Portfolio: ' . ($this->contactMessage->subject ?: 'Interés en tu perfil'),
             replyTo: [
                 new Address(
                     $this->contactMessage->email,
