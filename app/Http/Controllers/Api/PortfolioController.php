@@ -43,21 +43,21 @@ class PortfolioController extends Controller
         ]);
     }
 
-    public function getHeroData(Request $request): PortfolioHomeResource
-    {
-        $profile = ProfileSetting::query()
-            ->active()
-            ->orderBy('id')
-            ->first();
+    // public function getHeroData(Request $request): PortfolioHomeResource
+    // {
+    //     $profile = ProfileSetting::query()
+    //         ->active()
+    //         ->orderBy('id')
+    //         ->first();
 
-        $socialLinks = SocialLink::query()
-            ->visible()
-            ->ordered()
-            ->get();
+    //     $socialLinks = SocialLink::query()
+    //         ->visible()
+    //         ->ordered()
+    //         ->get();
 
-        return new PortfolioHomeResource([
-            'profile' => $profile,
-            'social_links' => $socialLinks,
-        ]);
-    }
+    //     return new PortfolioHomeResource([
+    //         'profile' => $profile,
+    //         'social_links' => $socialLinks,
+    //     ]);
+    // }
 }
