@@ -51,9 +51,15 @@ class SocialLinkForm
                             ->maxLength(255),
 
                         TextInput::make('url')
-                            ->label('URL')
-                            ->url()
-                            ->maxLength(2048),
+                            ->label('URL / Correo')
+                            ->required()
+                            ->maxLength(2048)
+                            // 🌟 CORRECCIÓN: Reemplazamos ->url() por esta regla flexible
+                            ->rules([
+                                'string',
+                                'regex:/^(https?:\/\/|mailto:)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'
+                            ])
+                            ->helperText('Introduce una URL (https://...) o un correo electrónico puro (alex@syskovex.com)'),
                     ])
                     ->columns(2),
 

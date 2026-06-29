@@ -27,8 +27,8 @@ class ContactConfirmationSent extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: 'Contact Confirmation Sent',
+        return new \Illuminate\Mail\Mailables\Envelope(
+            subject: '✉️ Gracias por contactar con Alexander Gálvez',
         );
     }
 
