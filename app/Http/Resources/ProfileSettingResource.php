@@ -13,23 +13,12 @@ class ProfileSettingResource extends JsonResource
             'id' => $this->id,
             'full_name' => $this->full_name,
             'display_name' => $this->display_name,
-            'headline' => $this->headline,
-            'subheadline' => $this->subheadline,
-            'bio_short' => $this->bio_short,
             'bio_long' => $this->bio_long,
             'location' => $this->location,
             'email_public' => $this->email_public,
             'website_url' => $this->website_url,
             'resume_url' => $this->resume_url,
             'status_label' => $this->status_label,
-            'is_active' => $this->is_active,
-            'hero_kicker' => $this->hero_kicker,
-            'hero_title_prefix' => $this->hero_title_prefix,
-            'hero_title_highlight' => $this->hero_title_highlight,
-            'hero_title_suffix' => $this->hero_title_suffix,
-            'hero_stack_badge' => $this->hero_stack_badge,
-            'about_title' => $this->about_title,
-            'about_intro' => $this->about_intro,
         ];
     }
 }

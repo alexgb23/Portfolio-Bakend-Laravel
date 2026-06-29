@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PortfolioHomeResource;
-use App\Models\ProfileExpertise;
 use App\Models\ProfileHighlight;
 use App\Models\ProfileSetting;
 use App\Models\Skill;
@@ -36,17 +35,11 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
-        $expertise = ProfileExpertise::query()
-            ->visible()
-            ->ordered()
-            ->get();
-
         return new PortfolioHomeResource([
             'profile' => $profile,
             'skills' => $skills,
             'social_links' => $socialLinks,
             'highlights' => $highlights,
-            'expertise' => $expertise,
         ]);
     }
 
@@ -62,15 +55,9 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
-        $expertise = ProfileExpertise::query()
-            ->visible()
-            ->ordered()
-            ->get();
-
         return new PortfolioHomeResource([
             'profile' => $profile,
             'social_links' => $socialLinks,
-            'expertise' => $expertise,
         ]);
     }
 }
