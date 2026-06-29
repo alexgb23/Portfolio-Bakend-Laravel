@@ -19,7 +19,6 @@
 
     **Alex | Syskovex**
     *Infrastructure & System Engineer*
-    [alex.syskovex.com](https://syskovex.com)
+    [alex.syskovex.com](https://alex.syskovex.com)
     *Barakaldo, País Vasco, España*
-
 </x-mail::message>
