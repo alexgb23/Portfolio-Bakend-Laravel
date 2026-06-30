@@ -36,6 +36,7 @@ Route::get('/metrics', [MetricController::class, 'index']);
 Route::get('/metrics/{id}', [MetricController::class, 'show']);
 
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
+Route::get('/portfolio-home/about', [PortfolioController::class, 'getAboutData']);
 
 Route::get('/laboratorio/home', [LaboratoryHomeController::class, 'index']);
 Route::get('/laboratorio', [LaboratorioController::class, 'index']);

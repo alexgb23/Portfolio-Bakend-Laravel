@@ -47,55 +47,33 @@ class PortfolioController extends Controller
             ->ordered()
             ->get();
 
-
-
-
-        // $profile = ProfileSetting::query()
-        //     ->active()
-        //     ->orderBy('id')
-        //     ->first();
-
-        // $skills = Skill::query()
-        //     ->visible()
-        //     ->orderByDesc('is_featured')
-        //     ->ordered()
-        //     ->get();
-
-
-        // $highlights = ProfileHighlight::query()
-        //     ->visible()
-        //     ->ordered()
-        //     ->get();
-
         return new PortfolioHomeResource([
             'social_links' => $socialLinks,
             'projects' => $projects,
             'servers' => $servers,
             'nodes' => $nodes,
             'metrics' => $metrics,
-            
-
-            // 'profile' => $profile,
-            // 'skills' => $skills,
-            // 'highlights' => $highlights,
         ]);
     }
 
-    // public function getHeroData(Request $request): PortfolioHomeResource
-    // {
-    //     $profile = ProfileSetting::query()
-    //         ->active()
-    //         ->orderBy('id')
-    //         ->first();
+    public function getAboutData(Request $request): PortfolioHomeResource
+    {
 
-    //     $socialLinks = SocialLink::query()
-    //         ->visible()
-    //         ->ordered()
-    //         ->get();
+        $skills = Skill::query()
+            ->visible()
+            ->orderByDesc('is_featured')
+            ->ordered()
+            ->get();
 
-    //     return new PortfolioHomeResource([
-    //         'profile' => $profile,
-    //         'social_links' => $socialLinks,
-    //     ]);
-    // }
+        $highlights = ProfileHighlight::query()
+            ->visible()
+            ->ordered()
+            ->get();
+
+        return new PortfolioHomeResource([
+
+            'skills' => $skills,
+            'highlights' => $highlights,
+        ]);
+    }
 }
