@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProjectCardResource;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -19,7 +18,7 @@ class ProjectController extends Controller
             ->ordered()
             ->get();
 
-        return ProjectCardResource::collection($projects);
+        return ProjectResource::collection($projects);
     }
 
     public function show(string $id): ProjectResource
@@ -39,7 +38,8 @@ class ProjectController extends Controller
             "short_description" => "nullable|string|max:280",
             "technologies" => "required|string|max:255",
             "stack_summary" => "nullable|string|max:255",
-            "image_url" => "nullable|url",
+            "image_url" => "nullable|array",
+            "image_url.*" => "required|url",
             "project_url" => "nullable|url",
             "repo_url" => "nullable|url",
             "status" => "nullable|string|max:50",
@@ -69,7 +69,8 @@ class ProjectController extends Controller
             "short_description" => "nullable|string|max:280",
             "technologies" => "required|string|max:255",
             "stack_summary" => "nullable|string|max:255",
-            "image_url" => "nullable|url",
+            "image_url" => "nullable|array",
+            "image_url.*" => "required|url",
             "project_url" => "nullable|url",
             "repo_url" => "nullable|url",
             "status" => "nullable|string|max:50",

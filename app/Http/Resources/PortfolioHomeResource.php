@@ -15,11 +15,11 @@ class PortfolioHomeResource extends JsonResource
 
             'projects' => ProjectCardResource::collection($this->resource['projects'] ?? collect()),
 
-            // 'servers' => ServerResource::collection($this->resource['servers'] ?? collect()),
+            'servers' => ServerResource::collection($this->resource['servers'] ?? collect()),
 
-            // 'nodes' => NodeResource::collection($this->resource['nodes'] ?? collect()),
+            'nodes' => NodeResource::collection($this->resource['nodes'] ?? collect()),
 
-            // 'metrics' => MetricResource::collection($this->resource['metrics'] ?? collect()),
+            'metrics' => MetricResource::collection($this->resource['metrics'] ?? collect()),
 
         ];
     }
