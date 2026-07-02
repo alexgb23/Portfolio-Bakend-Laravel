@@ -56,11 +56,11 @@ class PortfolioController extends Controller
 
     public function getAboutData(Request $request): AboutResource
     {
-        // $skills = Skill::query()
-        //     ->visible()
-        //     ->orderByDesc('is_featured')
-        //     ->ordered()
-        //     ->get();
+        $skills = Skill::query()
+            ->visible()
+            ->orderByDesc('is_featured')
+            ->ordered()
+            ->get();
 
         $highlights = ProfileHighlight::query()
             ->visible()
