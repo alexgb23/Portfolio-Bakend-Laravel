@@ -48,9 +48,11 @@ class PortfolioController extends Controller
         return new PortfolioHomeResource([
             'social_links' => $socialLinks,
             'projects' => $projects,
-            'servers' => $servers,
-            'nodes' => $nodes,
-            'metrics' => $metrics,
+            'laboratory_summary' => [
+                'servers_count' => $servers->count(),
+                'nodes_count' => $nodes->count(),
+                'metrics_count' => $metrics->count(),
+            ],
         ]);
     }
 

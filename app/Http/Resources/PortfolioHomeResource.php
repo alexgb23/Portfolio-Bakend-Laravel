@@ -10,17 +10,13 @@ class PortfolioHomeResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-
             'social_links' => SocialLinkResource::collection($this->resource['social_links'] ?? collect()),
-
             'projects' => ProjectCardResource::collection($this->resource['projects'] ?? collect()),
-
-            'servers' => ServerResource::collection($this->resource['servers'] ?? collect()),
-
-            'nodes' => NodeResource::collection($this->resource['nodes'] ?? collect()),
-
-            'metrics' => MetricResource::collection($this->resource['metrics'] ?? collect()),
-
+            'laboratory_summary' => $this->resource['laboratory_summary'] ?? [
+                'servers_count' => 0,
+                'nodes_count' => 0,
+                'metrics_count' => 0,
+            ],
         ];
     }
 }
