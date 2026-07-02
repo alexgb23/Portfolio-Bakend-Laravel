@@ -13,7 +13,7 @@ class PortfolioHomeResource extends JsonResource
 
             'social_links' => SocialLinkResource::collection($this->resource['social_links'] ?? collect()),
 
-            'projects' => ProjectResource::collection($this->resource['projects'] ?? collect()),
+            'projects' => ProjectcardResource::collection($this->resource['projects'] ?? collect()),
 
             'servers' => ServerResource::collection($this->resource['servers'] ?? collect()),
 
