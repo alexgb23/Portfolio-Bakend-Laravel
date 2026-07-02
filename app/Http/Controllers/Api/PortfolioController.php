@@ -68,7 +68,7 @@ class PortfolioController extends Controller
             ->get();
 
         return new AboutResource([
-            // 'skills' => $skills,
+            'skills' => $skills,
             'highlights' => $highlights,
         ]);
     }

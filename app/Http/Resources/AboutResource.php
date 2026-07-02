@@ -10,7 +10,7 @@ class AboutResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            // 'skills' => SkillResource::collection($this->resource['skills'] ?? collect()),
+            'skills' => SkillResource::collection($this->resource['skills'] ?? collect()),
 
             'highlights' => collect($this->resource['highlights'] ?? [])
                 ->map(fn($item) => [

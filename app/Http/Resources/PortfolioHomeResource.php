@@ -21,8 +21,6 @@ class PortfolioHomeResource extends JsonResource
 
             'metrics' => MetricResource::collection($this->resource['metrics'] ?? collect()),
 
-            'skills' => SkillResource::collection($this->resource['skills'] ?? collect()),
-        
         ];
     }
 }
