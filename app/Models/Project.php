@@ -24,6 +24,7 @@ class Project extends Model
     ];
 
     protected $casts = [
+        "image_url" => "array",
         "is_featured" => "boolean",
         "is_published" => "boolean",
         "sort_order" => "integer",

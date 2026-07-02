@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -55,10 +56,20 @@ class ProjectForm
                             ->label('Resumen técnico')
                             ->maxLength(255),
 
-                        TextInput::make('image_url')
-                            ->label('URL de imagen')
-                            ->url()
-                            ->maxLength(2048),
+                        Repeater::make('image_url')
+                            ->label('URLs de imágenes')
+                            ->simple(
+                                TextInput::make('')
+                                    ->label('URL')
+                                    ->url()
+                                    ->required()
+                                    ->maxLength(2048)
+                            )
+                            ->default([])
+                            ->addActionLabel('Añadir imagen')
+                            ->reorderable()
+                            ->collapsible()
+                            ->columnSpanFull(),
 
                         TextInput::make('project_url')
                             ->label('URL del proyecto')
