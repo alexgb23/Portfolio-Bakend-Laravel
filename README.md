@@ -225,3 +225,7 @@ curl -X GET http://localhost:8081/api/verify-auth \
 9. Desactivación de trazas de depuración (APP_DEBUG=false): Mantener habilitadas las herramientas de debug en producción fuerza a Laravel a guardar en memoria RAM un historial detallado de excepciones y consultas SQL de cada petición. Forzar el entorno a production y desactivar el debug previene fugas de memoria (memory leaks).
 
 10. Cierre explícito de conexiones persistentes (PDO::ATTR_PERSISTENT): Al conectar Laravel con bases de datos serverless como Neon DB, mantener hilos de conexión abiertos satura el pool de conexiones y eleva la RAM residual de Render. Definir la opción PDO::ATTR_PERSISTENT => false dentro del bloque pgsql obliga al framework a destruir el hilo con la base de datos inmediatamente después de despachar la respuesta HTTP.
+
+
+creacion de asistente real url:
+https://alexandergalvez-asistenten8n.hf.space/home/workflows

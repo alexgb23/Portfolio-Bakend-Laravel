@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\LabCapabilityController;
 use App\Http\Controllers\Api\ResearchSourceController;
 
+USE App\Http\Controllers\Api\LaboratorioRealController;
+
 
 
 // Públicas
@@ -61,6 +63,12 @@ Route::get('/research-sources', [ResearchSourceController::class, 'index']);
 Route::get('/research-sources/{id}', [ResearchSourceController::class, 'show']);
 
 Route::post('/contact-messages', [ContactMessageController::class, 'store']);
+
+
+
+// Laboratorio Real
+Route::get('/laboratorios-reales', [LaboratorioRealController::class, 'index']);
+Route::get('/laboratorios-reales/{slug}', [LaboratorioRealController::class, 'show']);
 
 
 
