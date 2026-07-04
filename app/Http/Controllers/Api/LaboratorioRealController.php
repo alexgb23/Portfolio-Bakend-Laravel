@@ -13,19 +13,14 @@ class LaboratorioRealController extends Controller
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
-            ->withCount(['documentacion', 'avances', 'adjuntos', 'ideas'])
+            ->withCount(['documentacion', 'avances'])
             ->orderByDesc('es_destacado')
             ->orderBy('orden')
             ->orderByDesc('id')
             ->limit(5)
             ->get();
 
-        $principal = $laboratorios->first();
-
-        return response()->json([
-            'featured' => LaboratorioRealHomeResource::collection($laboratorios),
-            'selected' => $principal ? new LaboratorioRealHomeResource($principal) : null,
-        ]);
+        return LaboratorioRealHomeResource::collection($laboratorios);
     }
 
     public function index()
