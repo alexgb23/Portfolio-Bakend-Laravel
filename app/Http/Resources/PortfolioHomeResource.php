@@ -12,6 +12,7 @@ class PortfolioHomeResource extends JsonResource
         return [
             'social_links' => SocialLinkResource::collection($this->resource['social_links'] ?? collect()),
             'projects' => ProjectCardResource::collection($this->resource['projects'] ?? collect()),
+            'laboratories' => LaboratorioRealHomeResource::collection($this->resource['laboratories'] ?? collect()),
         ];
     }
 }

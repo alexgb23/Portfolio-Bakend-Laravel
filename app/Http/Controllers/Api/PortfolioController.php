@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AboutResource;
 use App\Http\Resources\PortfolioHomeResource;
+use App\Models\LaboratorioReal;
 use App\Models\ProfileHighlight;
+use App\Models\Project;
 use App\Models\Skill;
 use App\Models\SocialLink;
-use App\Models\Project;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
@@ -22,14 +23,21 @@ class PortfolioController extends Controller
 
         $projects = Project::query()
             ->published()
-            ->orderByDesc("is_featured")
+            ->orderByDesc('is_featured')
             ->ordered()
+            ->get();
+
+        $laboratories = LaboratorioReal::query()
+            ->where('es_visible', true)
+            ->orderByDesc('es_destacado')
+            ->orderBy('orden')
+            ->withCount(['documentacion', 'avances'])
             ->get();
 
         return new PortfolioHomeResource([
             'social_links' => $socialLinks,
             'projects' => $projects,
-
+            'laboratories' => $laboratories,
         ]);
     }
 

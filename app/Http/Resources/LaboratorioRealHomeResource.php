@@ -20,6 +20,7 @@ class LaboratorioRealHomeResource extends JsonResource
             'cover_image' => data_get($this->galeria_urls, '0'),
             'documentacion_count' => $this->whenCounted('documentacion'),
             'avances_count' => $this->whenCounted('avances'),
+            'is_featured' => (bool) $this->es_destacado,
         ];
     }
 }
