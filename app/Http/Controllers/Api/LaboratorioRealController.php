@@ -13,7 +13,11 @@ class LaboratorioRealController extends Controller
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
-            ->withCount(['documentacion', 'avances'])
+            ->with([
+                'ideas:id,laboratorio_real_id,titulo,idea,estado,prioridad,created_at,updated_at',
+                'adjuntos:id,laboratorio_real_id,nombre_archivo,descripcion,url,metadata,orden,created_at,updated_at',
+            ])
+            ->withCount(['documentacion', 'avances', 'ideas', 'adjuntos'])
             ->orderByDesc('es_destacado')
             ->orderBy('orden')
             ->orderByDesc('id')
