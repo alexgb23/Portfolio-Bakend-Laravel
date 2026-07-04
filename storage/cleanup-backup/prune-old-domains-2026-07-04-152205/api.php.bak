@@ -5,8 +5,12 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\PortfolioController;
+use App\Http\Controllers\Api\HomeAssistantInstanceController;
+use App\Http\Controllers\Api\LocalAiSetupController;
+use App\Http\Controllers\Api\AiStudyCaseController;
+use App\Http\Controllers\Api\ClusterController;
 use App\Http\Controllers\Api\ContactMessageController;
-
+use App\Http\Controllers\Api\ResearchSourceController;
 
 USE App\Http\Controllers\Api\LaboratorioRealController;
 
@@ -21,8 +25,23 @@ Route::get('/projects/{id}', [ProjectController::class, 'show']);
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
 Route::get('/portfolio-home/about', [PortfolioController::class, 'getAboutData']);
 
+Route::get('/home-assistant', [HomeAssistantInstanceController::class, 'index']);
+Route::get('/home-assistant/{id}', [HomeAssistantInstanceController::class, 'show']);
+
+Route::get('/local-ai-setups', [LocalAiSetupController::class, 'index']);
+Route::get('/local-ai-setups/{id}', [LocalAiSetupController::class, 'show']);
+
+Route::get('/ai-study-cases', [AiStudyCaseController::class, 'index']);
+Route::get('/ai-study-cases/{id}', [AiStudyCaseController::class, 'show']);
+
+Route::get('/clusters', [ClusterController::class, 'index']);
+Route::get('/clusters/{id}', [ClusterController::class, 'show']);
+
+Route::get('/research-sources', [ResearchSourceController::class, 'index']);
+Route::get('/research-sources/{id}', [ResearchSourceController::class, 'show']);
 
 Route::post('/contact-messages', [ContactMessageController::class, 'store']);
+
 
 
 // Laboratorio Real
