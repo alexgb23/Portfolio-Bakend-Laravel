@@ -6,8 +6,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\ContactMessageController;
-
-
 USE App\Http\Controllers\Api\LaboratorioRealController;
 
 
@@ -21,9 +19,7 @@ Route::get('/projects/{id}', [ProjectController::class, 'show']);
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
 Route::get('/portfolio-home/about', [PortfolioController::class, 'getAboutData']);
 
-
 Route::post('/contact-messages', [ContactMessageController::class, 'store']);
-
 
 // Laboratorio Real
 Route::get('/laboratorios-reales', [LaboratorioRealController::class, 'index']);
