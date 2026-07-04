@@ -22,8 +22,10 @@ Route::get('/portfolio-home/about', [PortfolioController::class, 'getAboutData']
 Route::post('/contact-messages', [ContactMessageController::class, 'store']);
 
 // Laboratorio Real
+Route::get('/laboratorios-reales/home', [LaboratorioRealController::class, 'home']);
 Route::get('/laboratorios-reales', [LaboratorioRealController::class, 'index']);
 Route::get('/laboratorios-reales/{slug}', [LaboratorioRealController::class, 'show']);
+
 
 
 
