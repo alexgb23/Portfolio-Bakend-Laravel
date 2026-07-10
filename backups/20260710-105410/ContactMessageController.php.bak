@@ -3,18 +3,23 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ContactMessageStoreRequest;
-use App\Mail\ContactConfirmationSent;
 use App\Mail\ContactMessageReceived;
+use App\Mail\ContactConfirmationSent; // 🌟 NUEVO: Importamos tu segundo correo
 use App\Models\ContactMessage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class ContactMessageController extends Controller
 {
-    public function store(ContactMessageStoreRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255'],
+            'subject' => ['nullable', 'string', 'max:255'],
+            'message' => ['required', 'string'],
+        ]);
 
         $contactMessage = ContactMessage::create([
             'name' => $validated['name'],
@@ -25,20 +30,23 @@ class ContactMessageController extends Controller
         ]);
 
         try {
-            Mail::to('alexandergalvez880208@gmail.com')->sendNow(
-                new ContactMessageReceived($contactMessage)
-            );
+            // 1. Correo de aviso para TI (A tu Gmail personal)
+            Mail::to('alexandergalvez880208@gmail.com')
+                ->sendNow(new ContactMessageReceived($contactMessage));
 
-            Mail::to($contactMessage->email)->sendNow(
-                new ContactConfirmationSent($contactMessage)
-            );
+            // 2. 🚀 NUEVO: Correo de confirmación automático para el RECLUTADOR
+            // Se envía a la dirección de email que introdujeron en tu formulario web
+            Mail::to($contactMessage->email)
+                ->sendNow(new ContactConfirmationSent($contactMessage));
         } catch (\Throwable $e) {
+            // Si el SMTP falla, Render lo registrará aquí sin congelar el Front eternamente
             Log::error('Mail failed in production', [
                 'contact_message_id' => $contactMessage->id,
                 'error' => $e->getMessage(),
                 'class' => get_class($e),
             ]);
 
+            // Opcional: Puedes avisar al front que se guardó pero el mail falló
             return response()->json([
                 'message' => 'Mensaje guardado, pero hubo un problema al enviar la notificación por correo.',
                 'data' => [

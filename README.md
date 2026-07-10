@@ -4,228 +4,432 @@
 
 # 🚀 Infrastructure Lab & Portfolio API (Laravel & Docker Native)
 
-Este repositorio contiene el núcleo del backend y la API REST que gestiona mi portafolio profesional y el panel de telemetría de mi **Laboratorio de Infraestructura, Automatización y Computación Edge**. Diseñado bajo una arquitectura desacoplada (_Headless_), expone datos estructurados en tiempo real sobre clústeres híbridos, métricas de servidores físicos, domótica integrada e inteligencia artificial local.
+Este repositorio contiene el backend y la API REST que alimentan mi portafolio profesional, el bloque público de laboratorio y el panel administrativo del proyecto. Está construido con Laravel bajo una arquitectura desacoplada (_headless_), expone contenido estructurado para el frontend y deja preparada una base evolutiva para automatización, documentación técnica e integraciones futuras.
 
-🔗 **Frontend (Cloudfare):** [https://alex.syskovex.com/](https://alex.syskovex.com/)  
-🔗 **Backend API (Render):** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
-
----
-
-## 🛠️ Arquitectura y Stack Tecnológico
-
-La infraestructura está automatizada de extremo a extremo y optimizada para funcionar de forma autónoma en la nube, sin intervención directa sobre consola:
-
-- **Core:** Laravel (PHP 8.4) configurado en modo API REST.
-- **Contenedores:** **Docker** y **Docker Compose** para garantizar un entorno local consistente con producción.
-- **Servidor web en producción:** **Render** (Plan Free) configurado mediante _Docker Deployment_ con despliegue continuo.
-- **Base de datos relacional:** **Neon DB** (Serverless PostgreSQL) con soporte nativo para `pdo_pgsql` y conexiones SSL seguras.
-- **Mensajería y alertas:** **Resend API** integrado sobre HTTP (puerto 443), evitando las limitaciones habituales de SMTP saliente en plataformas cloud gratuitas.
-- **Gestor administrativo:** **Filament PHP** para la administración de métricas, clústeres, configuraciones de IA y contenidos del portafolio.
+🔗 **Frontend:** [https://alex.syskovex.com/](https://alex.syskovex.com/)  
+🔗 **Backend API:** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
 
 ---
 
-## 📋 Variables de Entorno Clave (`Environment`)
+## 🛠️ Arquitectura y stack tecnológico
 
-Estas variables se configuran directamente desde el panel de Render y permanecen fuera del repositorio:
+La base técnica actualmente confirmada en el proyecto es la siguiente:
+
+- **Core backend:** Laravel `13.8`
+- **Runtime:** PHP `8.4`
+- **Arquitectura de acceso:** API REST desacoplada
+- **Autenticación:** Laravel Sanctum `4.x`
+- **Panel administrativo:** Filament `5.6`
+- **Documentación OpenAPI:** `dedoc/scramble` `0.13.32`
+- **Mensajería:** Resend `1.4`
+- **Base de datos:** PostgreSQL sobre Neon
+- **Contenerización:** Docker y Docker Compose
+- **Despliegue:** Render
+- **Frontend consumidor:** React + Vite
+
+---
+
+## 🌐 Acceso público y documentación API
+
+Este backend Laravel expone una superficie pública mínima y profesional para facilitar revisión técnica, integración y evolución futura del proyecto.
+
+### URLs públicas
+
+- **Frontend:** [https://alex.syskovex.com/](https://alex.syskovex.com/)
+- **Backend público:** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
+- **Base URL API:** `https://portfolio-api.syskovex.com/api`
+- **Documentación UI:** [https://portfolio-api.syskovex.com/docs/api](https://portfolio-api.syskovex.com/docs/api)
+- **OpenAPI JSON:** [https://portfolio-api.syskovex.com/docs/api.json](https://portfolio-api.syskovex.com/docs/api.json)
+- **Panel admin:** [https://portfolio-api.syskovex.com/admin](https://portfolio-api.syskovex.com/admin)
+
+### Rutas públicas principales
+
+| Ruta | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `/` | Web pública | Landing técnica del backend y punto de acceso visual. |
+| `/health` | JSON técnico | Health check ligero del servicio. |
+| `/docs/api` | Documentación UI | Referencia navegable de la API generada automáticamente. |
+| `/docs/api.json` | OpenAPI 3.1 | Esquema bruto para inspección técnica e integración. |
+| `/admin` | Panel privado | Acceso al panel administrativo en Filament. |
+
+### Notas de implementación
+
+- La documentación pública se sirve con **Scramble**.
+- Se habilitó acceso a la documentación mediante la gate `viewApiDocs`.
+- Se mantiene `JsonResource::withoutWrapping()` para respuestas JSON planas.
+- En producción se fuerza `https` con `URL::forceScheme('https')`.
+
+---
+
+## 📋 Variables de entorno clave (`Environment`)
+
+Estas variables se configuran fuera del repositorio y forman parte de la base operativa del despliegue:
 
 ```env
+APP_NAME="Portfolio Backend API"
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://portfolio-api.syskovex.com
+API_VERSION=1.0.0
+
 DB_CONNECTION=pgsql
 DB_HOST=ep-your-neon-domain.pooler.neon.tech
 DB_PORT=5432
 DB_DATABASE=neondb
-DB_USERNAME=alexandergalvez880208
-DB_PASSWORD=****************
+DB_USERNAME=user
+DB_PASSWORD=**
 DB_SSLMODE=require
 
-# Forzar procesamiento inmediato por ausencia de background workers independientes en el plan gratis
 QUEUE_CONNECTION=sync
 
-# Proveedor de correo HTTP seguro (puerto 443) https://resend.com con redireccion a Dominio propio syskovex.com
 MAIL_MAILER=resend
-RESEND_API_KEY=re_tu_llave_secreta_de_resend
+RESEND_API_KEY=re_xxxxxxxxxxxxx
 MAIL_FROM_ADDRESS=alex@syskovex.com
 MAIL_FROM_NAME="Alexander Galvez"
+
+LOG_CHANNEL=stderr
 ```
 
----
+### Notas de infraestructura asociadas
 
-## 💾 Arquitectura de la Base de Datos (Modelos Técnicos)
-
-El esquema relacional modela el hardware y software del laboratorio mediante las siguientes entidades y relaciones clave:
-
-- **`Cluster` ↔ `Server` (N:M a través de `ClusterServer`):** relación muchos a muchos que modela la topología de red del laboratorio. La tabla pivote almacena datos críticos como el rol del nodo (`node_role`) y el orden físico (`sort_order`).
-- **`HomeAssistantInstance` → `HomeAssistantUseCase` (1:N):** abstracción de entornos IoT. Cada instancia centraliza múltiples casos de uso de automatización residencial y lógica Edge.
-- **`AiStudyCase` y `LabCapability`:** entidades orientadas a documentar arquitecturas de LLMs locales, benchmarks de inferencia, notas técnicas y niveles de madurez operacional (`capability_level`).
-- **`ContactMessage`:** gestor transaccional de mensajería asíncrona con filtros nativos como `scopeUnread` y `scopeRead`.
+- `QUEUE_CONNECTION=sync` permite procesamiento inmediato si no se usan workers separados.
+- `DB_SSLMODE=require` asegura conexión SSL con Neon.
+- `MAIL_MAILER=resend` evita depender de SMTP saliente en entornos cloud limitados.
+- `LOG_CHANNEL=stderr` es adecuado para contenedores en producción.
 
 ---
 
-## 📌 Documentación de Endpoints (API Reference)
+## 💾 Arquitectura funcional y modelos técnicos
 
-La URL base de producción es:
+Actualmente el proyecto expone una base de datos orientada a portfolio, contacto, laboratorio real y administración interna.
+
+### Modelos detectados en el proyecto
+
+- `AdjuntoLaboratorio`
+- `AvanceLaboratorio`
+- `ContactMessage`
+- `DocumentacionLaboratorio`
+- `IdeaLaboratorio`
+- `LaboratorioReal`
+- `ProfileExpertise`
+- `ProfileHighlight`
+- `Project`
+- `Skill`
+- `SocialLink`
+- `User`
+
+### Recursos API (`JsonResource`)
+
+La serialización pública de datos utiliza recursos de Laravel para mantener consistencia estructural en las respuestas:
+
+- `AboutResource`
+- `AdjuntoLaboratorioResource`
+- `AvanceLaboratorioResource`
+- `DocumentacionLaboratorioResource`
+- `IdeaLaboratorioResource`
+- `LaboratorioRealHomeResource`
+- `LaboratorioRealResource`
+- `PortfolioHomeResource`
+- `ProjectCardResource`
+- `ProjectResource`
+- `SkillResource`
+- `SocialLinkResource`
+- `UserResource`
+
+### Estructura funcional del dominio
+
+- **Portfolio:** contenido principal del perfil, enlaces sociales, proyectos y bloques “about”.
+- **Projects:** catálogo público de proyectos y operaciones CRUD protegidas.
+- **Laboratorios reales:** bloques documentales y técnicos para exponer entornos, avances, adjuntos, ideas y documentación asociada.
+- **Contact messages:** entrada de mensajes de contacto con persistencia y notificación.
+- **Panel admin:** gestión de contenido mediante Filament.
+
+---
+
+## 📌 Endpoints documentados del proyecto
+
+La URL base pública de la API es:
 
 ```text
-https://portfolio-backend-d4iy.onrender.com/api
+https://portfolio-api.syskovex.com/api
 ```
 
-### 🔒 Autenticación y Control de Sesión
+### 🔒 Autenticación y control de sesión
 
-| Método | Endpoint | Middleware | Descripción |
+| Método | Endpoint | Protección | Descripción |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/login` | `api` | Autentica administradores y devuelve un token Sanctum. |
-| `POST` | `/logout` | `api`, `auth:sanctum` | Revoca el token de la sesión actual. |
-| `GET` | `/verify-auth` | `api`, `auth:sanctum` | Valida el estado del token y devuelve el perfil autenticado. |
+| `POST` | `/api/login` | Pública | Autentica un usuario administrador. |
+| `POST` | `/api/logout` | `auth:sanctum` | Revoca la sesión autenticada actual. |
+| `GET` | `/api/verify-auth` | `auth:sanctum` | Verifica el token y devuelve el usuario autenticado. |
 
-### 📊 Telemetría de Servidores, Redes y Clústeres
+### 🧑‍💻 Portfolio y contenido público
 
-| Método | Endpoint | Middleware | Descripción |
+| Método | Endpoint | Protección | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/clusters` | `api` | Lista los clústeres de computación activos. |
-| `GET` | `/clusters/{id}` | `api` | Obtiene la topología detallada y los servidores asociados con su rol. |
-| `GET` | `/servers` | `api` | Devuelve los servidores físicos o virtuales del laboratorio. |
-| `GET` | `/servers/{id}` | `api` | Muestra el detalle de hardware y estado de un servidor. |
-| `GET` | `/nodes` | `api` | Lista los nodos de computación distribuidos. |
-| `GET` | `/nodes/{id}` | `api` | Devuelve estado, configuración y asignación de un nodo. |
-| `GET` | `/metrics` | `api` | Lista métricas agregadas de rendimiento del laboratorio. |
-| `GET` | `/metrics/{id}` | `api` | Devuelve histórico de carga, CPU, RAM y almacenamiento de un recurso. |
+| `GET` | `/api/portfolio-home` | Pública | Devuelve la carga principal del portfolio: enlaces sociales, proyectos destacados y contenido agregado. |
+| `GET` | `/api/portfolio-home/about` | Pública | Devuelve el bloque “about” con skills y contenido complementario del perfil. |
+| `GET` | `/api/projects` | Pública | Lista los proyectos públicos. |
+| `GET` | `/api/projects/{id}` | Pública | Devuelve el detalle técnico de un proyecto. |
 
-### 🤖 Inteligencia Artificial y Automatización Edge
+### 🔬 Laboratorios reales
 
-| Método | Endpoint | Middleware | Descripción |
+| Método | Endpoint | Protección | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/home-assistant` | `api` | Lista las instancias de domótica e integraciones IoT activas. |
-| `GET` | `/home-assistant/{id}` | `api` | Devuelve automatizaciones y casos de uso avanzados de una instancia. |
-| `GET` | `/local-ai-setups` | `api` | Lista configuraciones de LLMs y modelos ejecutados de forma local. |
-| `GET` | `/local-ai-setups/{id}` | `api` | Devuelve parámetros técnicos del hardware y modelo local. |
-| `GET` | `/ai-study-cases` | `api` | Lista casos de estudio y benchmarks de IA aplicada. |
-| `GET` | `/ai-study-cases/{id}` | `api` | Devuelve contexto, retos y soluciones de una arquitectura de IA. |
+| `GET` | `/api/laboratorios-reales/home` | Pública | Devuelve un resumen estructurado del laboratorio real. |
+| `GET` | `/api/laboratorios-reales` | Pública | Lista los laboratorios reales publicados. |
+| `GET` | `/api/laboratorios-reales/{slug}` | Pública | Devuelve el detalle de un laboratorio real por slug. |
 
-### 🔬 Laboratorio, Proyectos y Portafolio
+### ✉️ Entrada de datos y contacto
 
-| Método | Endpoint | Middleware | Descripción |
+| Método | Endpoint | Protección | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/portfolio-home` | `api` | Devuelve el bloque principal del portafolio: perfil, enlaces sociales, habilidades, destacados y experiencia. |
-| `GET` | `/portfolio-home/hero` | `api` | Devuelve los datos mínimos para la carga inicial de la hero: perfil, enlaces sociales y expertise. |
-| `GET` | `/laboratorio/home` | `api` | Devuelve los datos estructurados de presentación del laboratorio técnico. |
-| `GET` | `/laboratorio` | `api` | Lista módulos e ítems activos del laboratorio. |
-| `GET` | `/laboratorio/{id}` | `api` | Devuelve el detalle específico de un bloque o entorno del laboratorio. |
-| `GET` | `/projects` | `api` | Lista los proyectos públicos desarrollados. |
-| `GET` | `/projects/{id}` | `api` | Devuelve la ficha técnica y documentación de un proyecto. |
-| `GET` | `/lab-capabilities` | `api` | Lista capacidades operacionales y de testing del laboratorio. |
-| `GET` | `/research-sources` | `api` | Lista fuentes de datos, papers y documentación de soporte de I+D. |
+| `POST` | `/api/contact-messages` | Pública | Registra un mensaje de contacto y ejecuta la lógica de notificación configurada. |
 
-### ✉️ Entrada de Datos (Contacto)
+### 📝 Operaciones CRUD protegidas
 
-| Método | Endpoint | Middleware | Descripción |
+| Método | Endpoint | Protección | Descripción |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/contact-messages` | `api` | Registra el mensaje en PostgreSQL (Neon) y envía una notificación inmediata mediante Resend. |
-
-### 📝 Operaciones CRUD de Administración (Protegidas)
-
-| Método | Endpoint | Middleware | Descripción |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/projects` | `api`, `auth:sanctum` | Registra un nuevo proyecto en el portafolio. |
-| `PUT` | `/projects/{id}` | `api`, `auth:sanctum` | Actualiza la información técnica de un proyecto existente. |
-| `DELETE` | `/projects/{id}` | `api`, `auth:sanctum` | Elimina un proyecto del catálogo de forma permanente. |
+| `POST` | `/api/projects` | `auth:sanctum` | Crea un nuevo proyecto. |
+| `PUT` | `/api/projects/{id}` | `auth:sanctum` | Actualiza un proyecto existente. |
+| `DELETE` | `/api/projects/{id}` | `auth:sanctum` | Elimina un proyecto. |
 
 ---
 
-## 🐋 Comandos de Control en Desarrollo Local (Docker + Git Bash)
+## 🧪 Ejemplos de pruebas e integración local
 
-Dado que las carpetas compartidas están enlazadas a tu volumen local, puedes usar estos comandos para controlar el contenedor `portfolio_backend`:
+Puedes verificar el estado operativo de los endpoints con `curl` desde Git Bash.
 
-### Iniciar el contenedor local (recompilando cambios)
-
-```bash
-docker compose up -d --build
-```
-
-### Instalar dependencias en caliente
+### 1. Health check del backend
 
 ```bash
-docker exec -it portfolio_backend composer require resend/resend-laravel
+curl -X GET http://localhost:8081/health \
+  -H "Accept: application/json"
 ```
 
-### Limpiar caché tras modificar el `.env` local
+### 2. Carga principal del portfolio
 
 ```bash
-docker exec -it portfolio_backend php artisan config:clear
-docker exec -it portfolio_backend php artisan cache:clear
+curl -X GET http://localhost:8081/api/portfolio-home \
+  -H "Accept: application/json"
 ```
 
-### Ejecutar migraciones hacia la base de datos de desarrollo o producción
+### 3. Bloque about del portfolio
 
 ```bash
-docker exec -it portfolio_backend php artisan migrate
+curl -X GET http://localhost:8081/api/portfolio-home/about \
+  -H "Accept: application/json"
 ```
 
----
-
-## 🔒 Seguridad CORS (Cross-Origin Resource Sharing)
-
-El backend implementa una política estricta de acceso en `config/cors.php` para mitigar usos no autorizados de la API:
-
-- **Orígenes permitidos:** únicamente el entorno local (`http://localhost:5173`) y el dominio de producción del frontend (`https://portfolioalexsys.netlify.app`).
-- **Cabeceras explícitas:** se evitan comodines (`*`) y solo se habilitan cabeceras esenciales como `Content-Type`, `Authorization` y `Accept`.
-- **Optimización de red (`max_age`):** configurado a 24 horas (`86400` segundos) para cachear peticiones _Preflight OPTIONS_ y reducir latencia.
-- **Soporte de credenciales:** habilitado mediante `supports_credentials: true` para permitir autenticación segura con tokens.
-
----
-
-## 🧪 Pruebas de Integración y Seguridad (Rutas y Sanctum)
-
-Puedes verificar el estado operativo de los endpoints y las restricciones de seguridad con `curl` desde Git Bash:
-
-### 1. Comprobación del catálogo de proyectos (ruta pública)
+### 4. Catálogo público de proyectos
 
 ```bash
 curl -X GET http://localhost:8081/api/projects \
   -H "Accept: application/json"
 ```
 
-### 2. Autenticación de administrador y captura de token
+### 5. Home de laboratorios reales
+
+```bash
+curl -X GET http://localhost:8081/api/laboratorios-reales/home \
+  -H "Accept: application/json"
+```
+
+### 6. Listado de laboratorios reales
+
+```bash
+curl -X GET http://localhost:8081/api/laboratorios-reales \
+  -H "Accept: application/json"
+```
+
+### 7. Autenticación de administrador y captura de token
 
 ```bash
 curl -X POST http://localhost:8081/api/login \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
-  -d "{\"email\":\"alexandergalvez880208@gmail.com\", \"password\":\"tu_password_local\"}"
+  -d "{\"email\":\"tu_usuario@dominio.com\", \"password\":\"tu_password_local\"}"
 ```
 
-### 3. Validación de sesión protegida por token
-
-_Si no envías el token devuelto en el paso anterior, el servidor responderá con `401 Unauthorized`._
+### 8. Verificación de sesión con Sanctum
 
 ```bash
 curl -X GET http://localhost:8081/api/verify-auth \
   -H "Accept: application/json" \
-  -H "Authorization: Bearer INSERTA_TU_TOKEN_AQUÍ"
+  -H "Authorization: Bearer INSERTA_TU_TOKEN_AQUI"
 ```
 
 ---
 
-## ⚙️ Consideraciones de Infraestructura y Automatización
+## 🐋 Comandos de control en desarrollo local (Docker + Git Bash)
 
-1. **Bloqueo de puertos SMTP:** Render no permite tráfico SMTP saliente en capas gratuitas. El uso de Resend sobre HTTP/443 evita este problema sin introducir complejidad adicional.
+El backend se ejecuta localmente en un contenedor llamado `portfolio_backend` con publicación de puerto `8081:80`.
 
-2. **Límite de tiempo de respuesta:** Netlify puede abortar peticiones largas. Configurar `QUEUE_CONNECTION=sync` junto con Resend permite procesar el envío del correo de forma inmediata.
+### Iniciar el contenedor local
 
-3. **Compilación en frío:** El `Dockerfile` puede ejecutar limpiezas automáticas de caché como `php artisan config:clear`, tolerando errores transitorios con sentencias de escape como `|| true` para mantener builds estables.
+```bash
+docker compose up -d --build
+```
 
-4. **Mitigación de cold starts en Render Free:** Dado que Render puede suspender servicios gratuitos tras unos 15 minutos sin tráfico, puede utilizarse un monitor HTTP externo, como **UptimeRobot**, apuntando a un endpoint ligero como `/health` con una frecuencia aproximada de **10 a 14 minutos**. Esta técnica reduce los arranques en frío, pero también incrementa el consumo de horas mensuales del plan gratuito.[web:527][web:546]
+### Ver contenedores activos
 
-5. **Estrategia recomendada de disponibilidad:** Si se prioriza el ahorro de horas del plan gratuito, lo recomendable es pausar el monitor y aceptar _cold starts_ ocasionales. Si se necesita disponibilidad constante, la solución estable es migrar a una instancia de pago en Render.[web:527][web:544]
+```bash
+docker ps
+```
 
-6. Ajuste del límite de memoria en PHP (memory_limit): Las imágenes oficiales de php:apache imponen límites estrictos de RAM que rompen procesos pesados de frameworks con paneles administrativos como Filament. Inyectar la directiva memory_limit=256M mediante un archivo .ini personalizado en el Dockerfile permite dar estabilidad a las peticiones concurrentes del backend.
+### Listar rutas registradas
 
-7. Optimización de renderizado en producción (view:cache): Sustituir comandos de limpieza como view:clear por la pre-compilación de vistas (php artisan view:cache) durante la creación de la imagen de Docker disminuye los picos de CPU y RAM, evitando procesar código Blade en tiempo real ante las visitas de los usuarios.
+```bash
+docker exec -it portfolio_backend php artisan route:list
+```
 
-8. Configuración de logs efímeros (LOG_CHANNEL=stderr): Almacenar registros en archivos locales (file) dentro de contenedores de Render satura la memoria interna y degrada el rendimiento. Configurar el canal de logs hacia stderr en las variables de entorno redirige el flujo de errores directamente a la consola nativa de Render en tiempo real, liberando RAM en el servidor.
+### Instalar dependencias en caliente
 
-9. Desactivación de trazas de depuración (APP_DEBUG=false): Mantener habilitadas las herramientas de debug en producción fuerza a Laravel a guardar en memoria RAM un historial detallado de excepciones y consultas SQL de cada petición. Forzar el entorno a production y desactivar el debug previene fugas de memoria (memory leaks).
+```bash
+docker exec -it portfolio_backend composer require vendor/package
+```
 
-10. Cierre explícito de conexiones persistentes (PDO::ATTR_PERSISTENT): Al conectar Laravel con bases de datos serverless como Neon DB, mantener hilos de conexión abiertos satura el pool de conexiones y eleva la RAM residual de Render. Definir la opción PDO::ATTR_PERSISTENT => false dentro del bloque pgsql obliga al framework a destruir el hilo con la base de datos inmediatamente después de despachar la respuesta HTTP.
+### Limpiar caché tras modificar `.env`
 
+```bash
+docker exec -it portfolio_backend php artisan config:clear
+docker exec -it portfolio_backend php artisan cache:clear
+docker exec -it portfolio_backend php artisan route:clear
+docker exec -it portfolio_backend php artisan view:clear
+```
 
-creacion de asistente real url:
-https://alexandergalvez-asistenten8n.hf.space/home/workflows
+### Ejecutar migraciones
+
+```bash
+docker exec -it portfolio_backend php artisan migrate
+```
+
+### Regenerar documentación OpenAPI
+
+```bash
+docker exec -it portfolio_backend php artisan scramble:export
+```
+
+---
+
+## 🔒 Seguridad CORS (Cross-Origin Resource Sharing)
+
+El backend implementa una política de acceso concreta definida en `config/cors.php` para limitar orígenes y cabeceras admitidas.
+
+- **Paths protegidos:** `api/*` y `sanctum/csrf-cookie`
+- **Métodos permitidos:** `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`
+- **Orígenes permitidos:** `https://alex.syskovex.com` y `http://localhost:5173`
+- **Cabeceras permitidas:** `Content-Type`, `X-Requested-With`, `Authorization`, `Accept`
+- **Cache preflight (`max_age`):** `86400`
+- **Credenciales:** `supports_credentials=true`
+
+---
+
+## 📚 Documentación automática con Scramble
+
+La documentación se genera con **dedoc/scramble**, lo que permite exponer OpenAPI automáticamente a partir de rutas, requests, resources y responses del backend Laravel.
+
+### Instalación base
+
+```bash
+composer require dedoc/scramble
+php artisan vendor:publish --provider="Dedoc\Scramble\ScrambleServiceProvider" --tag="scramble-config"
+```
+
+### Configuración destacada
+
+- **Título UI:** `Portfolio Backend API`
+- **Renderer activo:** `elements`
+- **Tema:** `light`
+- **Try it:** habilitado
+- **Schemas:** visibles
+- **Servidores definidos en docs:**
+  - `Production`: `APP_URL/api`
+  - `Local`: `http://localhost:8081/api`
+
+---
+
+## 🧩 Panel administrativo con Filament
+
+El proyecto incluye un panel de administración en `/admin` para la gestión interna de contenido.
+
+### Recursos detectados en Filament
+
+- `ContactMessages`
+- `LaboratorioReals`
+- `ProfileExpertises`
+- `ProfileHighlights`
+- `Projects`
+- `Skills`
+- `SocialLinks`
+
+### Propósito del panel
+
+- Gestionar contenido del portfolio
+- Administrar habilidades y enlaces sociales
+- Mantener laboratorios reales
+- Revisar mensajes de contacto
+- Centralizar operaciones CRUD sin exponerlas públicamente
+
+---
+
+## ⚙️ Consideraciones de infraestructura y automatización
+
+1. **Resend sobre HTTP/443** evita depender de SMTP saliente en entornos cloud con restricciones.
+2. **Render Free** puede provocar _cold starts_ después de periodos de inactividad.
+3. **QUEUE_CONNECTION=sync** simplifica el procesamiento inmediato cuando no se usan workers separados.
+4. **Neon PostgreSQL** se usa con `sslmode=require`.
+5. **PDO::ATTR_PERSISTENT=false** está configurado en `pgsql` para evitar conexiones persistentes innecesarias.
+6. **APP_DEBUG=false** y `LOG_CHANNEL=stderr` son ajustes adecuados para producción.
+7. **view:cache** puede ser una optimización útil en despliegues productivos.
+8. **URL::forceScheme('https')** evita inconsistencias de esquema en producción.
+
+---
+
+## 🤖 Asistente real
+
+Instancia pública del asistente experimental conectado al ecosistema del laboratorio:
+
+- [Asistente n8n / Hugging Face](https://alexandergalvez-asistenten8n.hf.space/home/workflows)
+
+---
+
+## 📁 Estructura funcional resumida
+
+```text
+app/
+  Filament/
+  Http/
+    Controllers/
+    Requests/
+    Resources/
+  Models/
+
+config/
+  app.php
+  cors.php
+  database.php
+  mail.php
+  queue.php
+  sanctum.php
+  scramble.php
+
+resources/views/
+  backend-home.blade.php
+  emails/
+  welcome.blade.php
+
+routes/
+  api.php
+  web.php
+  console.php
+
+Dockerfile
+docker-compose.yml
+README.md
+```
+
+---
+
+## ✅ Estado actual del backend
+
+Este backend ya expone una base pública funcional, health check, documentación OpenAPI navegable, autenticación con Sanctum, administración con Filament y una estructura real para evolucionar el portfolio hacia un laboratorio técnico más amplio y mejor documentado.

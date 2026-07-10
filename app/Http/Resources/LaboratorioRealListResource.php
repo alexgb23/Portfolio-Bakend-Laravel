@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class LaboratorioRealHomeResource extends JsonResource
+class LaboratorioRealListResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -13,23 +13,30 @@ class LaboratorioRealHomeResource extends JsonResource
             'id' => $this->id,
             'titulo' => $this->titulo,
             'slug' => $this->slug,
-            'categoria' => $this->tipo_proyecto ?? 'Laboratorio',
+            'tipo_proyecto' => $this->tipo_proyecto,
             'area_principal' => $this->area_principal,
-            'estado' => $this->estado ?? 'activo',
+            'areas_relacionadas' => $this->areas_relacionadas ?? [],
+            'estado' => $this->estado,
+            'es_destacado' => (bool) $this->es_destacado,
+            'es_visible' => (bool) $this->es_visible,
+            'orden' => $this->orden,
             'resumen' => $this->resumen ?: $this->descripcion,
-            'descripcion' => $this->descripcion,
             'objetivo' => $this->objetivo,
             'resultado_actual' => $this->resultado_actual,
             'notas_tecnicas' => $this->notas_tecnicas,
-            'areas_relacionadas' => $this->areas_relacionadas ?? [],
+            'galeria_urls' => $this->galeria_urls ?? [],
+            'documentacion_urls' => $this->documentacion_urls ?? [],
+            'origen' => $this->origen,
+            'referencia_externa' => $this->referencia_externa,
             'metadata' => $this->metadata ?? [],
+            'fecha_inicio' => $this->fecha_inicio,
+            'fecha_fin' => $this->fecha_fin,
+            'created_at' => optional($this->created_at)?->toISOString(),
             'updated_at' => optional($this->updated_at)?->toISOString(),
             'documentacion_count' => $this->whenCounted('documentacion'),
             'avances_count' => $this->whenCounted('avances'),
-            'ideas_count' => $this->whenCounted('ideas'),
             'adjuntos_count' => $this->whenCounted('adjuntos'),
-            'adjuntos' => AdjuntoLaboratorioResource::collection($this->whenLoaded('adjuntos')),
-            'is_featured' => (bool) $this->es_destacado,
+            'ideas_count' => $this->whenCounted('ideas'),
         ];
     }
 }

@@ -11,16 +11,16 @@ class AboutResource extends JsonResource
     {
         return [
             'skills' => SkillResource::collection($this->resource['skills'] ?? collect()),
+
             'highlights' => collect($this->resource['highlights'] ?? [])
-                ->map(fn ($item) => [
+                ->map(fn($item) => [
                     'id' => $item->id,
                     'number' => $item->number,
                     'title' => $item->title,
                     'text' => $item->text,
                     'side' => $item->side,
                 ])
-                ->values()
-                ->all(),
+                ->values(),
         ];
     }
 }

@@ -40,7 +40,7 @@ class PortfolioController extends Controller
             ->where('es_visible', true)
             ->orderByDesc('es_destacado')
             ->orderBy('orden')
-            ->withCount(['documentacion', 'avances', 'ideas', 'adjuntos'])
+            ->withCount(['documentacion', 'avances'])
             ->get();
 
         return new PortfolioHomeResource([
