@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -56,10 +56,6 @@ class ProjectForm
                             ->label('Área principal')
                             ->maxLength(255),
 
-                        TagsInput::make('areas_relacionadas')
-                            ->label('Áreas relacionadas')
-                            ->separator(','),
-
                         Textarea::make('short_description')
                             ->label('Descripción corta')
                             ->rows(3)
@@ -99,13 +95,21 @@ class ProjectForm
 
                 Section::make('Tecnología')
                     ->schema([
-                        TagsInput::make('technologies')
+                        Repeater::make('technologies')
                             ->label('Tecnologías')
-                            ->placeholder('Escribe una tecnología y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
-                            ->reorderable()
-                            ->helperText('Verás las tecnologías ya añadidas como etiquetas. Para quitar una, pulsa la x de su etiqueta.'),
+                            ->schema([
+                                TextInput::make('value')
+                                    ->label('Tecnología')
+                                    ->placeholder('Ejemplo: Laravel')
+                                    ->maxLength(100),
+                            ])
+                            ->default([])
+                            ->addActionLabel('Añadir tecnología')
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Nueva tecnología')
+                            ->helperText('Si no hay ninguna, déjalo vacío. Para borrar una, usa la papelera.'),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen corto del stack')
@@ -116,63 +120,100 @@ class ProjectForm
 
                 Section::make('Galería y documentación')
                     ->schema([
-                        TagsInput::make('image_url')
-                            ->label('URLs de imágenes principales')
-                            ->placeholder('Pega una URL y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab'])
-                            ->trim()
-                            ->helperText('Opcional. Puedes dejarlo vacío hasta tener imágenes.'),
+                        Repeater::make('image_url')
+                            ->label('Imágenes principales')
+                            ->schema([
+                                TextInput::make('value')
+                                    ->label('URL de imagen')
+                                    ->url()
+                                    ->nullable()
+                                    ->maxLength(2048),
+                            ])
+                            ->default([])
+                            ->addActionLabel('Añadir imagen')
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
+                            ->helperText('Opcional. Si no hay imágenes todavía, no añadas ninguna fila.'),
 
-                        TagsInput::make('galeria_urls')
+                        Repeater::make('galeria_urls')
                             ->label('Galería adicional')
-                            ->placeholder('Pega una URL y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab'])
-                            ->trim()
-                            ->helperText('Opcional. Añade más imágenes cuando las tengas.'),
+                            ->schema([
+                                TextInput::make('value')
+                                    ->label('URL')
+                                    ->url()
+                                    ->nullable()
+                                    ->maxLength(2048),
+                            ])
+                            ->default([])
+                            ->addActionLabel('Añadir URL')
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
+                            ->helperText('Opcional. Si no hay nada, déjalo vacío.'),
 
-                        TagsInput::make('documentacion_urls')
+                        Repeater::make('documentacion_urls')
                             ->label('URLs de documentación')
-                            ->placeholder('Pega una URL y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab'])
-                            ->trim()
-                            ->helperText('Opcional. Por ejemplo: docs, Notion, PDF, demo técnica.'),
-                    ]),
+                            ->schema([
+                                TextInput::make('value')
+                                    ->label('URL')
+                                    ->url()
+                                    ->nullable()
+                                    ->maxLength(2048),
+                            ])
+                            ->default([])
+                            ->addActionLabel('Añadir URL')
+                            ->deletable(true)
+                            ->reorderable(false)
+                            ->collapsible()
+                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
+                            ->helperText('Opcional. Si no hay documentación aún, no añadas filas.'),
+                    ])
+                    ->columns(1),
 
                 Section::make('Enlaces')
                     ->schema([
                         TextInput::make('project_url')
                             ->label('URL del proyecto')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('frontend_url')
                             ->label('URL frontend')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('backend_url')
                             ->label('URL backend')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('api_base_url')
                             ->label('API base URL')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('staging_url')
-                            ->label('Staging URL')
+                            ->label('URL de pruebas')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('repo_url')
                             ->label('URL del repositorio')
                             ->url()
+                            ->nullable()
                             ->maxLength(2048),
 
                         TextInput::make('referencia_externa')
                             ->label('Referencia externa')
-                            ->url()
+                            ->helperText('Opcional. Puede ser una URL, una nota corta o una referencia libre.')
                             ->maxLength(2048),
                     ])
                     ->columns(2),

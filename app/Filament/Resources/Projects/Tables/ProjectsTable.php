@@ -45,83 +45,13 @@ class ProjectsTable
                     ->searchable()
                     ->wrap(),
 
-                TextColumn::make('technologies')
+                TextColumn::make('technologies_summary')
                     ->label('Tecnologías')
-                    ->getStateUsing(fn($record) => $record->technologies)
-                    ->formatStateUsing(function ($state): string {
-                        if (blank($state)) {
-                            return '—';
-                        }
-
-                        if (is_array($state)) {
-                            $items = array_filter(
-                                array_map(
-                                    fn($item) => is_scalar($item) ? trim((string) $item) : null,
-                                    $state
-                                )
-                            );
-
-                            return count($items) ? implode(', ', $items) : '—';
-                        }
-
-                        if (is_string($state)) {
-                            $decoded = json_decode($state, true);
-
-                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                $items = array_filter(
-                                    array_map(
-                                        fn($item) => is_scalar($item) ? trim((string) $item) : null,
-                                        $decoded
-                                    )
-                                );
-
-                                return count($items) ? implode(', ', $items) : '—';
-                            }
-
-                            return trim($state) !== '' ? $state : '—';
-                        }
-
-                        return '—';
-                    })
+                    ->getStateUsing(fn($record) => implode(', ', $record->technologies_list))
+                    ->placeholder('—')
                     ->wrap(false)
-                    ->limit(80)
-                    ->tooltip(function ($record): ?string {
-                        $state = $record->technologies;
-
-                        if (blank($state)) {
-                            return null;
-                        }
-
-                        if (is_array($state)) {
-                            $items = array_filter(
-                                array_map(
-                                    fn($item) => is_scalar($item) ? trim((string) $item) : null,
-                                    $state
-                                )
-                            );
-
-                            return count($items) ? implode(', ', $items) : null;
-                        }
-
-                        if (is_string($state)) {
-                            $decoded = json_decode($state, true);
-
-                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                                $items = array_filter(
-                                    array_map(
-                                        fn($item) => is_scalar($item) ? trim((string) $item) : null,
-                                        $decoded
-                                    )
-                                );
-
-                                return count($items) ? implode(', ', $items) : null;
-                            }
-
-                            return trim($state) !== '' ? $state : null;
-                        }
-
-                        return null;
-                    })
+                    ->limit(90)
+                    ->tooltip(fn($record): ?string => count($record->technologies_list) ? implode(', ', $record->technologies_list) : null)
                     ->toggleable(),
 
                 TextColumn::make('status')
@@ -153,13 +83,13 @@ class ProjectsTable
                 TextColumn::make('project_url')
                     ->label('Proyecto')
                     ->limit(30)
-                    ->url(fn($record) => $record->project_url, shouldOpenInNewTab: true)
+                    ->url(fn($record) => filled($record->project_url) ? $record->project_url : null, shouldOpenInNewTab: true)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('repo_url')
                     ->label('Repositorio')
                     ->limit(30)
-                    ->url(fn($record) => $record->repo_url, shouldOpenInNewTab: true)
+                    ->url(fn($record) => filled($record->repo_url) ? $record->repo_url : null, shouldOpenInNewTab: true)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
