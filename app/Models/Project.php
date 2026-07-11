@@ -43,6 +43,19 @@ class Project extends Model
         'fecha_fin',
     ];
 
+    protected $attributes = [
+        'areas_relacionadas' => '[]',
+        'technologies' => '[]',
+        'image_url' => '[]',
+        'galeria_urls' => '[]',
+        'documentacion_urls' => '[]',
+        'metadata' => '[]',
+        'is_featured' => false,
+        'is_published' => true,
+        'sort_order' => 0,
+        'status' => 'published',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -94,51 +107,5 @@ class Project extends Model
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('title');
-    }
-
-    public function getTechnologiesListAttribute(): array
-    {
-        return $this->normalizeRepeaterValues($this->technologies);
-    }
-
-    public function getImageUrlListAttribute(): array
-    {
-        return $this->normalizeRepeaterValues($this->image_url);
-    }
-
-    public function getGaleriaUrlsListAttribute(): array
-    {
-        return $this->normalizeRepeaterValues($this->galeria_urls);
-    }
-
-    public function getDocumentacionUrlsListAttribute(): array
-    {
-        return $this->normalizeRepeaterValues($this->documentacion_urls);
-    }
-
-    protected function normalizeRepeaterValues($items): array
-    {
-        if (blank($items)) {
-            return [];
-        }
-
-        if (is_string($items)) {
-            $decoded = json_decode($items, true);
-            $items = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
-        }
-
-        if (! is_array($items)) {
-            return [];
-        }
-
-        return array_values(array_filter(array_map(function ($item) {
-            if (is_array($item)) {
-                $value = $item['value'] ?? null;
-
-                return is_scalar($value) ? trim((string) $value) : null;
-            }
-
-            return is_scalar($item) ? trim((string) $item) : null;
-        }, $items)));
     }
 }

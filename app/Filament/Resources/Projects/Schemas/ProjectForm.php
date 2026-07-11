@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -56,6 +56,11 @@ class ProjectForm
                             ->label('Área principal')
                             ->maxLength(255),
 
+                        TagsInput::make('areas_relacionadas')
+                            ->label('Áreas relacionadas')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->trim(),
+
                         Textarea::make('short_description')
                             ->label('Descripción corta')
                             ->rows(3)
@@ -95,89 +100,45 @@ class ProjectForm
 
                 Section::make('Tecnología')
                     ->schema([
-                        Repeater::make('technologies')
+                        TagsInput::make('technologies')
                             ->label('Tecnologías')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('Tecnología')
-                                    ->placeholder('Ejemplo: Laravel')
-                                    ->maxLength(100)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir tecnología')
-                            ->reorderable(false)
-                            ->deletable(true)
-                            ->afterStateHydrated(function (Repeater $component, $state): void {
-                                $component->state(self::normalizeSimpleRepeaterState($state));
-                            })
-                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
-                            ->helperText('Si no hay tecnologías, déjalo vacío. Solo verás las que existan y podrás borrarlas.'),
+                            ->placeholder('Escribe una tecnología y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->trim()
+                            ->reorderable()
+                            ->helperText('Verás las tecnologías existentes como etiquetas. Pulsa la x para borrar una.'),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen corto del stack')
-                            ->helperText('Texto opcional, por ejemplo: Laravel + Docker + Filament + PostgreSQL + Render')
-                            ->maxLength(255),
+                            ->placeholder('Ejemplo: Laravel + Docker + Filament + PostgreSQL + Render')
+                            ->helperText('Campo opcional. Si no lo quieres, déjalo vacío.')
+                            ->maxLength(255)
+                            ->nullable(),
                     ])
                     ->columns(2),
 
                 Section::make('Galería y documentación')
                     ->schema([
-                        Repeater::make('image_url')
+                        TagsInput::make('image_url')
                             ->label('Imágenes principales')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL de imagen')
-                                    ->url()
-                                    ->nullable()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir imagen')
-                            ->reorderable(false)
-                            ->deletable(true)
-                            ->afterStateHydrated(function (Repeater $component, $state): void {
-                                $component->state(self::normalizeSimpleRepeaterState($state));
-                            })
-                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
-                            ->helperText('Opcional. Si no hay imágenes, déjalo vacío.'),
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->trim()
+                            ->helperText('Si hay imágenes, las verás aquí como etiquetas y podrás borrarlas con la x.'),
 
-                        Repeater::make('galeria_urls')
+                        TagsInput::make('galeria_urls')
                             ->label('Galería adicional')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL')
-                                    ->url()
-                                    ->nullable()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir URL')
-                            ->reorderable(false)
-                            ->deletable(true)
-                            ->afterStateHydrated(function (Repeater $component, $state): void {
-                                $component->state(self::normalizeSimpleRepeaterState($state));
-                            })
-                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
-                            ->helperText('Opcional. Si no hay nada, déjalo vacío.'),
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->trim()
+                            ->helperText('Opcional. Si no hay URLs, déjalo vacío.'),
 
-                        Repeater::make('documentacion_urls')
+                        TagsInput::make('documentacion_urls')
                             ->label('URLs de documentación')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL')
-                                    ->url()
-                                    ->nullable()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir URL')
-                            ->reorderable(false)
-                            ->deletable(true)
-                            ->afterStateHydrated(function (Repeater $component, $state): void {
-                                $component->state(self::normalizeSimpleRepeaterState($state));
-                            })
-                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
-                            ->helperText('Opcional. Si no hay documentación, déjalo vacío.'),
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->trim()
+                            ->helperText('Si hay URLs, las verás aquí y podrás borrarlas con la x. Si no hay, déjalo vacío.'),
                     ])
                     ->columns(1),
 
@@ -275,49 +236,5 @@ class ProjectForm
                             ->columnSpanFull(),
                     ]),
             ]);
-    }
-
-    protected static function normalizeSimpleRepeaterState($state): array
-    {
-        if (blank($state)) {
-            return [];
-        }
-
-        if (is_string($state)) {
-            $decoded = json_decode($state, true);
-            $state = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
-        }
-
-        if (! is_array($state)) {
-            return [];
-        }
-
-        $values = [];
-
-        foreach ($state as $item) {
-            if (is_array($item)) {
-                $value = reset($item);
-
-                if (is_scalar($value)) {
-                    $value = trim((string) $value);
-
-                    if ($value !== '') {
-                        $values[] = $value;
-                    }
-                }
-
-                continue;
-            }
-
-            if (is_scalar($item)) {
-                $item = trim((string) $item);
-
-                if ($item !== '') {
-                    $values[] = $item;
-                }
-            }
-        }
-
-        return array_values($values);
     }
 }
