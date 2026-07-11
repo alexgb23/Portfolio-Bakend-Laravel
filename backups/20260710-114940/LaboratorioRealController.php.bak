@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LaboratorioRealHomeResource;
-use App\Http\Resources\LaboratorioRealListResource;
 use App\Http\Resources\LaboratorioRealResource;
 use App\Models\LaboratorioReal;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -38,18 +37,18 @@ class LaboratorioRealController extends Controller
     }
 
     /**
-     * Lista todos los laboratorios reales visibles en formato resumido.
+     * Lista todos los laboratorios reales visibles con su contenido relacionado.
      */
     public function index(): AnonymousResourceCollection
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
-            ->withCount(['documentacion', 'avances', 'adjuntos', 'ideas'])
+            ->with(['documentacion', 'avances', 'adjuntos', 'ideas'])
             ->orderBy('orden')
             ->orderByDesc('id')
             ->get();
 
-        return LaboratorioRealListResource::collection($laboratorios);
+        return LaboratorioRealResource::collection($laboratorios);
     }
 
     /**

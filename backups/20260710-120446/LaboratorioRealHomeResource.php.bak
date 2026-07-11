@@ -12,7 +12,6 @@ class LaboratorioRealHomeResource extends JsonResource
         return [
             'id' => $this->id,
             'titulo' => $this->titulo,
-            'slug' => $this->slug,
             'categoria' => $this->tipo_proyecto ?? 'Laboratorio',
             'area_principal' => $this->area_principal,
             'estado' => $this->estado ?? 'activo',
@@ -23,7 +22,7 @@ class LaboratorioRealHomeResource extends JsonResource
             'notas_tecnicas' => $this->notas_tecnicas,
             'areas_relacionadas' => $this->areas_relacionadas ?? [],
             'metadata' => $this->metadata ?? [],
-            'updated_at' => optional($this->updated_at)?->toISOString(),
+            'updated_at' => $this->updated_at,
             'documentacion_count' => $this->whenCounted('documentacion'),
             'avances_count' => $this->whenCounted('avances'),
             'ideas_count' => $this->whenCounted('ideas'),

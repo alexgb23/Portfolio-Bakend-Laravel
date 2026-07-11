@@ -12,17 +12,8 @@ use App\Models\Skill;
 use App\Models\SocialLink;
 use Illuminate\Http\Request;
 
-/**
- * @tags Portfolio
- */
 class PortfolioController extends Controller
 {
-    /**
-     * Devuelve la carga principal agregada del portfolio público.
-     *
-     * Incluye enlaces sociales visibles, proyectos publicados y
-     * laboratorios visibles resumidos para la home del portfolio.
-     */
     public function getHomeData(Request $request): PortfolioHomeResource
     {
         $socialLinks = SocialLink::query()
@@ -40,7 +31,7 @@ class PortfolioController extends Controller
             ->where('es_visible', true)
             ->orderByDesc('es_destacado')
             ->orderBy('orden')
-            ->withCount(['documentacion', 'avances', 'ideas', 'adjuntos'])
+            ->withCount(['documentacion', 'avances'])
             ->get();
 
         return new PortfolioHomeResource([
@@ -50,11 +41,6 @@ class PortfolioController extends Controller
         ]);
     }
 
-    /**
-     * Devuelve el bloque público "about" del portfolio.
-     *
-     * Incluye skills visibles y highlights del perfil para la sección about.
-     */
     public function getAboutData(Request $request): AboutResource
     {
         $skills = Skill::query()

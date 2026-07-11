@@ -4,22 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LaboratorioRealHomeResource;
-use App\Http\Resources\LaboratorioRealListResource;
 use App\Http\Resources\LaboratorioRealResource;
 use App\Models\LaboratorioReal;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
-/**
- * @tags Laboratorios reales
- */
 class LaboratorioRealController extends Controller
 {
-    /**
-     * Devuelve una selección resumida de laboratorios reales visibles.
-     *
-     * Pensado para home, previews o listados destacados.
-     */
-    public function home(): AnonymousResourceCollection
+    public function home()
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
@@ -37,30 +27,24 @@ class LaboratorioRealController extends Controller
         return LaboratorioRealHomeResource::collection($laboratorios);
     }
 
-    /**
-     * Lista todos los laboratorios reales visibles en formato resumido.
-     */
-    public function index(): AnonymousResourceCollection
+    public function index()
     {
         $laboratorios = LaboratorioReal::query()
-            ->where('es_visible', true)
-            ->withCount(['documentacion', 'avances', 'adjuntos', 'ideas'])
-            ->orderBy('orden')
-            ->orderByDesc('id')
+            ->where("es_visible", true)
+            ->with(["documentacion", "avances", "adjuntos", "ideas"])
+            ->orderBy("orden")
+            ->orderByDesc("id")
             ->get();
 
-        return LaboratorioRealListResource::collection($laboratorios);
+        return LaboratorioRealResource::collection($laboratorios);
     }
 
-    /**
-     * Devuelve el detalle completo de un laboratorio real visible a partir de su slug.
-     */
-    public function show(string $slug): LaboratorioRealResource
+    public function show(string $slug)
     {
         $laboratorio = LaboratorioReal::query()
-            ->where('slug', $slug)
-            ->where('es_visible', true)
-            ->with(['documentacion', 'avances', 'adjuntos', 'ideas'])
+            ->where("slug", $slug)
+            ->where("es_visible", true)
+            ->with(["documentacion", "avances", "adjuntos", "ideas"])
             ->firstOrFail();
 
         return new LaboratorioRealResource($laboratorio);
