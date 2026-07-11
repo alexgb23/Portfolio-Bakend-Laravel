@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/projects', [ProjectController::class, 'index']);
-Route::get('/projects/{id}', [ProjectController::class, 'show']);
+Route::get('/projects/{slug}', [ProjectController::class, 'show']);
 
 Route::get('/portfolio-home', [PortfolioController::class, 'getHomeData']);
 Route::get('/portfolio-home/about', [PortfolioController::class, 'getAboutData']);

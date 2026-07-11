@@ -10,12 +10,13 @@ class ProjectCardResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "id" => $this->id,
-            "title" => $this->title,
-            "short_description" => $this->short_description,
-            "stack_summary" => $this->stack_summary,
-            "technologies" => $this->technologies,
-            "is_featured" => (bool) $this->is_featured,
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'short_description' => $this->short_description,
+            'stack_summary' => $this->stack_summary,
+            'technologies' => $this->technologies,
+            'is_featured' => (bool) $this->is_featured,
         ];
     }
 }

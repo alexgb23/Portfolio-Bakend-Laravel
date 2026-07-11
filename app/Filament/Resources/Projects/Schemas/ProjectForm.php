@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -29,14 +31,41 @@ class ProjectForm
                             ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
                         TextInput::make('slug')
+                            ->label('Slug')
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
+                        Select::make('tipo_proyecto')
+                            ->label('Tipo de proyecto')
+                            ->options([
+                                'web' => 'Web',
+                                'mobile' => 'Mobile',
+                                'api' => 'API',
+                                'backend' => 'Backend',
+                                'frontend' => 'Frontend',
+                                'fullstack' => 'Full Stack',
+                                'ia' => 'IA',
+                                'data' => 'Data',
+                                'tool' => 'Tool',
+                                'other' => 'Other',
+                            ])
+                            ->searchable()
+                            ->native(false),
+
+                        TextInput::make('area_principal')
+                            ->label('Área principal')
+                            ->maxLength(255),
+
+                        TagsInput::make('areas_relacionadas')
+                            ->label('Áreas relacionadas')
+                            ->separator(','),
+
                         Textarea::make('short_description')
                             ->label('Descripción corta')
                             ->rows(3)
-                            ->maxLength(280),
+                            ->maxLength(280)
+                            ->columnSpanFull(),
 
                         Textarea::make('description')
                             ->label('Descripción')
@@ -46,7 +75,30 @@ class ProjectForm
                     ])
                     ->columns(2),
 
-                Section::make('Tecnología y enlaces')
+                Section::make('Contenido ampliado')
+                    ->schema([
+                        Textarea::make('resumen')
+                            ->label('Resumen')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                        Textarea::make('objetivo')
+                            ->label('Objetivo')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                        Textarea::make('resultado_actual')
+                            ->label('Resultado actual')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
+                        Textarea::make('notas_tecnicas')
+                            ->label('Notas técnicas')
+                            ->rows(6)
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Tecnología')
                     ->schema([
                         TagsInput::make('technologies')
                             ->label('Tecnologías')
@@ -55,7 +107,11 @@ class ProjectForm
                         TextInput::make('stack_summary')
                             ->label('Resumen técnico')
                             ->maxLength(255),
+                    ])
+                    ->columns(2),
 
+                Section::make('Galería y documentación')
+                    ->schema([
                         Repeater::make('image_url')
                             ->label('URLs de imágenes')
                             ->simple(
@@ -71,13 +127,71 @@ class ProjectForm
                             ->collapsible()
                             ->columnSpanFull(),
 
+                        Repeater::make('galeria_urls')
+                            ->label('Galería adicional')
+                            ->simple(
+                                TextInput::make('')
+                                    ->label('URL')
+                                    ->url()
+                                    ->required()
+                                    ->maxLength(2048)
+                            )
+                            ->default([])
+                            ->addActionLabel('Añadir URL')
+                            ->reorderable()
+                            ->collapsible()
+                            ->columnSpanFull(),
+
+                        Repeater::make('documentacion_urls')
+                            ->label('URLs de documentación')
+                            ->simple(
+                                TextInput::make('')
+                                    ->label('URL')
+                                    ->url()
+                                    ->required()
+                                    ->maxLength(2048)
+                            )
+                            ->default([])
+                            ->addActionLabel('Añadir URL')
+                            ->reorderable()
+                            ->collapsible()
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Enlaces')
+                    ->schema([
                         TextInput::make('project_url')
                             ->label('URL del proyecto')
                             ->url()
                             ->maxLength(2048),
 
+                        TextInput::make('frontend_url')
+                            ->label('URL frontend')
+                            ->url()
+                            ->maxLength(2048),
+
+                        TextInput::make('backend_url')
+                            ->label('URL backend')
+                            ->url()
+                            ->maxLength(2048),
+
+                        TextInput::make('api_base_url')
+                            ->label('API base URL')
+                            ->url()
+                            ->maxLength(2048),
+
+                        TextInput::make('staging_url')
+                            ->label('Staging URL')
+                            ->url()
+                            ->maxLength(2048),
+
                         TextInput::make('repo_url')
                             ->label('URL del repositorio')
+                            ->url()
+                            ->maxLength(2048),
+
+                        TextInput::make('referencia_externa')
+                            ->label('Referencia externa')
                             ->url()
                             ->maxLength(2048),
                     ])
@@ -86,13 +200,15 @@ class ProjectForm
                 Section::make('Publicación')
                     ->schema([
                         Select::make('status')
+                            ->label('Estado')
                             ->required()
                             ->options([
                                 'draft' => 'Draft',
                                 'published' => 'Published',
                                 'archived' => 'Archived',
                             ])
-                            ->default('published'),
+                            ->default('published')
+                            ->native(false),
 
                         TextInput::make('sort_order')
                             ->label('Orden')
@@ -109,6 +225,26 @@ class ProjectForm
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Section::make('Fechas')
+                    ->schema([
+                        DatePicker::make('fecha_inicio')
+                            ->label('Fecha de inicio'),
+
+                        DatePicker::make('fecha_fin')
+                            ->label('Fecha de fin'),
+                    ])
+                    ->columns(2),
+
+                Section::make('Metadata')
+                    ->schema([
+                        KeyValue::make('metadata')
+                            ->label('Metadata')
+                            ->keyLabel('Clave')
+                            ->valueLabel('Valor')
+                            ->addActionLabel('Añadir metadata')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }

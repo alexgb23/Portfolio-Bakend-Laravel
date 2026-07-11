@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Project extends Model
 {
@@ -78,4 +79,19 @@ class Project extends Model
     {
         return $query->orderBy('sort_order')->orderBy('title');
     }
+    public function adjuntos(): HasMany
+    {
+        return $this->hasMany(ProyectoAdjunto::class)->orderBy('orden');
+    }
+
+    public function documentacion(): HasMany
+    {
+        return $this->hasMany(ProyectoDocumentacion::class)->orderBy('orden');
+    }
+
+    public function secciones(): HasMany
+    {
+        return $this->hasMany(ProyectoSeccion::class)->orderBy('orden');
+    }
+
 }

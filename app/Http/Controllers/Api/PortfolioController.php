@@ -17,12 +17,6 @@ use Illuminate\Http\Request;
  */
 class PortfolioController extends Controller
 {
-    /**
-     * Devuelve la carga principal agregada del portfolio público.
-     *
-     * Incluye enlaces sociales visibles, proyectos publicados y
-     * laboratorios visibles resumidos para la home del portfolio.
-     */
     public function getHomeData(Request $request): PortfolioHomeResource
     {
         $socialLinks = SocialLink::query()
@@ -50,11 +44,6 @@ class PortfolioController extends Controller
         ]);
     }
 
-    /**
-     * Devuelve el bloque público "about" del portfolio.
-     *
-     * Incluye skills visibles y highlights del perfil para la sección about.
-     */
     public function getAboutData(Request $request): AboutResource
     {
         $skills = Skill::query()

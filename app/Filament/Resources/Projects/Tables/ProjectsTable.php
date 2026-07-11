@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Projects\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Actions\DeleteAction;
 
 class ProjectsTable
 {
@@ -24,14 +24,25 @@ class ProjectsTable
                     ->weight('bold'),
 
                 TextColumn::make('slug')
+                    ->label('Slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('tipo_proyecto')
+                    ->label('Tipo')
+                    ->badge()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('area_principal')
+                    ->label('Área principal')
+                    ->searchable()
+                    ->toggleable(),
 
                 TextColumn::make('short_description')
                     ->label('Descripción corta')
                     ->limit(40)
                     ->searchable(),
-
 
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
@@ -40,6 +51,7 @@ class ProjectsTable
                     ->toggleable(),
 
                 TextColumn::make('status')
+                    ->label('Estado')
                     ->badge()
                     ->sortable()
                     ->color(fn(string $state): string => match ($state) {
@@ -77,11 +89,13 @@ class ProjectsTable
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
+                    ->label('Creado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
+                    ->label('Actualizado')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

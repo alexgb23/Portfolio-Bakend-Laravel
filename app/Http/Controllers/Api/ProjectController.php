@@ -85,12 +85,11 @@ class ProjectController extends Controller
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
         ]);
 
-        if (empty($validated['slug']) && !empty($validated['title'])) {
+        if (blank($validated['slug'] ?? null) && filled($validated['title'] ?? null)) {
             $validated['slug'] = Str::slug($validated['title']);
         }
 
         $project = Project::create($validated);
-
         $project->load('laboratorioReal:id,titulo,slug,estado');
 
         return (new ProjectResource($project))
@@ -156,12 +155,11 @@ class ProjectController extends Controller
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
         ]);
 
-        if (empty($validated['slug']) && !empty($validated['title'])) {
+        if (blank($validated['slug'] ?? null) && filled($validated['title'] ?? null)) {
             $validated['slug'] = Str::slug($validated['title']);
         }
 
         $project->update($validated);
-
         $project->load('laboratorioReal:id,titulo,slug,estado');
 
         return new ProjectResource($project);
@@ -170,7 +168,6 @@ class ProjectController extends Controller
     public function destroy(string $id)
     {
         $project = Project::query()->findOrFail($id);
-
         $project->delete();
 
         return response()->json([

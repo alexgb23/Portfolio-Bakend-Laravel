@@ -29,7 +29,7 @@ class ProjectResource extends JsonResource
             'technologies' => $this->technologies,
             'stack_summary' => $this->stack_summary,
 
-            'image_url' => $this->image_url,
+            'image_url' => $this->image_url ?? [],
             'galeria_urls' => $this->galeria_urls ?? [],
             'documentacion_urls' => $this->documentacion_urls ?? [],
 
@@ -54,13 +54,13 @@ class ProjectResource extends JsonResource
             'created_at' => optional($this->created_at)?->toISOString(),
             'updated_at' => optional($this->updated_at)?->toISOString(),
 
-            'laboratorio_origen' => $this->whenLoaded(
-                'laboratorioReal',
+            'laboratorio_origen' => $this->when(
+                $this->relationLoaded('laboratorioReal') && $this->laboratorioReal,
                 fn() => [
-                    'id' => $this->laboratorioReal?->id,
-                    'titulo' => $this->laboratorioReal?->titulo,
-                    'slug' => $this->laboratorioReal?->slug,
-                    'estado' => $this->laboratorioReal?->estado,
+                    'id' => $this->laboratorioReal->id,
+                    'titulo' => $this->laboratorioReal->titulo,
+                    'slug' => $this->laboratorioReal->slug,
+                    'estado' => $this->laboratorioReal->estado,
                 ]
             ),
         ];
