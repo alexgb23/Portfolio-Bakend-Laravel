@@ -103,7 +103,47 @@ class ProjectForm
                             ->label('Tecnologías')
                             ->placeholder('Escribe una tecnología y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->helperText('Escribe una tecnología, pulsa Enter y se añadirá a la lista.'),
+                            ->suggestions([
+                                'Laravel',
+                                'PHP',
+                                'Filament',
+                                'Livewire',
+                                'Blade',
+                                'MySQL',
+                                'PostgreSQL',
+                                'SQLite',
+                                'Docker',
+                                'Nginx',
+                                'Apache',
+                                'Redis',
+                                'React',
+                                'Next.js',
+                                'Vue',
+                                'Nuxt',
+                                'JavaScript',
+                                'TypeScript',
+                                'Tailwind CSS',
+                                'Bootstrap',
+                                'Node.js',
+                                'Express',
+                                'Python',
+                                'FastAPI',
+                                'Django',
+                                'REST API',
+                                'GraphQL',
+                                'JWT',
+                                'Git',
+                                'GitHub Actions',
+                                'Vite',
+                                'Firebase',
+                                'Supabase',
+                                'AWS',
+                                'Render',
+                                'Vercel',
+                            ])
+                            ->reorderable()
+                            ->trim()
+                            ->helperText('Verás las tecnologías ya añadidas como etiquetas. Para quitar una, pulsa la x de su etiqueta.'),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen corto del stack')
@@ -118,19 +158,22 @@ class ProjectForm
                             ->label('URLs de imágenes principales')
                             ->placeholder('Pega una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab'])
+                            ->trim()
                             ->helperText('Opcional. Puedes dejarlo vacío hasta tener imágenes.'),
 
                         TagsInput::make('galeria_urls')
                             ->label('Galería adicional')
                             ->placeholder('Pega una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab'])
+                            ->trim()
                             ->helperText('Opcional. Añade más imágenes cuando las tengas.'),
 
                         TagsInput::make('documentacion_urls')
                             ->label('URLs de documentación')
                             ->placeholder('Pega una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab'])
-                            ->helperText('Opcional. Por ejemplo: docs, Notion, PDF, demo técnica.')
+                            ->trim()
+                            ->helperText('Opcional. Por ejemplo: docs, Notion, PDF, demo técnica.'),
                     ]),
 
                 Section::make('Enlaces')

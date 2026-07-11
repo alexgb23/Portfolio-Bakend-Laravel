@@ -83,7 +83,45 @@ class ProjectsTable
 
                         return '—';
                     })
-                    ->wrap()
+                    ->wrap(false)
+                    ->limit(80)
+                    ->tooltip(function ($record): ?string {
+                        $state = $record->technologies;
+
+                        if (blank($state)) {
+                            return null;
+                        }
+
+                        if (is_array($state)) {
+                            $items = array_filter(
+                                array_map(
+                                    fn($item) => is_scalar($item) ? trim((string) $item) : null,
+                                    $state
+                                )
+                            );
+
+                            return count($items) ? implode(', ', $items) : null;
+                        }
+
+                        if (is_string($state)) {
+                            $decoded = json_decode($state, true);
+
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                $items = array_filter(
+                                    array_map(
+                                        fn($item) => is_scalar($item) ? trim((string) $item) : null,
+                                        $decoded
+                                    )
+                                );
+
+                                return count($items) ? implode(', ', $items) : null;
+                            }
+
+                            return trim($state) !== '' ? $state : null;
+                        }
+
+                        return null;
+                    })
                     ->toggleable(),
 
                 TextColumn::make('status')
