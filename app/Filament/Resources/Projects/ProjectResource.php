@@ -5,11 +5,11 @@ namespace App\Filament\Resources\Projects;
 use App\Filament\Resources\Projects\Pages\CreateProject;
 use App\Filament\Resources\Projects\Pages\EditProject;
 use App\Filament\Resources\Projects\Pages\ListProjects;
-use App\Filament\Resources\Projects\Schemas\ProjectForm;
-use App\Filament\Resources\Projects\Tables\ProjectsTable;
 use App\Filament\Resources\Projects\RelationManagers\AdjuntosRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\DocumentacionRelationManager;
 use App\Filament\Resources\Projects\RelationManagers\SeccionesRelationManager;
+use App\Filament\Resources\Projects\Schemas\ProjectForm;
+use App\Filament\Resources\Projects\Tables\ProjectsTable;
 use App\Models\Project;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -25,11 +25,11 @@ class ProjectResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
-    protected static ?string $navigationLabel = 'Projects';
+    protected static ?string $navigationLabel = 'Proyectos';
 
-    protected static ?string $modelLabel = 'Project';
+    protected static ?string $modelLabel = 'Proyecto';
 
-    protected static ?string $pluralModelLabel = 'Projects';
+    protected static ?string $pluralModelLabel = 'Proyectos';
 
     public static function form(Schema $schema): Schema
     {
