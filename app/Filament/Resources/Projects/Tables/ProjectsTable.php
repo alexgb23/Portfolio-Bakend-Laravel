@@ -41,13 +41,49 @@ class ProjectsTable
 
                 TextColumn::make('short_description')
                     ->label('Descripción corta')
-                    ->limit(40)
-                    ->searchable(),
+                    ->limit(60)
+                    ->searchable()
+                    ->wrap(),
 
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
-                    ->badge()
-                    ->formatStateUsing(fn($state) => is_array($state) ? $state : [])
+                    ->getStateUsing(fn($record) => $record->technologies)
+                    ->formatStateUsing(function ($state): string {
+                        if (blank($state)) {
+                            return '—';
+                        }
+
+                        if (is_array($state)) {
+                            $items = array_filter(
+                                array_map(
+                                    fn($item) => is_scalar($item) ? trim((string) $item) : null,
+                                    $state
+                                )
+                            );
+
+                            return count($items) ? implode(', ', $items) : '—';
+                        }
+
+                        if (is_string($state)) {
+                            $decoded = json_decode($state, true);
+
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                                $items = array_filter(
+                                    array_map(
+                                        fn($item) => is_scalar($item) ? trim((string) $item) : null,
+                                        $decoded
+                                    )
+                                );
+
+                                return count($items) ? implode(', ', $items) : '—';
+                            }
+
+                            return trim($state) !== '' ? $state : '—';
+                        }
+
+                        return '—';
+                    })
+                    ->wrap()
                     ->toggleable(),
 
                 TextColumn::make('status')

@@ -66,20 +66,6 @@ class Project extends Model
         return $this->belongsTo(LaboratorioReal::class, 'laboratorio_real_id');
     }
 
-    public function scopePublished(Builder $query): Builder
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeFeatured(Builder $query): Builder
-    {
-        return $query->where('is_featured', true);
-    }
-
-    public function scopeOrdered(Builder $query): Builder
-    {
-        return $query->orderBy('sort_order')->orderBy('title');
-    }
     public function adjuntos(): HasMany
     {
         return $this->hasMany(ProyectoAdjunto::class)->orderBy('orden');
@@ -95,4 +81,18 @@ class Project extends Model
         return $this->hasMany(ProyectoSeccion::class)->orderBy('orden');
     }
 
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query->where('is_published', true);
+    }
+
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('is_featured', true);
+    }
+
+    public function scopeOrdered(Builder $query): Builder
+    {
+        return $query->orderBy('sort_order')->orderBy('title');
+    }
 }

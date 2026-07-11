@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -102,60 +101,36 @@ class ProjectForm
                     ->schema([
                         TagsInput::make('technologies')
                             ->label('Tecnologías')
-                            ->separator(','),
+                            ->placeholder('Escribe una tecnología y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->helperText('Escribe una tecnología, pulsa Enter y se añadirá a la lista.'),
 
                         TextInput::make('stack_summary')
-                            ->label('Resumen técnico')
+                            ->label('Resumen corto del stack')
+                            ->helperText('Texto opcional, por ejemplo: Laravel + Docker + Filament + PostgreSQL + Render')
                             ->maxLength(255),
                     ])
                     ->columns(2),
 
                 Section::make('Galería y documentación')
                     ->schema([
-                        Repeater::make('image_url')
-                            ->label('URLs de imágenes')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL')
-                                    ->url()
-                                    ->required()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir imagen')
-                            ->reorderable()
-                            ->collapsible()
-                            ->columnSpanFull(),
+                        TagsInput::make('image_url')
+                            ->label('URLs de imágenes principales')
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->helperText('Opcional. Puedes dejarlo vacío hasta tener imágenes.'),
 
-                        Repeater::make('galeria_urls')
+                        TagsInput::make('galeria_urls')
                             ->label('Galería adicional')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL')
-                                    ->url()
-                                    ->required()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir URL')
-                            ->reorderable()
-                            ->collapsible()
-                            ->columnSpanFull(),
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->helperText('Opcional. Añade más imágenes cuando las tengas.'),
 
-                        Repeater::make('documentacion_urls')
+                        TagsInput::make('documentacion_urls')
                             ->label('URLs de documentación')
-                            ->simple(
-                                TextInput::make('')
-                                    ->label('URL')
-                                    ->url()
-                                    ->required()
-                                    ->maxLength(2048)
-                            )
-                            ->default([])
-                            ->addActionLabel('Añadir URL')
-                            ->reorderable()
-                            ->collapsible()
-                            ->columnSpanFull(),
+                            ->placeholder('Pega una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab'])
+                            ->helperText('Opcional. Por ejemplo: docs, Notion, PDF, demo técnica.')
                     ]),
 
                 Section::make('Enlaces')
