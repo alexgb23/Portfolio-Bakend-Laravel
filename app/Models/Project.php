@@ -48,6 +48,7 @@ class Project extends Model
         return [
             'laboratorio_real_id' => 'integer',
             'areas_relacionadas' => 'array',
+            'technologies' => 'array',
             'image_url' => 'array',
             'galeria_urls' => 'array',
             'documentacion_urls' => 'array',

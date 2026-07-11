@@ -47,7 +47,7 @@ class ProjectsTable
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
                     ->badge()
-                    ->separator(',')
+                    ->formatStateUsing(fn($state) => is_array($state) ? $state : [])
                     ->toggleable(),
 
                 TextColumn::make('status')

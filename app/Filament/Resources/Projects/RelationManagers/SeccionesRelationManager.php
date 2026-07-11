@@ -13,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,107 +26,94 @@ class SeccionesRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Información principal')
-                    ->schema([
-                        TextInput::make('clave')
-                            ->label('Clave')
-                            ->maxLength(255),
+                TextInput::make('clave')
+                    ->label('Clave')
+                    ->maxLength(255),
 
-                        TextInput::make('titulo')
-                            ->label('Título')
-                            ->required()
-                            ->maxLength(255),
+                TextInput::make('titulo')
+                    ->label('Título')
+                    ->required()
+                    ->maxLength(255),
 
-                        Select::make('tipo_contenido')
-                            ->label('Tipo de contenido')
-                            ->options([
-                                'text' => 'Texto',
-                                'markdown' => 'Markdown',
-                                'list' => 'Lista',
-                                'code' => 'Código',
-                                'media' => 'Media',
-                                'mixed' => 'Mixto',
-                            ])
-                            ->searchable()
-                            ->native(false),
-
-                        Select::make('layout')
-                            ->label('Layout')
-                            ->options([
-                                'default' => 'Default',
-                                'full' => 'Full width',
-                                'split' => 'Split',
-                                'grid' => 'Grid',
-                                'highlight' => 'Highlight',
-                            ])
-                            ->searchable()
-                            ->native(false),
+                Select::make('tipo_contenido')
+                    ->label('Tipo de contenido')
+                    ->options([
+                        'text' => 'Texto',
+                        'markdown' => 'Markdown',
+                        'list' => 'Lista',
+                        'code' => 'Código',
+                        'media' => 'Media',
+                        'mixed' => 'Mixto',
                     ])
-                    ->columns(2),
+                    ->searchable()
+                    ->native(false),
 
-                Section::make('Contenido')
-                    ->schema([
-                        Textarea::make('resumen')
-                            ->label('Resumen')
-                            ->rows(3)
-                            ->columnSpanFull(),
-
-                        Textarea::make('contenido')
-                            ->label('Contenido')
-                            ->rows(10)
-                            ->columnSpanFull(),
-
-                        Textarea::make('items')
-                            ->label('Items')
-                            ->rows(6)
-                            ->helperText('Si lo usas, escribe un JSON simple o una lista de apoyo.')
-                            ->columnSpanFull(),
-
-                        TextInput::make('media_url')
-                            ->label('Media URL')
-                            ->url()
-                            ->maxLength(2048)
-                            ->columnSpanFull(),
-
-                        TextInput::make('codigo_lenguaje')
-                            ->label('Lenguaje de código')
-                            ->maxLength(100),
-                    ]),
-
-                Section::make('Visibilidad')
-                    ->schema([
-                        TextInput::make('origen')
-                            ->label('Origen')
-                            ->required()
-                            ->default('manual')
-                            ->maxLength(255),
-
-                        TextInput::make('orden')
-                            ->label('Orden')
-                            ->required()
-                            ->numeric()
-                            ->default(0),
-
-                        Toggle::make('es_visible')
-                            ->label('Visible')
-                            ->default(true),
-
-                        Toggle::make('es_destacado')
-                            ->label('Destacado')
-                            ->default(false),
+                Select::make('layout')
+                    ->label('Layout')
+                    ->options([
+                        'default' => 'Default',
+                        'full' => 'Full width',
+                        'split' => 'Split',
+                        'grid' => 'Grid',
+                        'highlight' => 'Highlight',
                     ])
-                    ->columns(2),
+                    ->searchable()
+                    ->native(false),
 
-                Section::make('Metadata')
-                    ->schema([
-                        KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Clave')
-                            ->valueLabel('Valor')
-                            ->addActionLabel('Añadir metadata')
-                            ->columnSpanFull(),
-                    ]),
-            ]);
+                Textarea::make('resumen')
+                    ->label('Resumen')
+                    ->rows(3)
+                    ->columnSpanFull(),
+
+                Textarea::make('contenido')
+                    ->label('Contenido')
+                    ->rows(10)
+                    ->columnSpanFull(),
+
+                Textarea::make('items')
+                    ->label('Items')
+                    ->rows(6)
+                    ->helperText('Si lo usas, escribe un JSON simple o una lista de apoyo.')
+                    ->columnSpanFull(),
+
+                TextInput::make('media_url')
+                    ->label('Media URL')
+                    ->url()
+                    ->maxLength(2048)
+                    ->columnSpanFull(),
+
+                TextInput::make('codigo_lenguaje')
+                    ->label('Lenguaje de código')
+                    ->maxLength(100),
+
+                TextInput::make('origen')
+                    ->label('Origen')
+                    ->required()
+                    ->default('manual')
+                    ->maxLength(255),
+
+                TextInput::make('orden')
+                    ->label('Orden')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
+
+                Toggle::make('es_visible')
+                    ->label('Visible')
+                    ->default(true),
+
+                Toggle::make('es_destacado')
+                    ->label('Destacado')
+                    ->default(false),
+
+                KeyValue::make('metadata')
+                    ->label('Metadata')
+                    ->keyLabel('Clave')
+                    ->valueLabel('Valor')
+                    ->addActionLabel('Añadir metadata')
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
     }
 
     public function table(Table $table): Table

@@ -13,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -27,99 +26,85 @@ class AdjuntosRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Información principal')
-                    ->schema([
-                        TextInput::make('titulo')
-                            ->label('Título')
-                            ->required()
-                            ->maxLength(255),
+                TextInput::make('titulo')
+                    ->label('Título')
+                    ->required()
+                    ->maxLength(255),
 
-                        Select::make('tipo')
-                            ->label('Tipo')
-                            ->options([
-                                'demo' => 'Demo',
-                                'repo' => 'Repositorio',
-                                'doc' => 'Documento',
-                                'file' => 'Archivo',
-                                'link' => 'Enlace',
-                                'image' => 'Imagen',
-                                'video' => 'Vídeo',
-                                'other' => 'Otro',
-                            ])
-                            ->searchable()
-                            ->native(false),
-
-                        TextInput::make('grupo')
-                            ->label('Grupo')
-                            ->maxLength(255),
-
-                        TextInput::make('subtitulo')
-                            ->label('Subtítulo')
-                            ->maxLength(255),
-
-                        Textarea::make('descripcion')
-                            ->label('Descripción')
-                            ->rows(4)
-                            ->columnSpanFull(),
+                Select::make('tipo')
+                    ->label('Tipo')
+                    ->options([
+                        'demo' => 'Demo',
+                        'repo' => 'Repositorio',
+                        'doc' => 'Documento',
+                        'file' => 'Archivo',
+                        'link' => 'Enlace',
+                        'image' => 'Imagen',
+                        'video' => 'Vídeo',
+                        'other' => 'Otro',
                     ])
-                    ->columns(2),
+                    ->searchable()
+                    ->native(false),
 
-                Section::make('Enlace y archivo')
-                    ->schema([
-                        TextInput::make('url')
-                            ->label('URL')
-                            ->url()
-                            ->maxLength(2048)
-                            ->columnSpanFull(),
+                TextInput::make('grupo')
+                    ->label('Grupo')
+                    ->maxLength(255),
 
-                        TextInput::make('nombre_archivo')
-                            ->label('Nombre de archivo')
-                            ->maxLength(255),
+                TextInput::make('subtitulo')
+                    ->label('Subtítulo')
+                    ->maxLength(255),
 
-                        TextInput::make('mime_type')
-                            ->label('MIME type')
-                            ->maxLength(255),
+                Textarea::make('descripcion')
+                    ->label('Descripción')
+                    ->rows(4)
+                    ->columnSpanFull(),
 
-                        TextInput::make('icono')
-                            ->label('Icono')
-                            ->maxLength(100),
-                    ])
-                    ->columns(2),
+                TextInput::make('url')
+                    ->label('URL')
+                    ->url()
+                    ->maxLength(2048)
+                    ->columnSpanFull(),
 
-                Section::make('Visibilidad')
-                    ->schema([
-                        TextInput::make('origen')
-                            ->label('Origen')
-                            ->required()
-                            ->default('manual')
-                            ->maxLength(255),
+                TextInput::make('nombre_archivo')
+                    ->label('Nombre de archivo')
+                    ->maxLength(255),
 
-                        TextInput::make('orden')
-                            ->label('Orden')
-                            ->required()
-                            ->numeric()
-                            ->default(0),
+                TextInput::make('mime_type')
+                    ->label('MIME type')
+                    ->maxLength(255),
 
-                        Toggle::make('es_visible')
-                            ->label('Visible')
-                            ->default(true),
+                TextInput::make('icono')
+                    ->label('Icono')
+                    ->maxLength(100),
 
-                        Toggle::make('es_destacado')
-                            ->label('Destacado')
-                            ->default(false),
-                    ])
-                    ->columns(2),
+                TextInput::make('origen')
+                    ->label('Origen')
+                    ->required()
+                    ->default('manual')
+                    ->maxLength(255),
 
-                Section::make('Metadata')
-                    ->schema([
-                        KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Clave')
-                            ->valueLabel('Valor')
-                            ->addActionLabel('Añadir metadata')
-                            ->columnSpanFull(),
-                    ]),
-            ]);
+                TextInput::make('orden')
+                    ->label('Orden')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
+
+                Toggle::make('es_visible')
+                    ->label('Visible')
+                    ->default(true),
+
+                Toggle::make('es_destacado')
+                    ->label('Destacado')
+                    ->default(false),
+
+                KeyValue::make('metadata')
+                    ->label('Metadata')
+                    ->keyLabel('Clave')
+                    ->valueLabel('Valor')
+                    ->addActionLabel('Añadir metadata')
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
     }
 
     public function table(Table $table): Table

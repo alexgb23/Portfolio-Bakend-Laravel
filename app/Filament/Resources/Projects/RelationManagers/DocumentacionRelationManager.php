@@ -13,7 +13,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -29,92 +28,79 @@ class DocumentacionRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                Section::make('Información principal')
-                    ->schema([
-                        TextInput::make('titulo')
-                            ->label('Título')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
+                TextInput::make('titulo')
+                    ->label('Título')
+                    ->required()
+                    ->maxLength(255)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
-                        TextInput::make('slug')
-                            ->label('Slug')
-                            ->maxLength(255),
+                TextInput::make('slug')
+                    ->label('Slug')
+                    ->maxLength(255),
 
-                        TextInput::make('seccion')
-                            ->label('Sección')
-                            ->maxLength(255),
+                TextInput::make('seccion')
+                    ->label('Sección')
+                    ->maxLength(255),
 
-                        Select::make('tipo')
-                            ->label('Tipo')
-                            ->options([
-                                'overview' => 'Overview',
-                                'setup' => 'Setup',
-                                'technical' => 'Technical',
-                                'api' => 'API',
-                                'notes' => 'Notes',
-                                'faq' => 'FAQ',
-                                'other' => 'Other',
-                            ])
-                            ->searchable()
-                            ->native(false),
+                Select::make('tipo')
+                    ->label('Tipo')
+                    ->options([
+                        'overview' => 'Overview',
+                        'setup' => 'Setup',
+                        'technical' => 'Technical',
+                        'api' => 'API',
+                        'notes' => 'Notes',
+                        'faq' => 'FAQ',
+                        'other' => 'Other',
                     ])
-                    ->columns(2),
+                    ->searchable()
+                    ->native(false),
 
-                Section::make('Contenido')
-                    ->schema([
-                        Textarea::make('resumen')
-                            ->label('Resumen')
-                            ->rows(3)
-                            ->columnSpanFull(),
+                Textarea::make('resumen')
+                    ->label('Resumen')
+                    ->rows(3)
+                    ->columnSpanFull(),
 
-                        Textarea::make('contenido')
-                            ->label('Contenido')
-                            ->rows(10)
-                            ->columnSpanFull(),
+                Textarea::make('contenido')
+                    ->label('Contenido')
+                    ->rows(10)
+                    ->columnSpanFull(),
 
-                        TextInput::make('url_referencia')
-                            ->label('URL de referencia')
-                            ->url()
-                            ->maxLength(2048)
-                            ->columnSpanFull(),
-                    ]),
+                TextInput::make('url_referencia')
+                    ->label('URL de referencia')
+                    ->url()
+                    ->maxLength(2048)
+                    ->columnSpanFull(),
 
-                Section::make('Visibilidad')
-                    ->schema([
-                        TextInput::make('origen')
-                            ->label('Origen')
-                            ->required()
-                            ->default('manual')
-                            ->maxLength(255),
+                TextInput::make('origen')
+                    ->label('Origen')
+                    ->required()
+                    ->default('manual')
+                    ->maxLength(255),
 
-                        TextInput::make('orden')
-                            ->label('Orden')
-                            ->required()
-                            ->numeric()
-                            ->default(0),
+                TextInput::make('orden')
+                    ->label('Orden')
+                    ->required()
+                    ->numeric()
+                    ->default(0),
 
-                        Toggle::make('es_visible')
-                            ->label('Visible')
-                            ->default(true),
+                Toggle::make('es_visible')
+                    ->label('Visible')
+                    ->default(true),
 
-                        Toggle::make('es_destacado')
-                            ->label('Destacado')
-                            ->default(false),
-                    ])
-                    ->columns(2),
+                Toggle::make('es_destacado')
+                    ->label('Destacado')
+                    ->default(false),
 
-                Section::make('Metadata')
-                    ->schema([
-                        KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Clave')
-                            ->valueLabel('Valor')
-                            ->addActionLabel('Añadir metadata')
-                            ->columnSpanFull(),
-                    ]),
-            ]);
+                KeyValue::make('metadata')
+                    ->label('Metadata')
+                    ->keyLabel('Clave')
+                    ->valueLabel('Valor')
+                    ->addActionLabel('Añadir metadata')
+                    ->columnSpanFull(),
+            ])
+            ->columns(2);
     }
 
     public function table(Table $table): Table
