@@ -97,19 +97,21 @@ class ProjectForm
                     ->schema([
                         Repeater::make('technologies')
                             ->label('Tecnologías')
-                            ->schema([
-                                TextInput::make('value')
+                            ->simple(
+                                TextInput::make('')
                                     ->label('Tecnología')
                                     ->placeholder('Ejemplo: Laravel')
-                                    ->maxLength(100),
-                            ])
+                                    ->maxLength(100)
+                            )
                             ->default([])
                             ->addActionLabel('Añadir tecnología')
-                            ->deletable(true)
                             ->reorderable(false)
-                            ->collapsible()
-                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Nueva tecnología')
-                            ->helperText('Si no hay ninguna, déjalo vacío. Para borrar una, usa la papelera.'),
+                            ->deletable(true)
+                            ->afterStateHydrated(function (Repeater $component, $state): void {
+                                $component->state(self::normalizeSimpleRepeaterState($state));
+                            })
+                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
+                            ->helperText('Si no hay tecnologías, déjalo vacío. Solo verás las que existan y podrás borrarlas.'),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen corto del stack')
@@ -122,54 +124,60 @@ class ProjectForm
                     ->schema([
                         Repeater::make('image_url')
                             ->label('Imágenes principales')
-                            ->schema([
-                                TextInput::make('value')
+                            ->simple(
+                                TextInput::make('')
                                     ->label('URL de imagen')
                                     ->url()
                                     ->nullable()
-                                    ->maxLength(2048),
-                            ])
+                                    ->maxLength(2048)
+                            )
                             ->default([])
                             ->addActionLabel('Añadir imagen')
-                            ->deletable(true)
                             ->reorderable(false)
-                            ->collapsible()
-                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
-                            ->helperText('Opcional. Si no hay imágenes todavía, no añadas ninguna fila.'),
+                            ->deletable(true)
+                            ->afterStateHydrated(function (Repeater $component, $state): void {
+                                $component->state(self::normalizeSimpleRepeaterState($state));
+                            })
+                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
+                            ->helperText('Opcional. Si no hay imágenes, déjalo vacío.'),
 
                         Repeater::make('galeria_urls')
                             ->label('Galería adicional')
-                            ->schema([
-                                TextInput::make('value')
+                            ->simple(
+                                TextInput::make('')
                                     ->label('URL')
                                     ->url()
                                     ->nullable()
-                                    ->maxLength(2048),
-                            ])
+                                    ->maxLength(2048)
+                            )
                             ->default([])
                             ->addActionLabel('Añadir URL')
-                            ->deletable(true)
                             ->reorderable(false)
-                            ->collapsible()
-                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
+                            ->deletable(true)
+                            ->afterStateHydrated(function (Repeater $component, $state): void {
+                                $component->state(self::normalizeSimpleRepeaterState($state));
+                            })
+                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
                             ->helperText('Opcional. Si no hay nada, déjalo vacío.'),
 
                         Repeater::make('documentacion_urls')
                             ->label('URLs de documentación')
-                            ->schema([
-                                TextInput::make('value')
+                            ->simple(
+                                TextInput::make('')
                                     ->label('URL')
                                     ->url()
                                     ->nullable()
-                                    ->maxLength(2048),
-                            ])
+                                    ->maxLength(2048)
+                            )
                             ->default([])
                             ->addActionLabel('Añadir URL')
-                            ->deletable(true)
                             ->reorderable(false)
-                            ->collapsible()
-                            ->itemLabel(fn(array $state): ?string => filled($state['value'] ?? null) ? $state['value'] : 'Sin URL')
-                            ->helperText('Opcional. Si no hay documentación aún, no añadas filas.'),
+                            ->deletable(true)
+                            ->afterStateHydrated(function (Repeater $component, $state): void {
+                                $component->state(self::normalizeSimpleRepeaterState($state));
+                            })
+                            ->mutateDehydratedStateUsing(fn($state) => self::normalizeSimpleRepeaterState($state))
+                            ->helperText('Opcional. Si no hay documentación, déjalo vacío.'),
                     ])
                     ->columns(1),
 
@@ -267,5 +275,49 @@ class ProjectForm
                             ->columnSpanFull(),
                     ]),
             ]);
+    }
+
+    protected static function normalizeSimpleRepeaterState($state): array
+    {
+        if (blank($state)) {
+            return [];
+        }
+
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+            $state = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+        }
+
+        if (! is_array($state)) {
+            return [];
+        }
+
+        $values = [];
+
+        foreach ($state as $item) {
+            if (is_array($item)) {
+                $value = reset($item);
+
+                if (is_scalar($value)) {
+                    $value = trim((string) $value);
+
+                    if ($value !== '') {
+                        $values[] = $value;
+                    }
+                }
+
+                continue;
+            }
+
+            if (is_scalar($item)) {
+                $item = trim((string) $item);
+
+                if ($item !== '') {
+                    $values[] = $item;
+                }
+            }
+        }
+
+        return array_values($values);
     }
 }
