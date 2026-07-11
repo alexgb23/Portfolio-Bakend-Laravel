@@ -45,13 +45,27 @@ class ProjectsTable
                     ->searchable()
                     ->wrap(),
 
-                TextColumn::make('technologies_summary')
+                TextColumn::make('technologies')
                     ->label('Tecnologías')
-                    ->getStateUsing(fn($record) => implode(', ', $record->technologies_list))
+                    ->getStateUsing(function ($record): string {
+                        $items = is_array($record->technologies) ? array_filter($record->technologies) : [];
+
+                        return count($items) ? implode(', ', $items) : '';
+                    })
                     ->placeholder('—')
-                    ->wrap(false)
                     ->limit(90)
-                    ->tooltip(fn($record): ?string => count($record->technologies_list) ? implode(', ', $record->technologies_list) : null)
+                    ->tooltip(function ($record): ?string {
+                        $items = is_array($record->technologies) ? array_filter($record->technologies) : [];
+
+                        return count($items) ? implode(', ', $items) : null;
+                    })
+                    ->toggleable(),
+
+                TextColumn::make('stack_summary')
+                    ->label('Resumen stack')
+                    ->placeholder('—')
+                    ->limit(60)
+                    ->wrap()
                     ->toggleable(),
 
                 TextColumn::make('status')
