@@ -22,12 +22,15 @@ class SeccionesRelationManager extends RelationManager
 {
     protected static string $relationship = 'secciones';
 
+    protected static ?string $title = 'Secciones';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 TextInput::make('clave')
                     ->label('Clave')
+                    ->helperText('Ejemplo: resumen, retos, solucion, resultados')
                     ->maxLength(255),
 
                 TextInput::make('titulo')
@@ -38,13 +41,15 @@ class SeccionesRelationManager extends RelationManager
                 Select::make('tipo_contenido')
                     ->label('Tipo de contenido')
                     ->options([
-                        'text' => 'Texto',
+                        'texto' => 'Texto',
                         'markdown' => 'Markdown',
-                        'list' => 'Lista',
-                        'code' => 'Código',
+                        'lista' => 'Lista',
+                        'codigo' => 'Código',
                         'media' => 'Media',
-                        'mixed' => 'Mixto',
+                        'mixto' => 'Mixto',
                     ])
+                    ->default('texto')
+                    ->required()
                     ->searchable()
                     ->native(false),
 
@@ -57,6 +62,7 @@ class SeccionesRelationManager extends RelationManager
                         'grid' => 'Grid',
                         'highlight' => 'Highlight',
                     ])
+                    ->default('full')
                     ->searchable()
                     ->native(false),
 
@@ -70,10 +76,12 @@ class SeccionesRelationManager extends RelationManager
                     ->rows(10)
                     ->columnSpanFull(),
 
-                Textarea::make('items')
+                KeyValue::make('items')
                     ->label('Items')
-                    ->rows(6)
-                    ->helperText('Si lo usas, escribe un JSON simple o una lista de apoyo.')
+                    ->keyLabel('Clave')
+                    ->valueLabel('Valor')
+                    ->addActionLabel('Añadir item')
+                    ->helperText('Opcional. Úsalo solo si esta sección necesita datos adicionales tipo lista o pares clave/valor.')
                     ->columnSpanFull(),
 
                 TextInput::make('media_url')
@@ -145,6 +153,13 @@ class SeccionesRelationManager extends RelationManager
                 TextColumn::make('layout')
                     ->label('Layout')
                     ->badge()
+                    ->toggleable(),
+
+                TextColumn::make('resumen')
+                    ->label('Resumen')
+                    ->limit(80)
+                    ->wrap()
+                    ->placeholder('—')
                     ->toggleable(),
 
                 IconColumn::make('es_visible')
