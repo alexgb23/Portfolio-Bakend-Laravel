@@ -15,7 +15,7 @@ class ProjectsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('sort_order')
+            ->defaultSort('title')
             ->columns([
                 TextColumn::make('title')
                     ->label('Título')
@@ -61,24 +61,6 @@ class ProjectsTable
                     })
                     ->toggleable(),
 
-                TextColumn::make('stack_summary')
-                    ->label('Resumen stack')
-                    ->placeholder('—')
-                    ->limit(60)
-                    ->wrap()
-                    ->toggleable(),
-
-                TextColumn::make('status')
-                    ->label('Estado')
-                    ->badge()
-                    ->sortable()
-                    ->color(fn(string $state): string => match ($state) {
-                        'draft' => 'gray',
-                        'published' => 'success',
-                        'archived' => 'danger',
-                        default => 'warning',
-                    }),
-
                 IconColumn::make('is_featured')
                     ->label('Destacado')
                     ->boolean()
@@ -87,11 +69,6 @@ class ProjectsTable
                 IconColumn::make('is_published')
                     ->label('Publicado')
                     ->boolean()
-                    ->sortable(),
-
-                TextColumn::make('sort_order')
-                    ->label('Orden')
-                    ->numeric()
                     ->sortable(),
 
                 TextColumn::make('project_url')
