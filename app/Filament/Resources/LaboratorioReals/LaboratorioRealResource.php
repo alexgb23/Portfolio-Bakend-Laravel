@@ -21,7 +21,18 @@ class LaboratorioRealResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
-    protected static ?string $recordTitleAttribute = 'LaboratorioReal';
+    protected static ?string $recordTitleAttribute = 'titulo';
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Laboratorio';
+
+    protected static ?string $navigationLabel = 'Laboratorios';
+
+    protected static ?string $modelLabel = 'Laboratorio';
+
+    protected static ?string $pluralModelLabel = 'Laboratorios';
+
+    protected static ?int $navigationSort = 0;
+
 
     public static function form(Schema $schema): Schema
     {
