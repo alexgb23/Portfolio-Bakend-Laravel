@@ -2,7 +2,9 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
+use App\Models\LaboratorioReal;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -21,6 +23,13 @@ class ProjectForm
             ->components([
                 Section::make('Información principal')
                     ->schema([
+                        Select::make('laboratorio_real_id')
+                            ->label('Laboratorio real')
+                            ->options(LaboratorioReal::query()->pluck('nombre', 'id'))
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
+
                         TextInput::make('title')
                             ->label('Título')
                             ->required()
@@ -58,7 +67,8 @@ class ProjectForm
                         TagsInput::make('areas_relacionadas')
                             ->label('Áreas relacionadas')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim(),
+                            ->trim()
+                            ->reorderable(),
 
                         Textarea::make('short_description')
                             ->label('Descripción corta')
@@ -81,6 +91,11 @@ class ProjectForm
                             ->rows(4)
                             ->columnSpanFull(),
 
+                        Textarea::make('notas_tecnicas')
+                            ->label('Notas técnicas')
+                            ->rows(4)
+                            ->columnSpanFull(),
+
                         Textarea::make('objetivo')
                             ->label('Objetivo')
                             ->rows(4)
@@ -99,13 +114,97 @@ class ProjectForm
                             ->placeholder('Escribe una tecnología y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
                             ->trim()
+                            ->reorderable(),
+
+                        TextInput::make('stack_summary')
+                            ->label('Resumen stack')
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Section::make('Imágenes y documentación')
+                    ->schema([
+                        TagsInput::make('image_url')
+                            ->label('Image URL')
+                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->trim()
                             ->reorderable()
-                            ->helperText('Verás las tecnologías existentes como etiquetas. Pulsa la x para borrar una.'),
+                            ->columnSpanFull(),
+
+                        TagsInput::make('galeria_urls')
+                            ->label('Galería URLs')
+                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->trim()
+                            ->reorderable()
+                            ->columnSpanFull(),
+
+                        TagsInput::make('documentacion_urls')
+                            ->label('Documentación URLs')
+                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->splitKeys(['Enter', 'Tab', ','])
+                            ->trim()
+                            ->reorderable()
+                            ->columnSpanFull(),
                     ]),
 
-
-                Section::make('Visibilidad')
+                Section::make('Enlaces')
                     ->schema([
+                        TextInput::make('project_url')
+                            ->label('Proyecto URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('frontend_url')
+                            ->label('Frontend URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('backend_url')
+                            ->label('Backend URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('api_base_url')
+                            ->label('API base URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('staging_url')
+                            ->label('Staging URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('repo_url')
+                            ->label('Repositorio URL')
+                            ->url()
+                            ->maxLength(255),
+
+                        TextInput::make('referencia_externa')
+                            ->label('Referencia externa')
+                            ->url()
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
+
+                Section::make('Estado y visibilidad')
+                    ->schema([
+                        Select::make('status')
+                            ->label('Estado')
+                            ->options([
+                                'draft' => 'Draft',
+                                'published' => 'Published',
+                                'archived' => 'Archived',
+                            ])
+                            ->required()
+                            ->native(false),
+
+                        TextInput::make('sort_order')
+                            ->label('Orden')
+                            ->numeric()
+                            ->default(0),
+
                         Toggle::make('is_featured')
                             ->label('Destacado')
                             ->default(false),
@@ -125,6 +224,16 @@ class ProjectForm
                             ->label('Fecha de fin'),
                     ])
                     ->columns(2),
+
+                Section::make('Metadata')
+                    ->schema([
+                        KeyValue::make('metadata')
+                            ->label('Metadata')
+                            ->keyLabel('Clave')
+                            ->valueLabel('Valor')
+                            ->addActionLabel('Añadir metadata')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 }
