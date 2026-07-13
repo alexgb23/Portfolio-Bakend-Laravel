@@ -22,6 +22,30 @@ class AdjuntosRelationManager extends RelationManager
 {
     protected static string $relationship = 'adjuntos';
 
+    // Tipos permitidos de adjunto.
+    protected static function tipoOptions(): array
+    {
+        return [
+            'demo' => 'Demo',
+            'repo' => 'Repositorio',
+            'doc' => 'Documento',
+            'file' => 'Archivo',
+            'link' => 'Enlace',
+            'image' => 'Imagen',
+            'video' => 'Vídeo',
+            'other' => 'Otro',
+        ];
+    }
+
+    // Assets predefinidos para seleccionar rápido.
+    protected static function urlOptions(): array
+    {
+        return [
+            '/backendDarkAvif.avif' => '/backendDarkAvif.avif',
+            '/backendDarkWebp.webp' => '/backendDarkWebp.webp',
+        ];
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -31,21 +55,16 @@ class AdjuntosRelationManager extends RelationManager
                     ->required()
                     ->maxLength(255),
 
+                // Select tolerante con registros antiguos.
                 Select::make('tipo')
                     ->label('Tipo')
-                    ->options([
-                        'demo' => 'Demo',
-                        'repo' => 'Repositorio',
-                        'doc' => 'Documento',
-                        'file' => 'Archivo',
-                        'link' => 'Enlace',
-                        'image' => 'Imagen',
-                        'video' => 'Vídeo',
-                        'other' => 'Otro',
-                    ])
+                    ->options(static::tipoOptions())
                     ->searchable()
                     ->native(false)
-                    ->required(),
+                    ->required()
+                    ->allowHtml(false)
+                    ->placeholder('Selecciona un tipo')
+                    ->helperText('Si un registro antiguo tiene un tipo viejo, cámbialo por uno válido.'),
 
                 TextInput::make('grupo')
                     ->label('Grupo')
@@ -60,11 +79,25 @@ class AdjuntosRelationManager extends RelationManager
                     ->rows(4)
                     ->columnSpanFull(),
 
-                // URL flexible para recursos externos.
+                // Selector rápido de rutas conocidas.
+                Select::make('url_predefinida')
+                    ->label('URL predefinida')
+                    ->options(static::urlOptions())
+                    ->searchable()
+                    ->native(false)
+                    ->dehydrated(false)
+                    ->placeholder('Selecciona una ruta predefinida')
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        if (filled($state)) {
+                            $set('url', trim($state));
+                        }
+                    }),
+
+                // Campo manual compatible con rutas locales o URLs completas.
                 TextInput::make('url')
-                    ->label('URL')
-                    ->placeholder('https://ejemplo.com/recurso')
-                    ->helperText('Pega una URL completa. Se recortan espacios automáticamente.')
+                    ->label('URL o ruta')
+                    ->placeholder('https://ejemplo.com/recurso o /backendDarkAvif.avif')
+                    ->helperText('Acepta URLs completas o rutas locales que empiecen por /.')
                     ->maxLength(2048)
                     ->columnSpanFull()
                     ->dehydrateStateUsing(fn($state) => filled($state) ? trim($state) : null)
@@ -133,6 +166,9 @@ class AdjuntosRelationManager extends RelationManager
                 TextColumn::make('tipo')
                     ->label('Tipo')
                     ->badge()
+                    ->formatStateUsing(function ($state) {
+                        return static::tipoOptions()[$state] ?? $state;
+                    })
                     ->sortable(),
 
                 TextColumn::make('grupo')
