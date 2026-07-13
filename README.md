@@ -2,38 +2,34 @@
   <img src="https://githubusercontent.com" width="350" alt="Laravel Logo">
 </p>
 
-# 🚀 Infrastructure Lab & Portfolio API (Laravel & Docker Native)
+# 🚀 Infrastructure Lab & Portfolio API (Laravel + Docker)
 
-Este repositorio contiene el backend y la API REST que alimentan mi portafolio profesional, el bloque público de laboratorio y el panel administrativo del proyecto. Está construido con Laravel bajo una arquitectura desacoplada (_headless_), expone contenido estructurado para el frontend y deja preparada una base evolutiva para automatización, documentación técnica e integraciones futuras.
+Backend principal y API REST del portfolio profesional, el laboratorio técnico público y el panel administrativo interno. El proyecto está construido con Laravel bajo una arquitectura desacoplada (_headless_), pensado para servir contenido estructurado al frontend, exponer documentación técnica pública y mantener una base extensible para automatización, documentación e integraciones futuras.
 
 🔗 **Frontend:** [https://alex.syskovex.com/](https://alex.syskovex.com/)  
 🔗 **Backend API:** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
 
 ---
 
-## 🛠️ Arquitectura y stack tecnológico
-
-La base técnica actualmente confirmada en el proyecto es la siguiente:
+## 🧱 Stack principal
 
 - **Core backend:** Laravel `13.8`
 - **Runtime:** PHP `8.4`
-- **Arquitectura de acceso:** API REST desacoplada
+- **Arquitectura:** API REST desacoplada
 - **Autenticación:** Laravel Sanctum `4.x`
 - **Panel administrativo:** Filament `5.6`
-- **Documentación OpenAPI:** `dedoc/scramble` `0.13.32`
+- **OpenAPI / documentación:** `dedoc/scramble` `0.13.32`
 - **Mensajería:** Resend `1.4`
 - **Base de datos:** PostgreSQL sobre Neon
-- **Contenerización:** Docker y Docker Compose
+- **Contenedores:** Docker + Docker Compose
 - **Despliegue:** Render
 - **Frontend consumidor:** React + Vite
 
 ---
 
-## 🌐 Acceso público y documentación API
+## 🌐 Acceso público
 
-Este backend Laravel expone una superficie pública mínima y profesional para facilitar revisión técnica, integración y evolución futura del proyecto.
-
-### URLs públicas
+### URLs principales
 
 - **Frontend:** [https://alex.syskovex.com/](https://alex.syskovex.com/)
 - **Backend público:** [https://portfolio-api.syskovex.com/](https://portfolio-api.syskovex.com/)
@@ -42,28 +38,223 @@ Este backend Laravel expone una superficie pública mínima y profesional para f
 - **OpenAPI JSON:** [https://portfolio-api.syskovex.com/docs/api.json](https://portfolio-api.syskovex.com/docs/api.json)
 - **Panel admin:** [https://portfolio-api.syskovex.com/admin](https://portfolio-api.syskovex.com/admin)
 
-### Rutas públicas principales
+### Superficie pública expuesta
 
 | Ruta | Tipo | Descripción |
 | :--- | :--- | :--- |
-| `/` | Web pública | Landing técnica del backend y punto de acceso visual. |
+| `/` | Web pública | Landing técnica del backend. |
 | `/health` | JSON técnico | Health check ligero del servicio. |
-| `/docs/api` | Documentación UI | Referencia navegable de la API generada automáticamente. |
-| `/docs/api.json` | OpenAPI 3.1 | Esquema bruto para inspección técnica e integración. |
-| `/admin` | Panel privado | Acceso al panel administrativo en Filament. |
+| `/docs/api` | Documentación UI | Interfaz navegable de la API. |
+| `/docs/api.json` | OpenAPI 3.1 | Esquema bruto para integración técnica. |
+| `/admin` | Panel privado | Acceso al panel administrativo Filament. |
 
 ### Notas de implementación
 
 - La documentación pública se sirve con **Scramble**.
-- Se habilitó acceso a la documentación mediante la gate `viewApiDocs`.
+- El acceso a la documentación se controla mediante la gate `viewApiDocs`.
 - Se mantiene `JsonResource::withoutWrapping()` para respuestas JSON planas.
 - En producción se fuerza `https` con `URL::forceScheme('https')`.
 
 ---
 
-## 📋 Variables de entorno clave (`Environment`)
+## 🧩 Dominio funcional
 
-Estas variables se configuran fuera del repositorio y forman parte de la base operativa del despliegue:
+El backend está orientado a portfolio, laboratorio técnico, contacto y administración interna.
+
+### Modelos principales
+
+- `AdjuntoLaboratorio`
+- `AvanceLaboratorio`
+- `ContactMessage`
+- `DocumentacionLaboratorio`
+- `IdeaLaboratorio`
+- `LaboratorioReal`
+- `ProfileExpertise`
+- `ProfileHighlight`
+- `Project`
+- `ProyectoAdjunto`
+- `ProyectoDocumentacion`
+- `ProyectoSeccion`
+- `Skill`
+- `SocialLink`
+- `User`
+
+### Recursos API (`JsonResource`)
+
+- `AboutResource`
+- `AdjuntoLaboratorioResource`
+- `AvanceLaboratorioResource`
+- `DocumentacionLaboratorioResource`
+- `IdeaLaboratorioResource`
+- `LaboratorioRealHomeResource`
+- `LaboratorioRealResource`
+- `PortfolioHomeResource`
+- `ProjectCardResource`
+- `ProjectResource`
+- `SkillResource`
+- `SocialLinkResource`
+- `UserResource`
+
+### Áreas funcionales
+
+- **Portfolio:** contenido principal del perfil, enlaces sociales, proyectos y bloque “about”.
+- **Projects:** catálogo público de proyectos y CRUD protegido.
+- **Laboratorios reales:** contenido documental y técnico con avances, adjuntos, ideas y documentación asociada.
+- **Contact messages:** recepción de mensajes y disparo de notificaciones.
+- **Panel admin:** gestión centralizada del contenido desde Filament.
+
+---
+
+## 📌 Endpoints principales
+
+Base pública de la API:
+
+```text
+https://portfolio-api.syskovex.com/api
+```
+
+### 🔒 Autenticación
+
+| Método | Endpoint | Protección | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/login` | Pública | Autentica un usuario administrador. |
+| `POST` | `/api/logout` | `auth:sanctum` | Revoca la sesión autenticada actual. |
+| `GET` | `/api/verify-auth` | `auth:sanctum` | Verifica el token y devuelve el usuario autenticado. |
+
+### 🧑‍💻 Portfolio público
+
+| Método | Endpoint | Protección | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/portfolio-home` | Pública | Devuelve la carga agregada principal del portfolio. |
+| `GET` | `/api/portfolio-home/about` | Pública | Devuelve el bloque “about” y contenido complementario. |
+| `GET` | `/api/projects` | Pública | Lista los proyectos publicados. |
+| `GET` | `/api/projects/{id}` | Pública | Devuelve el detalle técnico de un proyecto. |
+
+### 🔬 Laboratorios reales
+
+| Método | Endpoint | Protección | Descripción |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/laboratorios-reales/home` | Pública | Resume el contenido del laboratorio real. |
+| `GET` | `/api/laboratorios-reales` | Pública | Lista laboratorios publicados. |
+| `GET` | `/api/laboratorios-reales/{slug}` | Pública | Devuelve el detalle por slug. |
+
+### ✉️ Contacto
+
+| Método | Endpoint | Protección | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/contact-messages` | Pública | Registra un mensaje y ejecuta la lógica de notificación configurada. |
+
+### 📝 CRUD protegido de proyectos
+
+| Método | Endpoint | Protección | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/projects` | `auth:sanctum` | Crea un nuevo proyecto. |
+| `PUT` | `/api/projects/{id}` | `auth:sanctum` | Actualiza un proyecto existente. |
+| `DELETE` | `/api/projects/{id}` | `auth:sanctum` | Elimina un proyecto. |
+
+---
+
+## 🧪 Pruebas rápidas
+
+### Health check
+
+```bash
+curl -X GET http://localhost:8081/health \
+  -H "Accept: application/json"
+```
+
+### Portfolio home
+
+```bash
+curl -X GET http://localhost:8081/api/portfolio-home \
+  -H "Accept: application/json"
+```
+
+### About del portfolio
+
+```bash
+curl -X GET http://localhost:8081/api/portfolio-home/about \
+  -H "Accept: application/json"
+```
+
+### Listado de proyectos
+
+```bash
+curl -X GET http://localhost:8081/api/projects \
+  -H "Accept: application/json"
+```
+
+### Home de laboratorios reales
+
+```bash
+curl -X GET http://localhost:8081/api/laboratorios-reales/home \
+  -H "Accept: application/json"
+```
+
+### Login admin
+
+```bash
+curl -X POST http://localhost:8081/api/login \
+  -H "Accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"tu_usuario@dominio.com\", \"password\":\"tu_password_local\"}"
+```
+
+### Verificación de sesión
+
+```bash
+curl -X GET http://localhost:8081/api/verify-auth \
+  -H "Accept: application/json" \
+  -H "Authorization: Bearer INSERTA_TU_TOKEN_AQUI"
+```
+
+---
+
+## 🐋 Flujo local con Docker
+
+El backend se ejecuta en un contenedor llamado `portfolio_backend` con mapeo `8081:80`.
+
+### Levantar entorno
+
+```bash
+docker compose up -d --build
+```
+
+### Ver contenedores activos
+
+```bash
+docker ps
+```
+
+### Listar rutas
+
+```bash
+docker exec -it portfolio_backend php artisan route:list
+```
+
+### Ejecutar migraciones
+
+```bash
+docker exec -it portfolio_backend php artisan migrate
+```
+
+### Limpiar caché
+
+```bash
+docker exec -it portfolio_backend php artisan optimize:clear
+```
+
+### Regenerar OpenAPI
+
+```bash
+docker exec -it portfolio_backend php artisan scramble:export
+```
+
+---
+
+## ⚙️ Entorno e infraestructura
+
+### Variables de entorno clave
 
 ```env
 APP_NAME="Portfolio Backend API"
@@ -90,230 +281,25 @@ MAIL_FROM_NAME="Alexander Galvez"
 LOG_CHANNEL=stderr
 ```
 
-### Notas de infraestructura asociadas
+### Notas operativas
 
-- `QUEUE_CONNECTION=sync` permite procesamiento inmediato si no se usan workers separados.
-- `DB_SSLMODE=require` asegura conexión SSL con Neon.
-- `MAIL_MAILER=resend` evita depender de SMTP saliente en entornos cloud limitados.
-- `LOG_CHANNEL=stderr` es adecuado para contenedores en producción.
+- `QUEUE_CONNECTION=sync` permite procesamiento inmediato sin workers dedicados.
+- `DB_SSLMODE=require` fuerza conexión segura con Neon.
+- `MAIL_MAILER=resend` evita depender de SMTP saliente tradicional.
+- `LOG_CHANNEL=stderr` es apropiado para ejecución en contenedores.
+- `APP_DEBUG=false` y `URL::forceScheme('https')` refuerzan el entorno productivo.
 
----
+### Disponibilidad en Render
 
-## 💾 Arquitectura funcional y modelos técnicos
-
-Actualmente el proyecto expone una base de datos orientada a portfolio, contacto, laboratorio real y administración interna.
-
-### Modelos detectados en el proyecto
-
-- `AdjuntoLaboratorio`
-- `AvanceLaboratorio`
-- `ContactMessage`
-- `DocumentacionLaboratorio`
-- `IdeaLaboratorio`
-- `LaboratorioReal`
-- `ProfileExpertise`
-- `ProfileHighlight`
-- `Project`
-- `Skill`
-- `SocialLink`
-- `User`
-
-### Recursos API (`JsonResource`)
-
-La serialización pública de datos utiliza recursos de Laravel para mantener consistencia estructural en las respuestas:
-
-- `AboutResource`
-- `AdjuntoLaboratorioResource`
-- `AvanceLaboratorioResource`
-- `DocumentacionLaboratorioResource`
-- `IdeaLaboratorioResource`
-- `LaboratorioRealHomeResource`
-- `LaboratorioRealResource`
-- `PortfolioHomeResource`
-- `ProjectCardResource`
-- `ProjectResource`
-- `SkillResource`
-- `SocialLinkResource`
-- `UserResource`
-
-### Estructura funcional del dominio
-
-- **Portfolio:** contenido principal del perfil, enlaces sociales, proyectos y bloques “about”.
-- **Projects:** catálogo público de proyectos y operaciones CRUD protegidas.
-- **Laboratorios reales:** bloques documentales y técnicos para exponer entornos, avances, adjuntos, ideas y documentación asociada.
-- **Contact messages:** entrada de mensajes de contacto con persistencia y notificación.
-- **Panel admin:** gestión de contenido mediante Filament.
+- En Render, los servicios gratuitos pueden entrar en reposo tras periodos de inactividad y generar **cold starts**. [web:233]
+- Para reducir ese efecto, se utiliza un monitor HTTP externo que hace ping periódico al endpoint `/health`. [web:233]
+- Este mecanismo mejora la disponibilidad percibida, aunque la forma oficialmente soportada de evitar el spin-down continuo sigue siendo usar un plan no gratuito. [web:233]
 
 ---
 
-## 📌 Endpoints documentados del proyecto
+## 🔒 CORS
 
-La URL base pública de la API es:
-
-```text
-https://portfolio-api.syskovex.com/api
-```
-
-### 🔒 Autenticación y control de sesión
-
-| Método | Endpoint | Protección | Descripción |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/login` | Pública | Autentica un usuario administrador. |
-| `POST` | `/api/logout` | `auth:sanctum` | Revoca la sesión autenticada actual. |
-| `GET` | `/api/verify-auth` | `auth:sanctum` | Verifica el token y devuelve el usuario autenticado. |
-
-### 🧑‍💻 Portfolio y contenido público
-
-| Método | Endpoint | Protección | Descripción |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/portfolio-home` | Pública | Devuelve la carga principal del portfolio: enlaces sociales, proyectos destacados y contenido agregado. |
-| `GET` | `/api/portfolio-home/about` | Pública | Devuelve el bloque “about” con skills y contenido complementario del perfil. |
-| `GET` | `/api/projects` | Pública | Lista los proyectos públicos. |
-| `GET` | `/api/projects/{id}` | Pública | Devuelve el detalle técnico de un proyecto. |
-
-### 🔬 Laboratorios reales
-
-| Método | Endpoint | Protección | Descripción |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/api/laboratorios-reales/home` | Pública | Devuelve un resumen estructurado del laboratorio real. |
-| `GET` | `/api/laboratorios-reales` | Pública | Lista los laboratorios reales publicados. |
-| `GET` | `/api/laboratorios-reales/{slug}` | Pública | Devuelve el detalle de un laboratorio real por slug. |
-
-### ✉️ Entrada de datos y contacto
-
-| Método | Endpoint | Protección | Descripción |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/contact-messages` | Pública | Registra un mensaje de contacto y ejecuta la lógica de notificación configurada. |
-
-### 📝 Operaciones CRUD protegidas
-
-| Método | Endpoint | Protección | Descripción |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/api/projects` | `auth:sanctum` | Crea un nuevo proyecto. |
-| `PUT` | `/api/projects/{id}` | `auth:sanctum` | Actualiza un proyecto existente. |
-| `DELETE` | `/api/projects/{id}` | `auth:sanctum` | Elimina un proyecto. |
-
----
-
-## 🧪 Ejemplos de pruebas e integración local
-
-Puedes verificar el estado operativo de los endpoints con `curl` desde Git Bash.
-
-### 1. Health check del backend
-
-```bash
-curl -X GET http://localhost:8081/health \
-  -H "Accept: application/json"
-```
-
-### 2. Carga principal del portfolio
-
-```bash
-curl -X GET http://localhost:8081/api/portfolio-home \
-  -H "Accept: application/json"
-```
-
-### 3. Bloque about del portfolio
-
-```bash
-curl -X GET http://localhost:8081/api/portfolio-home/about \
-  -H "Accept: application/json"
-```
-
-### 4. Catálogo público de proyectos
-
-```bash
-curl -X GET http://localhost:8081/api/projects \
-  -H "Accept: application/json"
-```
-
-### 5. Home de laboratorios reales
-
-```bash
-curl -X GET http://localhost:8081/api/laboratorios-reales/home \
-  -H "Accept: application/json"
-```
-
-### 6. Listado de laboratorios reales
-
-```bash
-curl -X GET http://localhost:8081/api/laboratorios-reales \
-  -H "Accept: application/json"
-```
-
-### 7. Autenticación de administrador y captura de token
-
-```bash
-curl -X POST http://localhost:8081/api/login \
-  -H "Accept: application/json" \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"tu_usuario@dominio.com\", \"password\":\"tu_password_local\"}"
-```
-
-### 8. Verificación de sesión con Sanctum
-
-```bash
-curl -X GET http://localhost:8081/api/verify-auth \
-  -H "Accept: application/json" \
-  -H "Authorization: Bearer INSERTA_TU_TOKEN_AQUI"
-```
-
----
-
-## 🐋 Comandos de control en desarrollo local (Docker + Git Bash)
-
-El backend se ejecuta localmente en un contenedor llamado `portfolio_backend` con publicación de puerto `8081:80`.
-
-### Iniciar el contenedor local
-
-```bash
-docker compose up -d --build
-```
-
-### Ver contenedores activos
-
-```bash
-docker ps
-```
-
-### Listar rutas registradas
-
-```bash
-docker exec -it portfolio_backend php artisan route:list
-```
-
-### Instalar dependencias en caliente
-
-```bash
-docker exec -it portfolio_backend composer require vendor/package
-```
-
-### Limpiar caché tras modificar `.env`
-
-```bash
-docker exec -it portfolio_backend php artisan config:clear
-docker exec -it portfolio_backend php artisan cache:clear
-docker exec -it portfolio_backend php artisan route:clear
-docker exec -it portfolio_backend php artisan view:clear
-```
-
-### Ejecutar migraciones
-
-```bash
-docker exec -it portfolio_backend php artisan migrate
-```
-
-### Regenerar documentación OpenAPI
-
-```bash
-docker exec -it portfolio_backend php artisan scramble:export
-```
-
----
-
-## 🔒 Seguridad CORS (Cross-Origin Resource Sharing)
-
-El backend implementa una política de acceso concreta definida en `config/cors.php` para limitar orígenes y cabeceras admitidas.
+La política definida en `config/cors.php` limita orígenes y cabeceras permitidas.
 
 - **Paths protegidos:** `api/*` y `sanctum/csrf-cookie`
 - **Métodos permitidos:** `GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`
@@ -324,9 +310,9 @@ El backend implementa una política de acceso concreta definida en `config/cors.
 
 ---
 
-## 📚 Documentación automática con Scramble
+## 📚 OpenAPI con Scramble
 
-La documentación se genera con **dedoc/scramble**, lo que permite exponer OpenAPI automáticamente a partir de rutas, requests, resources y responses del backend Laravel.
+La documentación se genera con **dedoc/scramble** a partir de rutas, requests, resources y responses.
 
 ### Instalación base
 
@@ -342,17 +328,23 @@ php artisan vendor:publish --provider="Dedoc\Scramble\ScrambleServiceProvider" -
 - **Tema:** `light`
 - **Try it:** habilitado
 - **Schemas:** visibles
-- **Servidores definidos en docs:**
+- **Servidores documentados:**
   - `Production`: `APP_URL/api`
   - `Local`: `http://localhost:8081/api`
 
 ---
 
-## 🧩 Panel administrativo con Filament
+## 🧩 Panel administrativo
 
-El proyecto incluye un panel de administración en `/admin` para la gestión interna de contenido.
+El panel de administración se sirve en `/admin` mediante Filament.
 
-### Recursos detectados en Filament
+### Organización actual
+
+- La navegación del panel está agrupada por dominio funcional, principalmente **Laboratorios** y **Proyectos**. [web:233]
+- Los recursos hijos de proyectos se gestionan desde relation managers dentro del recurso `Projects`, en lugar de exponerse como entradas separadas en el sidebar. [web:481][web:459]
+- Esto mantiene una navegación más limpia y un flujo de edición más consistente dentro del panel. [web:481]
+
+### Recursos principales detectados
 
 - `ContactMessages`
 - `LaboratorioReals`
@@ -362,38 +354,25 @@ El proyecto incluye un panel de administración en `/admin` para la gestión int
 - `Skills`
 - `SocialLinks`
 
-### Propósito del panel
+### Propósito
 
-- Gestionar contenido del portfolio
-- Administrar habilidades y enlaces sociales
-- Mantener laboratorios reales
-- Revisar mensajes de contacto
-- Centralizar operaciones CRUD sin exponerlas públicamente
-
----
-
-## ⚙️ Consideraciones de infraestructura y automatización
-
-1. **Resend sobre HTTP/443** evita depender de SMTP saliente en entornos cloud con restricciones.
-2. **Render Free** puede provocar _cold starts_ después de periodos de inactividad.
-3. **QUEUE_CONNECTION=sync** simplifica el procesamiento inmediato cuando no se usan workers separados.
-4. **Neon PostgreSQL** se usa con `sslmode=require`.
-5. **PDO::ATTR_PERSISTENT=false** está configurado en `pgsql` para evitar conexiones persistentes innecesarias.
-6. **APP_DEBUG=false** y `LOG_CHANNEL=stderr` son ajustes adecuados para producción.
-7. **view:cache** puede ser una optimización útil en despliegues productivos.
-8. **URL::forceScheme('https')** evita inconsistencias de esquema en producción.
+- Gestionar contenido del portfolio.
+- Administrar habilidades y enlaces sociales.
+- Mantener laboratorios reales.
+- Revisar mensajes de contacto.
+- Centralizar operaciones CRUD sin exponerlas públicamente.
 
 ---
 
-## 🤖 Asistente real
+## 🤖 Asistente experimental
 
-Instancia pública del asistente experimental conectado al ecosistema del laboratorio:
+Instancia pública del asistente conectada al ecosistema del laboratorio:
 
 - [Asistente n8n / Hugging Face](https://alexandergalvez-asistenten8n.hf.space/home/workflows)
 
 ---
 
-## 📁 Estructura funcional resumida
+## 📁 Estructura resumida
 
 ```text
 app/
@@ -430,6 +409,6 @@ README.md
 
 ---
 
-## ✅ Estado actual del backend
+## ✅ Estado actual
 
-Este backend ya expone una base pública funcional, health check, documentación OpenAPI navegable, autenticación con Sanctum, administración con Filament y una estructura real para evolucionar el portfolio hacia un laboratorio técnico más amplio y mejor documentado.
+El backend ya expone una base pública funcional, health check, documentación OpenAPI navegable, autenticación con Sanctum, administración con Filament, catálogo público de proyectos, bloque documental de laboratorios y una base técnica lista para seguir creciendo.
