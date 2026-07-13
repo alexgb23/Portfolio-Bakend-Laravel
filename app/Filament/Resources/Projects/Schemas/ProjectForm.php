@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -13,7 +14,6 @@ use Illuminate\Support\Str;
 
 class ProjectForm
 {
-    // Normaliza cualquier valor a array limpio para TagsInput.
     protected static function normalizeArrayState(mixed $state): array
     {
         if (is_array($state)) {
@@ -46,7 +46,6 @@ class ProjectForm
         return [];
     }
 
-    // Normaliza metadata a objeto asociativo válido.
     protected static function normalizeMetadataState(mixed $state): array
     {
         if (is_array($state)) {
@@ -83,9 +82,18 @@ class ProjectForm
             ->components([
                 Section::make('Información principal')
                     ->schema([
-                        TextInput::make('laboratorio_real_id')
-                            ->label('Laboratorio real ID')
-                            ->numeric(),
+                        TextInput::make('id')
+                            ->label('ID')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->visible(fn($record) => $record !== null),
+
+                        Select::make('laboratorio_real_id')
+                            ->label('Laboratorio')
+                            ->relationship('laboratorioReal', 'titulo')
+                            ->searchable()
+                            ->preload()
+                            ->native(false),
 
                         TextInput::make('title')
                             ->label('Título')
