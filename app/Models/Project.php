@@ -13,9 +13,7 @@ class Project extends Model
         'laboratorio_real_id',
         'title',
         'slug',
-        'tipo_proyecto',
         'area_principal',
-        'areas_relacionadas',
         'description',
         'short_description',
         'resumen',
@@ -24,51 +22,22 @@ class Project extends Model
         'resultado_actual',
         'technologies',
         'stack_summary',
-        'image_url',
-        'galeria_urls',
-        'documentacion_urls',
-        'project_url',
-        'frontend_url',
-        'backend_url',
-        'api_base_url',
-        'staging_url',
-        'repo_url',
-        'referencia_externa',
         'metadata',
-        'status',
-        'is_featured',
-        'is_published',
-        'sort_order',
         'fecha_inicio',
         'fecha_fin',
     ];
 
     protected $attributes = [
-        'areas_relacionadas' => '[]',
         'technologies' => '[]',
-        'image_url' => '[]',
-        'galeria_urls' => '[]',
-        'documentacion_urls' => '[]',
         'metadata' => '[]',
-        'is_featured' => false,
-        'is_published' => true,
-        'sort_order' => 0,
-        'status' => 'published',
     ];
 
     protected function casts(): array
     {
         return [
             'laboratorio_real_id' => 'integer',
-            'areas_relacionadas' => 'array',
             'technologies' => 'array',
-            'image_url' => 'array',
-            'galeria_urls' => 'array',
-            'documentacion_urls' => 'array',
             'metadata' => 'array',
-            'is_featured' => 'boolean',
-            'is_published' => 'boolean',
-            'sort_order' => 'integer',
             'fecha_inicio' => 'date',
             'fecha_fin' => 'date',
         ];
@@ -94,18 +63,8 @@ class Project extends Model
         return $this->hasMany(ProyectoSeccion::class)->orderBy('orden');
     }
 
-    public function scopePublished(Builder $query): Builder
-    {
-        return $query->where('is_published', true);
-    }
-
-    public function scopeFeatured(Builder $query): Builder
-    {
-        return $query->where('is_featured', true);
-    }
-
     public function scopeOrdered(Builder $query): Builder
     {
-        return $query->orderBy('sort_order')->orderBy('title');
+        return $query->orderBy('title');
     }
 }

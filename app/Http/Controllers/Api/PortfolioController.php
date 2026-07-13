@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
  */
 class PortfolioController extends Controller
 {
+    // Datos principales de la home del portfolio.
     public function getHomeData(Request $request): PortfolioHomeResource
     {
         $socialLinks = SocialLink::query()
@@ -25,8 +26,7 @@ class PortfolioController extends Controller
             ->get();
 
         $projects = Project::query()
-            ->published()
-            ->orderByDesc('is_featured')
+            ->with(['adjuntos'])
             ->ordered()
             ->get();
 
@@ -44,6 +44,7 @@ class PortfolioController extends Controller
         ]);
     }
 
+    // Datos de la página About.
     public function getAboutData(Request $request): AboutResource
     {
         $skills = Skill::query()

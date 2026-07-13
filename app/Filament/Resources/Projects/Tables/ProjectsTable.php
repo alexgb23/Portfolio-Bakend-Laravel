@@ -6,7 +6,6 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -90,11 +89,6 @@ class ProjectsTable
                     ->label('ID')
                     ->sortable(),
 
-                TextColumn::make('laboratorio_real_id')
-                    ->label('Laboratorio real ID')
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('title')
                     ->label('Título')
                     ->searchable()
@@ -106,64 +100,10 @@ class ProjectsTable
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('tipo_proyecto')
-                    ->label('Tipo')
-                    ->badge()
-                    ->sortable()
-                    ->searchable(),
-
                 TextColumn::make('area_principal')
                     ->label('Área principal')
                     ->searchable()
                     ->sortable(),
-
-                TextColumn::make('areas_relacionadas')
-                    ->label('Áreas relacionadas')
-                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->lineClamp(3)
-                    ->wrap(),
-
-                TextColumn::make('description')
-                    ->label('Descripción')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('short_description')
-                    ->label('Descripción corta')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('resumen')
-                    ->label('Resumen')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('notas_tecnicas')
-                    ->label('Notas técnicas')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('objetivo')
-                    ->label('Objetivo')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('resultado_actual')
-                    ->label('Resultado actual')
-                    ->limit(80)
-                    ->wrap()
-                    ->searchable(),
-
-                TextColumn::make('technologies')
-                    ->label('Tecnologías')
-                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->lineClamp(4)
-                    ->wrap(),
 
                 TextColumn::make('stack_summary')
                     ->label('Resumen stack')
@@ -171,88 +111,62 @@ class ProjectsTable
                     ->wrap()
                     ->searchable(),
 
-                // Muestra cada imagen en una línea para ver qué hay dentro del array.
-                TextColumn::make('image_url')
-                    ->label('Image URL')
+                TextColumn::make('technologies')
+                    ->label('Tecnologías')
                     ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->listWithLineBreaks()
-                    ->limitList(3)
-                    ->expandableLimitedList()
-                    ->copyable()
                     ->wrap(),
 
-                // Igual para la galería.
-                TextColumn::make('galeria_urls')
-                    ->label('Galería URLs')
-                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->listWithLineBreaks()
-                    ->limitList(4)
-                    ->expandableLimitedList()
-                    ->copyable()
-                    ->wrap(),
+                TextColumn::make('short_description')
+                    ->label('Descripción corta')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable(),
 
-                // Igual para documentación.
-                TextColumn::make('documentacion_urls')
-                    ->label('Documentación URLs')
-                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->listWithLineBreaks()
-                    ->limitList(4)
-                    ->expandableLimitedList()
-                    ->copyable()
-                    ->wrap(),
+                TextColumn::make('description')
+                    ->label('Descripción')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('project_url')
-                    ->label('Proyecto URL')
-                    ->wrap(),
+                TextColumn::make('resumen')
+                    ->label('Resumen')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('frontend_url')
-                    ->label('Frontend URL')
-                    ->wrap(),
+                TextColumn::make('notas_tecnicas')
+                    ->label('Notas técnicas')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('backend_url')
-                    ->label('Backend URL')
-                    ->wrap(),
+                TextColumn::make('objetivo')
+                    ->label('Objetivo')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('api_base_url')
-                    ->label('API base URL')
-                    ->wrap(),
+                TextColumn::make('resultado_actual')
+                    ->label('Resultado actual')
+                    ->limit(80)
+                    ->wrap()
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('staging_url')
-                    ->label('Staging URL')
-                    ->wrap(),
-
-                TextColumn::make('repo_url')
-                    ->label('Repositorio URL')
-                    ->wrap(),
-
-                TextColumn::make('referencia_externa')
-                    ->label('Referencia externa')
-                    ->wrap(),
+                TextColumn::make('laboratorio_real_id')
+                    ->label('Laboratorio real ID')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('metadata')
                     ->label('Metadata')
                     ->formatStateUsing(fn($state): string => self::stringifyJson($state))
-                    ->wrap(),
-
-                TextColumn::make('status')
-                    ->label('Estado')
-                    ->badge()
-                    ->sortable()
-                    ->searchable(),
-
-                IconColumn::make('is_featured')
-                    ->label('Destacado')
-                    ->boolean()
-                    ->sortable(),
-
-                IconColumn::make('is_published')
-                    ->label('Publicado')
-                    ->boolean()
-                    ->sortable(),
-
-                TextColumn::make('sort_order')
-                    ->label('Orden')
-                    ->sortable(),
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('fecha_inicio')
                     ->label('Fecha inicio')
@@ -267,12 +181,14 @@ class ProjectsTable
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Actualizado')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

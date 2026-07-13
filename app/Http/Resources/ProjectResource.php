@@ -2,11 +2,11 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ProyectoAdjuntoResource;
 use App\Http\Resources\ProyectoDocumentacionResource;
 use App\Http\Resources\ProyectoSeccionResource;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProjectResource extends JsonResource
 {
@@ -18,9 +18,7 @@ class ProjectResource extends JsonResource
 
             'title' => $this->title,
             'slug' => $this->slug,
-            'tipo_proyecto' => $this->tipo_proyecto,
             'area_principal' => $this->area_principal,
-            'areas_relacionadas' => $this->areas_relacionadas ?? [],
 
             'short_description' => $this->short_description,
             'resumen' => $this->resumen,
@@ -31,25 +29,7 @@ class ProjectResource extends JsonResource
 
             'technologies' => $this->technologies ?? [],
             'stack_summary' => $this->stack_summary,
-
-            'image_url' => $this->image_url ?? [],
-            'galeria_urls' => $this->galeria_urls ?? [],
-            'documentacion_urls' => $this->documentacion_urls ?? [],
-
-            'project_url' => $this->project_url,
-            'frontend_url' => $this->frontend_url,
-            'backend_url' => $this->backend_url,
-            'api_base_url' => $this->api_base_url,
-            'staging_url' => $this->staging_url,
-            'repo_url' => $this->repo_url,
-            'referencia_externa' => $this->referencia_externa,
-
             'metadata' => $this->metadata ?? [],
-
-            'status' => $this->status,
-            'is_featured' => (bool) $this->is_featured,
-            'is_published' => (bool) $this->is_published,
-            'sort_order' => (int) $this->sort_order,
 
             'fecha_inicio' => optional($this->fecha_inicio)?->toISOString(),
             'fecha_fin' => optional($this->fecha_fin)?->toISOString(),
@@ -57,6 +37,7 @@ class ProjectResource extends JsonResource
             'created_at' => optional($this->created_at)?->toISOString(),
             'updated_at' => optional($this->updated_at)?->toISOString(),
 
+            // Relación opcional con laboratorio origen.
             'laboratorio_origen' => $this->when(
                 $this->relationLoaded('laboratorioReal') && $this->laboratorioReal,
                 fn() => [
@@ -67,6 +48,7 @@ class ProjectResource extends JsonResource
                 ]
             ),
 
+            // Recursos externos del proyecto.
             'adjuntos' => ProyectoAdjuntoResource::collection(
                 $this->whenLoaded('adjuntos')
             ),

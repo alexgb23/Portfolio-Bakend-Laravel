@@ -3,11 +3,9 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
@@ -19,7 +17,10 @@ class ProjectForm
     protected static function normalizeArrayState(mixed $state): array
     {
         if (is_array($state)) {
-            return array_values(array_filter($state, fn($item) => filled($item)));
+            return array_values(array_filter(
+                array_map(fn($item) => is_scalar($item) ? trim((string) $item) : '', $state),
+                fn($item) => filled($item)
+            ));
         }
 
         if (blank($state)) {
@@ -30,7 +31,10 @@ class ProjectForm
             $decoded = json_decode($state, true);
 
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return array_values(array_filter($decoded, fn($item) => filled($item)));
+                return array_values(array_filter(
+                    array_map(fn($item) => is_scalar($item) ? trim((string) $item) : '', $decoded),
+                    fn($item) => filled($item)
+                ));
             }
 
             return array_values(array_filter(
@@ -96,33 +100,9 @@ class ProjectForm
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
 
-                        Select::make('tipo_proyecto')
-                            ->label('Tipo de proyecto')
-                            ->options([
-                                'web' => 'Web',
-                                'mobile' => 'Mobile',
-                                'api' => 'API',
-                                'backend' => 'Backend',
-                                'frontend' => 'Frontend',
-                                'fullstack' => 'Full Stack',
-                                'ia' => 'IA',
-                                'data' => 'Data',
-                                'tool' => 'Tool',
-                                'other' => 'Other',
-                            ])
-                            ->searchable()
-                            ->native(false),
-
                         TextInput::make('area_principal')
                             ->label('Área principal')
                             ->maxLength(255),
-
-                        TagsInput::make('areas_relacionadas')
-                            ->label('Áreas relacionadas')
-                            ->splitKeys(['Enter', 'Tab', ','])
-                            ->reorderable()
-                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
-                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state)),
 
                         Textarea::make('short_description')
                             ->label('Descripción corta')
@@ -166,105 +146,17 @@ class ProjectForm
                         TagsInput::make('technologies')
                             ->label('Tecnologías')
                             ->placeholder('Escribe una tecnología y pulsa Enter')
+                            ->helperText('Puedes añadir, editar, reordenar o eliminar tecnologías directamente aquí.')
                             ->splitKeys(['Enter', 'Tab', ','])
                             ->reorderable()
                             ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
-                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state)),
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
+                            ->columnSpanFull(),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen stack')
-                            ->maxLength(255),
-                    ])
-                    ->columns(2),
-
-                Section::make('Imágenes y documentación')
-                    ->schema([
-                        // Campo principal de imagen. Cada valor queda visible como tag editable.
-                        TagsInput::make('image_url')
-                            ->label('Image URL')
-                            ->placeholder('Añade una ruta o URL y pulsa Enter')
-                            ->helperText('Ejemplo válido: /backendDarkAvif.avif')
-                            ->splitKeys(['Enter', 'Tab', ','])
-                            ->reorderable()
-                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
-                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
+                            ->maxLength(255)
                             ->columnSpanFull(),
-
-                        TagsInput::make('galeria_urls')
-                            ->label('Galería URLs')
-                            ->placeholder('Añade una ruta o URL y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab', ','])
-                            ->reorderable()
-                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
-                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
-                            ->columnSpanFull(),
-
-                        TagsInput::make('documentacion_urls')
-                            ->label('Documentación URLs')
-                            ->placeholder('Añade una ruta o URL y pulsa Enter')
-                            ->splitKeys(['Enter', 'Tab', ','])
-                            ->reorderable()
-                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
-                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
-                            ->columnSpanFull(),
-                    ]),
-
-                Section::make('Enlaces')
-                    ->schema([
-                        TextInput::make('project_url')
-                            ->label('Proyecto URL')
-                            ->maxLength(255),
-
-                        TextInput::make('frontend_url')
-                            ->label('Frontend URL')
-                            ->maxLength(255),
-
-                        TextInput::make('backend_url')
-                            ->label('Backend URL')
-                            ->maxLength(255),
-
-                        TextInput::make('api_base_url')
-                            ->label('API base URL')
-                            ->maxLength(255),
-
-                        TextInput::make('staging_url')
-                            ->label('Staging URL')
-                            ->maxLength(255),
-
-                        TextInput::make('repo_url')
-                            ->label('Repositorio URL')
-                            ->maxLength(255),
-
-                        TextInput::make('referencia_externa')
-                            ->label('Referencia externa')
-                            ->maxLength(255),
-                    ])
-                    ->columns(2),
-
-                Section::make('Estado y visibilidad')
-                    ->schema([
-                        Select::make('status')
-                            ->label('Estado')
-                            ->options([
-                                'draft' => 'Draft',
-                                'published' => 'Published',
-                                'archived' => 'Archived',
-                            ])
-                            ->required()
-                            ->native(false),
-
-                        TextInput::make('sort_order')
-                            ->label('Orden')
-                            ->numeric()
-                            ->default(0),
-
-                        Toggle::make('is_featured')
-                            ->label('Destacado')
-                            ->default(false),
-
-                        Toggle::make('is_published')
-                            ->label('Publicado')
-                            ->default(true),
                     ])
                     ->columns(2),
 

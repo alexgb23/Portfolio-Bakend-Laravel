@@ -13,10 +13,10 @@ class ProjectCardResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'slug' => $this->slug,
+            'area_principal' => $this->area_principal,
             'short_description' => $this->short_description,
             'stack_summary' => $this->stack_summary,
-            'technologies' => $this->technologies,
-            'is_featured' => (bool) $this->is_featured,
+            'technologies' => $this->technologies ?? [],
         ];
     }
 }

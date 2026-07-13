@@ -44,7 +44,8 @@ class AdjuntosRelationManager extends RelationManager
                         'other' => 'Otro',
                     ])
                     ->searchable()
-                    ->native(false),
+                    ->native(false)
+                    ->required(),
 
                 TextInput::make('grupo')
                     ->label('Grupo')
@@ -59,11 +60,17 @@ class AdjuntosRelationManager extends RelationManager
                     ->rows(4)
                     ->columnSpanFull(),
 
+                // URL flexible para recursos externos.
                 TextInput::make('url')
                     ->label('URL')
-                    ->url()
+                    ->placeholder('https://ejemplo.com/recurso')
+                    ->helperText('Pega una URL completa. Se recortan espacios automáticamente.')
                     ->maxLength(2048)
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->dehydrateStateUsing(fn($state) => filled($state) ? trim($state) : null)
+                    ->rule('nullable')
+                    ->rule('string')
+                    ->rule('max:2048'),
 
                 TextInput::make('nombre_archivo')
                     ->label('Nombre de archivo')
@@ -136,6 +143,12 @@ class AdjuntosRelationManager extends RelationManager
                 TextColumn::make('nombre_archivo')
                     ->label('Archivo')
                     ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('url')
+                    ->label('URL')
+                    ->limit(50)
+                    ->tooltip(fn($record) => $record->url)
                     ->toggleable(),
 
                 IconColumn::make('es_visible')
