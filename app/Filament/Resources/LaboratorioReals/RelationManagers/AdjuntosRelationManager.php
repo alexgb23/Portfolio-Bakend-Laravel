@@ -2,14 +2,12 @@
 
 namespace App\Filament\Resources\LaboratorioReals\RelationManagers;
 
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -21,27 +19,48 @@ class AdjuntosRelationManager extends RelationManager
 {
     protected static string $relationship = 'adjuntos';
 
+    protected static ?string $title = 'Adjuntos';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('seccion'),
+
                 TextInput::make('fase'),
+
                 TextInput::make('tipo_adjunto'),
+
                 TextInput::make('storage_driver'),
+
                 Textarea::make('url')
                     ->columnSpanFull(),
-                TextInput::make('urls_relacionadas'),
+
+                TagsInput::make('urls_relacionadas'),
+
                 TextInput::make('nombre_archivo'),
+
                 TextInput::make('mime_type'),
+
                 Textarea::make('descripcion')
                     ->columnSpanFull(),
+
                 Textarea::make('resumen_ia')
                     ->columnSpanFull(),
+
                 TextInput::make('origen')
                     ->required()
                     ->default('manual'),
-                TextInput::make('metadata'),
+
+                Textarea::make('metadata')
+                    ->columnSpanFull(),
+
                 TextInput::make('orden')
                     ->required()
                     ->numeric()
@@ -54,27 +73,49 @@ class AdjuntosRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('nombre_archivo')
             ->columns([
-                TextColumn::make('seccion')
-                    ->searchable(),
-                TextColumn::make('fase')
-                    ->searchable(),
-                TextColumn::make('tipo_adjunto')
-                    ->searchable(),
-                TextColumn::make('storage_driver')
-                    ->searchable(),
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('nombre_archivo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('tipo_adjunto')
+                    ->label('Tipo')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('seccion')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('fase')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('storage_driver')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('mime_type')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('origen')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('orden')
                     ->numeric()
                     ->sortable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -85,16 +126,13 @@ class AdjuntosRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

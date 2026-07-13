@@ -2,14 +2,12 @@
 
 namespace App\Filament\Resources\LaboratorioReals\RelationManagers;
 
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -23,31 +21,50 @@ class IdeasRelationManager extends RelationManager
 {
     protected static string $relationship = 'ideas';
 
+    protected static ?string $title = 'Ideas';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('titulo'),
+
                 Textarea::make('idea')
                     ->required()
                     ->columnSpanFull(),
+
                 Textarea::make('detalle')
                     ->columnSpanFull(),
+
                 TextInput::make('fase'),
+
                 TextInput::make('seccion'),
+
                 TextInput::make('estado')
                     ->required()
                     ->default('nueva'),
+
                 TextInput::make('prioridad')
                     ->required()
                     ->default('media'),
+
                 TextInput::make('origen')
                     ->required()
                     ->default('manual'),
+
                 Toggle::make('creada_por_ia')
                     ->required(),
-                TextInput::make('urls_relacionadas'),
-                TextInput::make('metadata'),
+
+                TagsInput::make('urls_relacionadas'),
+
+                Textarea::make('metadata')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -56,24 +73,43 @@ class IdeasRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('titulo')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('titulo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('fase')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('seccion')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('estado')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('prioridad')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('origen')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 IconColumn::make('creada_por_ia')
                     ->boolean(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -84,16 +120,13 @@ class IdeasRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

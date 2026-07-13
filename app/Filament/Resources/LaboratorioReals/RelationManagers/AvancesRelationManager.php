@@ -2,15 +2,13 @@
 
 namespace App\Filament\Resources\LaboratorioReals\RelationManagers;
 
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -22,25 +20,43 @@ class AvancesRelationManager extends RelationManager
 {
     protected static string $relationship = 'avances';
 
+    protected static ?string $title = 'Avances';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('titulo')
                     ->required(),
+
                 Textarea::make('resumen')
                     ->columnSpanFull(),
+
                 Textarea::make('descripcion')
                     ->columnSpanFull(),
+
                 TextInput::make('fase'),
+
                 TextInput::make('seccion'),
+
                 TextInput::make('tipo_avance'),
+
                 TextInput::make('estado')
                     ->required()
                     ->default('registrado'),
+
                 DateTimePicker::make('fecha_avance'),
-                TextInput::make('urls_relacionadas'),
-                TextInput::make('metadata'),
+
+                TagsInput::make('urls_relacionadas'),
+
+                Textarea::make('metadata')
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -49,23 +65,41 @@ class AvancesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('titulo')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('titulo')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('fase')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('seccion')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('tipo_avance')
-                    ->searchable(),
+                    ->label('Tipo')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('estado')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('fecha_avance')
                     ->dateTime()
                     ->sortable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
@@ -76,16 +110,13 @@ class AvancesRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);
