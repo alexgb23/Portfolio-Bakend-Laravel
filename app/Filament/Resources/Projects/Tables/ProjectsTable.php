@@ -11,7 +11,6 @@ use Filament\Tables\Table;
 
 class ProjectsTable
 {
-    // Convierte arrays o JSON en una lista limpia de strings.
     protected static function normalizeArrayish(mixed $state): array
     {
         if (is_array($state)) {
@@ -44,7 +43,6 @@ class ProjectsTable
         return [];
     }
 
-    // Devuelve arrays en varias líneas para que se lean mejor en tabla.
     protected static function multilineArrayish(mixed $state): string
     {
         $items = self::normalizeArrayish($state);
@@ -56,7 +54,6 @@ class ProjectsTable
         return implode(PHP_EOL, $items);
     }
 
-    // Devuelve un JSON bonito y legible si existe.
     protected static function stringifyJson(mixed $state): string
     {
         if (is_array($state)) {
@@ -100,6 +97,17 @@ class ProjectsTable
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('laboratorioReal.titulo')
+                    ->label('Laboratorio')
+                    ->searchable()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('laboratorio_real_id')
+                    ->label('Laboratorio ID')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('area_principal')
                     ->label('Área principal')
                     ->searchable()
@@ -111,10 +119,26 @@ class ProjectsTable
                     ->wrap()
                     ->searchable(),
 
+                TextColumn::make('adjuntos_count')
+                    ->label('Adjuntos')
+                    ->counts('adjuntos')
+                    ->sortable(),
+
+                TextColumn::make('documentacion_count')
+                    ->label('Documentación')
+                    ->counts('documentacion')
+                    ->sortable(),
+
+                TextColumn::make('secciones_count')
+                    ->label('Secciones')
+                    ->counts('secciones')
+                    ->sortable(),
+
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
                     ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
-                    ->wrap(),
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('short_description')
                     ->label('Descripción corta')
@@ -155,11 +179,6 @@ class ProjectsTable
                     ->limit(80)
                     ->wrap()
                     ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('laboratorio_real_id')
-                    ->label('Laboratorio real ID')
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('metadata')
