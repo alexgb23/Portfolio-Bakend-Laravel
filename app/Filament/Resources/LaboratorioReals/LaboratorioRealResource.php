@@ -23,7 +23,7 @@ class LaboratorioRealResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'titulo';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Laboratorio';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laboratorios';
 
     protected static ?string $navigationLabel = 'Laboratorios';
 
