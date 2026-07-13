@@ -24,8 +24,6 @@ class ProyectoAdjuntoResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Proyectos';
 
-    protected static ?string $navigationParentItem = 'Proyectos';
-
     protected static ?string $navigationLabel = 'Adjuntos';
 
     protected static ?string $modelLabel = 'Adjunto';

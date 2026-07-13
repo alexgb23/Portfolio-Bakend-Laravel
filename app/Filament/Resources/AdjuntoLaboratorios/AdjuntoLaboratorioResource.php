@@ -22,7 +22,7 @@ class AdjuntoLaboratorioResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'nombre_archivo';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Laboratorio';
+    protected static string|\UnitEnum|null $navigationGroup = 'Laboratorios';
 
     protected static ?string $navigationLabel = 'Adjuntos';
 

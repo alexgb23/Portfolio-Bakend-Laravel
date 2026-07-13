@@ -24,8 +24,6 @@ class ProyectoDocumentacionResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Proyectos';
 
-    protected static ?string $navigationParentItem = 'Proyectos';
-
     protected static ?string $navigationLabel = 'Documentación';
 
     protected static ?string $modelLabel = 'Documento';

@@ -33,13 +33,8 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->navigationGroups([
-                NavigationGroup::make()
-                    ->label('Laboratorios')
-                    ->icon('heroicon-o-beaker'),
-
-                NavigationGroup::make()
-                    ->label('Proyectos')
-                    ->icon('heroicon-o-rectangle-stack'),
+                NavigationGroup::make()->label('Laboratorios'),
+                NavigationGroup::make()->label('Proyectos'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
