@@ -38,11 +38,61 @@ class AdjuntosRelationManager extends RelationManager
         ];
     }
 
-    protected static function urlOptions(): array
+    protected static function grupoOptions(): array
     {
         return [
-            '/backendDarkAvif.avif' => '/backendDarkAvif.avif',
-            '/backendDarkWebp.webp' => '/backendDarkWebp.webp',
+            'general' => 'General',
+            'frontend' => 'Frontend',
+            'backend' => 'Backend',
+            'api' => 'API',
+            'infraestructura' => 'Infraestructura',
+            'deploy' => 'Deploy',
+            'documentacion' => 'Documentación',
+            'assets' => 'Assets',
+            'monitorizacion' => 'Monitorización',
+            'seguridad' => 'Seguridad',
+        ];
+    }
+
+    protected static function origenOptions(): array
+    {
+        return [
+            'manual' => 'Manual',
+            'importado' => 'Importado',
+            'ia' => 'IA',
+            'generado' => 'Generado',
+            'scraping' => 'Scraping',
+            'externo' => 'Externo',
+        ];
+    }
+
+    protected static function mimeTypeOptions(): array
+    {
+        return [
+            'application/json' => 'application/json',
+            'application/pdf' => 'application/pdf',
+            'text/plain' => 'text/plain',
+            'text/html' => 'text/html',
+            'image/png' => 'image/png',
+            'image/jpeg' => 'image/jpeg',
+            'image/webp' => 'image/webp',
+            'image/avif' => 'image/avif',
+            'video/mp4' => 'video/mp4',
+            'application/zip' => 'application/zip',
+        ];
+    }
+
+    protected static function iconoOptions(): array
+    {
+        return [
+            'heroicon-o-link' => 'Enlace',
+            'heroicon-o-document-text' => 'Documento',
+            'heroicon-o-code-bracket' => 'Código',
+            'heroicon-o-photo' => 'Imagen',
+            'heroicon-o-film' => 'Vídeo',
+            'heroicon-o-archive-box' => 'Archivo',
+            'heroicon-o-server' => 'Servidor',
+            'heroicon-o-globe-alt' => 'Web',
         ];
     }
 
@@ -69,14 +119,15 @@ class AdjuntosRelationManager extends RelationManager
                     ->searchable()
                     ->native(false)
                     ->required()
-                    ->allowHtml(false)
                     ->placeholder('Selecciona un tipo')
                     ->helperText('Clasifica el adjunto: repositorio, demo, documento, imagen, vídeo, etc.'),
 
-                TextInput::make('grupo')
+                Select::make('grupo')
                     ->label('Grupo')
-                    ->maxLength(255)
-                    ->placeholder('frontend, backend, despliegue...')
+                    ->options(static::grupoOptions())
+                    ->searchable()
+                    ->native(false)
+                    ->placeholder('Selecciona un grupo')
                     ->helperText('Agrupa adjuntos parecidos dentro del proyecto.'),
 
                 TextInput::make('subtitulo')
@@ -90,24 +141,10 @@ class AdjuntosRelationManager extends RelationManager
                     ->helperText('Explica qué contiene o para qué sirve este adjunto.')
                     ->columnSpanFull(),
 
-                Select::make('url_predefinida')
-                    ->label('URL predefinida')
-                    ->options(static::urlOptions())
-                    ->searchable()
-                    ->native(false)
-                    ->dehydrated(false)
-                    ->placeholder('Selecciona una ruta predefinida')
-                    ->helperText('Atajo para rellenar la URL con rutas ya conocidas.')
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if (filled($state)) {
-                            $set('url', trim($state));
-                        }
-                    }),
-
                 TextInput::make('url')
                     ->label('URL o ruta')
-                    ->placeholder('https://ejemplo.com/recurso o /backendDarkAvif.avif')
-                    ->helperText('Acepta URLs completas o rutas locales que empiecen por /.')
+                    ->placeholder('https://ejemplo.com/recurso o /images/proyectos/mi-imagen.webp')
+                    ->helperText('Escribe una URL completa o una ruta del frontend. No está limitada a valores predefinidos.')
                     ->maxLength(2048)
                     ->columnSpanFull()
                     ->dehydrateStateUsing(fn($state) => filled($state) ? trim($state) : null)
@@ -120,23 +157,30 @@ class AdjuntosRelationManager extends RelationManager
                     ->maxLength(255)
                     ->helperText('Nombre físico o lógico del archivo, si aplica.'),
 
-                TextInput::make('mime_type')
+                Select::make('mime_type')
                     ->label('MIME type')
-                    ->maxLength(255)
-                    ->placeholder('image/png, application/pdf...')
+                    ->options(static::mimeTypeOptions())
+                    ->searchable()
+                    ->native(false)
+                    ->placeholder('Selecciona un MIME type')
                     ->helperText('Tipo técnico del archivo. Útil para diferenciar imágenes, PDFs, vídeos, etc.'),
 
-                TextInput::make('icono')
+                Select::make('icono')
                     ->label('Icono')
-                    ->maxLength(100)
-                    ->helperText('Nombre del icono si usas uno para representarlo visualmente.'),
+                    ->options(static::iconoOptions())
+                    ->searchable()
+                    ->native(false)
+                    ->placeholder('Selecciona un icono')
+                    ->helperText('Nombre del icono para representarlo visualmente.'),
 
-                TextInput::make('origen')
+                Select::make('origen')
                     ->label('Origen')
-                    ->required()
+                    ->options(static::origenOptions())
                     ->default('manual')
-                    ->maxLength(255)
-                    ->placeholder('manual, importado, ia...')
+                    ->searchable()
+                    ->native(false)
+                    ->required()
+                    ->placeholder('Selecciona el origen')
                     ->helperText('Indica de dónde salió este registro.'),
 
                 TextInput::make('orden')
@@ -196,6 +240,7 @@ class AdjuntosRelationManager extends RelationManager
 
                 TextColumn::make('grupo')
                     ->label('Grupo')
+                    ->formatStateUsing(fn($state) => static::grupoOptions()[$state] ?? $state)
                     ->searchable()
                     ->toggleable(),
 
@@ -217,6 +262,7 @@ class AdjuntosRelationManager extends RelationManager
 
                 TextColumn::make('origen')
                     ->label('Origen')
+                    ->formatStateUsing(fn($state) => static::origenOptions()[$state] ?? $state)
                     ->searchable()
                     ->toggleable(),
 
