@@ -12,6 +12,52 @@ use Filament\Tables\Table;
 
 class ProjectsTable
 {
+    protected static function stringifyArrayish(mixed $state): string
+    {
+        if (is_array($state)) {
+            return implode(', ', array_filter($state, fn($item) => filled($item)));
+        }
+
+        if (blank($state)) {
+            return '';
+        }
+
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return implode(', ', array_filter($decoded, fn($item) => filled($item)));
+            }
+
+            return $state;
+        }
+
+        return '';
+    }
+
+    protected static function stringifyJson(mixed $state): string
+    {
+        if (is_array($state)) {
+            return json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        }
+
+        if (blank($state)) {
+            return '';
+        }
+
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                return json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+            }
+
+            return $state;
+        }
+
+        return '';
+    }
+
     public static function configure(Table $table): Table
     {
         return $table
@@ -23,7 +69,6 @@ class ProjectsTable
 
                 TextColumn::make('laboratorio_real_id')
                     ->label('Laboratorio real ID')
-                    ->numeric()
                     ->sortable()
                     ->searchable(),
 
@@ -51,7 +96,7 @@ class ProjectsTable
 
                 TextColumn::make('areas_relacionadas')
                     ->label('Áreas relacionadas')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? implode(', ', array_filter($state)) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
                     ->wrap(),
 
                 TextColumn::make('description')
@@ -92,7 +137,7 @@ class ProjectsTable
 
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? implode(', ', array_filter($state)) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
                     ->wrap(),
 
                 TextColumn::make('stack_summary')
@@ -103,57 +148,50 @@ class ProjectsTable
 
                 TextColumn::make('image_url')
                     ->label('Image URL')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? implode("\n", array_filter($state)) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
                     ->wrap(),
 
                 TextColumn::make('galeria_urls')
                     ->label('Galería URLs')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? implode("\n", array_filter($state)) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
                     ->wrap(),
 
                 TextColumn::make('documentacion_urls')
                     ->label('Documentación URLs')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? implode("\n", array_filter($state)) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
                     ->wrap(),
 
                 TextColumn::make('project_url')
                     ->label('Proyecto URL')
-                    ->url(fn($record) => filled($record->project_url) ? $record->project_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('frontend_url')
                     ->label('Frontend URL')
-                    ->url(fn($record) => filled($record->frontend_url) ? $record->frontend_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('backend_url')
                     ->label('Backend URL')
-                    ->url(fn($record) => filled($record->backend_url) ? $record->backend_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('api_base_url')
                     ->label('API base URL')
-                    ->url(fn($record) => filled($record->api_base_url) ? $record->api_base_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('staging_url')
                     ->label('Staging URL')
-                    ->url(fn($record) => filled($record->staging_url) ? $record->staging_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('repo_url')
                     ->label('Repositorio URL')
-                    ->url(fn($record) => filled($record->repo_url) ? $record->repo_url : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('referencia_externa')
                     ->label('Referencia externa')
-                    ->url(fn($record) => filled($record->referencia_externa) ? $record->referencia_externa : null, shouldOpenInNewTab: true)
                     ->wrap(),
 
                 TextColumn::make('metadata')
                     ->label('Metadata')
-                    ->formatStateUsing(fn($state): string => is_array($state) ? json_encode($state, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : '')
+                    ->formatStateUsing(fn($state): string => self::stringifyJson($state))
                     ->wrap(),
 
                 TextColumn::make('status')
@@ -174,7 +212,6 @@ class ProjectsTable
 
                 TextColumn::make('sort_order')
                     ->label('Orden')
-                    ->numeric()
                     ->sortable(),
 
                 TextColumn::make('fecha_inicio')

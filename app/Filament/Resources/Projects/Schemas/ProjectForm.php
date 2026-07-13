@@ -2,9 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Schemas;
 
-use App\Models\LaboratorioReal;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -17,18 +15,71 @@ use Illuminate\Support\Str;
 
 class ProjectForm
 {
+    protected static function normalizeArrayState(mixed $state): array
+    {
+        if (is_array($state)) {
+            return array_values(array_filter($state, fn($item) => filled($item)));
+        }
+
+        if (blank($state)) {
+            return [];
+        }
+
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return array_values(array_filter($decoded, fn($item) => filled($item)));
+            }
+
+            return array_values(array_filter(
+                array_map('trim', explode(',', $state)),
+                fn($item) => filled($item)
+            ));
+        }
+
+        return [];
+    }
+
+    protected static function normalizeMetadataState(mixed $state): array
+    {
+        if (is_array($state)) {
+            return self::isAssoc($state) ? $state : [];
+        }
+
+        if (blank($state)) {
+            return [];
+        }
+
+        if (is_string($state)) {
+            $decoded = json_decode($state, true);
+
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return self::isAssoc($decoded) ? $decoded : [];
+            }
+        }
+
+        return [];
+    }
+
+    protected static function isAssoc(array $array): bool
+    {
+        if ($array === []) {
+            return true;
+        }
+
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
             ->components([
                 Section::make('Información principal')
                     ->schema([
-                        Select::make('laboratorio_real_id')
-                            ->label('Laboratorio real')
-                            ->options(LaboratorioReal::query()->pluck('nombre', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->native(false),
+                        TextInput::make('laboratorio_real_id')
+                            ->label('Laboratorio real ID')
+                            ->numeric(),
 
                         TextInput::make('title')
                             ->label('Título')
@@ -67,8 +118,9 @@ class ProjectForm
                         TagsInput::make('areas_relacionadas')
                             ->label('Áreas relacionadas')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
-                            ->reorderable(),
+                            ->reorderable()
+                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state)),
 
                         Textarea::make('short_description')
                             ->label('Descripción corta')
@@ -113,8 +165,9 @@ class ProjectForm
                             ->label('Tecnologías')
                             ->placeholder('Escribe una tecnología y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
-                            ->reorderable(),
+                            ->reorderable()
+                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state)),
 
                         TextInput::make('stack_summary')
                             ->label('Resumen stack')
@@ -128,24 +181,27 @@ class ProjectForm
                             ->label('Image URL')
                             ->placeholder('Añade una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
                             ->reorderable()
+                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
                             ->columnSpanFull(),
 
                         TagsInput::make('galeria_urls')
                             ->label('Galería URLs')
                             ->placeholder('Añade una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
                             ->reorderable()
+                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
                             ->columnSpanFull(),
 
                         TagsInput::make('documentacion_urls')
                             ->label('Documentación URLs')
                             ->placeholder('Añade una URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
-                            ->trim()
                             ->reorderable()
+                            ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
+                            ->dehydrateStateUsing(fn($state) => self::normalizeArrayState($state))
                             ->columnSpanFull(),
                     ]),
 
@@ -153,37 +209,30 @@ class ProjectForm
                     ->schema([
                         TextInput::make('project_url')
                             ->label('Proyecto URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('frontend_url')
                             ->label('Frontend URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('backend_url')
                             ->label('Backend URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('api_base_url')
                             ->label('API base URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('staging_url')
                             ->label('Staging URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('repo_url')
                             ->label('Repositorio URL')
-                            ->url()
                             ->maxLength(255),
 
                         TextInput::make('referencia_externa')
                             ->label('Referencia externa')
-                            ->url()
                             ->maxLength(255),
                     ])
                     ->columns(2),
@@ -227,11 +276,32 @@ class ProjectForm
 
                 Section::make('Metadata')
                     ->schema([
-                        KeyValue::make('metadata')
-                            ->label('Metadata')
-                            ->keyLabel('Clave')
-                            ->valueLabel('Valor')
-                            ->addActionLabel('Añadir metadata')
+                        Textarea::make('metadata')
+                            ->label('Metadata (JSON)')
+                            ->rows(6)
+                            ->formatStateUsing(function ($state): string {
+                                $normalized = self::normalizeMetadataState($state);
+
+                                return $normalized === []
+                                    ? ''
+                                    : json_encode($normalized, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                            })
+                            ->dehydrateStateUsing(function ($state): array {
+                                if (blank($state)) {
+                                    return [];
+                                }
+
+                                if (is_array($state)) {
+                                    return self::normalizeMetadataState($state);
+                                }
+
+                                $decoded = json_decode($state, true);
+
+                                return (json_last_error() === JSON_ERROR_NONE && is_array($decoded))
+                                    ? self::normalizeMetadataState($decoded)
+                                    : [];
+                            })
+                            ->helperText('Introduce un objeto JSON válido, por ejemplo: {"cliente":"ACME","prioridad":"alta"}')
                             ->columnSpanFull(),
                     ]),
             ]);
