@@ -28,15 +28,23 @@ class SeccionesRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->helperText('Identificador interno de la sección.')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('clave')
                     ->label('Clave')
-                    ->helperText('Ejemplo: resumen, retos, solucion, resultados')
+                    ->helperText('Ejemplo: resumen, retos, solucion, resultados.')
                     ->maxLength(255),
 
                 TextInput::make('titulo')
                     ->label('Título')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Nombre visible de esta sección del proyecto.'),
 
                 Select::make('tipo_contenido')
                     ->label('Tipo de contenido')
@@ -51,7 +59,8 @@ class SeccionesRelationManager extends RelationManager
                     ->default('texto')
                     ->required()
                     ->searchable()
-                    ->native(false),
+                    ->native(false)
+                    ->helperText('Define la naturaleza principal del contenido de esta sección.'),
 
                 Select::make('layout')
                     ->label('Layout')
@@ -64,16 +73,19 @@ class SeccionesRelationManager extends RelationManager
                     ])
                     ->default('full')
                     ->searchable()
-                    ->native(false),
+                    ->native(false)
+                    ->helperText('Controla cómo debería presentarse visualmente esta sección.'),
 
                 Textarea::make('resumen')
                     ->label('Resumen')
                     ->rows(3)
+                    ->helperText('Explicación breve del bloque.')
                     ->columnSpanFull(),
 
                 Textarea::make('contenido')
                     ->label('Contenido')
                     ->rows(10)
+                    ->helperText('Texto principal o contenido desarrollado de la sección.')
                     ->columnSpanFull(),
 
                 KeyValue::make('items')
@@ -81,44 +93,54 @@ class SeccionesRelationManager extends RelationManager
                     ->keyLabel('Clave')
                     ->valueLabel('Valor')
                     ->addActionLabel('Añadir item')
-                    ->helperText('Opcional. Úsalo solo si esta sección necesita datos adicionales tipo lista o pares clave/valor.')
+                    ->helperText('Opcional. Úsalo para listas o pares clave/valor.')
                     ->columnSpanFull(),
 
                 TextInput::make('media_url')
                     ->label('Media URL')
                     ->url()
                     ->maxLength(2048)
+                    ->placeholder('https://...')
+                    ->helperText('Enlace a imagen, vídeo o recurso multimedia asociado.')
                     ->columnSpanFull(),
 
                 TextInput::make('codigo_lenguaje')
                     ->label('Lenguaje de código')
-                    ->maxLength(100),
+                    ->maxLength(100)
+                    ->placeholder('php, js, ts, python...')
+                    ->helperText('Solo si esta sección incluye código.'),
 
                 TextInput::make('origen')
                     ->label('Origen')
                     ->required()
                     ->default('manual')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('manual, importado, ia...')
+                    ->helperText('Indica cómo se generó esta sección.'),
 
                 TextInput::make('orden')
                     ->label('Orden')
                     ->required()
                     ->numeric()
-                    ->default(0),
+                    ->default(0)
+                    ->helperText('Sirve para ordenar las secciones del proyecto.'),
 
                 Toggle::make('es_visible')
                     ->label('Visible')
-                    ->default(true),
+                    ->default(true)
+                    ->helperText('Actívalo si esta sección debe mostrarse normalmente.'),
 
                 Toggle::make('es_destacado')
                     ->label('Destacado')
-                    ->default(false),
+                    ->default(false)
+                    ->helperText('Marca esta sección si quieres resaltarla.'),
 
                 KeyValue::make('metadata')
                     ->label('Metadata')
                     ->keyLabel('Clave')
                     ->valueLabel('Valor')
                     ->addActionLabel('Añadir metadata')
+                    ->helperText('Datos adicionales opcionales para esta sección.')
                     ->columnSpanFull(),
             ])
             ->columns(2);
@@ -130,6 +152,11 @@ class SeccionesRelationManager extends RelationManager
             ->recordTitleAttribute('titulo')
             ->defaultSort('orden')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('orden')
                     ->label('Orden')
                     ->numeric()
@@ -153,6 +180,11 @@ class SeccionesRelationManager extends RelationManager
                 TextColumn::make('layout')
                     ->label('Layout')
                     ->badge()
+                    ->toggleable(),
+
+                TextColumn::make('origen')
+                    ->label('Origen')
+                    ->searchable()
                     ->toggleable(),
 
                 TextColumn::make('resumen')

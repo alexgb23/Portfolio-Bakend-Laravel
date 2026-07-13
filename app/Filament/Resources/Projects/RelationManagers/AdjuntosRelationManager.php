@@ -22,7 +22,8 @@ class AdjuntosRelationManager extends RelationManager
 {
     protected static string $relationship = 'adjuntos';
 
-    // Tipos permitidos de adjunto.
+    protected static ?string $title = 'Adjuntos';
+
     protected static function tipoOptions(): array
     {
         return [
@@ -37,7 +38,6 @@ class AdjuntosRelationManager extends RelationManager
         ];
     }
 
-    // Assets predefinidos para seleccionar rápido.
     protected static function urlOptions(): array
     {
         return [
@@ -50,12 +50,19 @@ class AdjuntosRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->helperText('Identificador interno del adjunto.')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('titulo')
                     ->label('Título')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Nombre principal con el que reconocerás este adjunto.'),
 
-                // Select tolerante con registros antiguos.
                 Select::make('tipo')
                     ->label('Tipo')
                     ->options(static::tipoOptions())
@@ -64,22 +71,25 @@ class AdjuntosRelationManager extends RelationManager
                     ->required()
                     ->allowHtml(false)
                     ->placeholder('Selecciona un tipo')
-                    ->helperText('Si un registro antiguo tiene un tipo viejo, cámbialo por uno válido.'),
+                    ->helperText('Clasifica el adjunto: repositorio, demo, documento, imagen, vídeo, etc.'),
 
                 TextInput::make('grupo')
                     ->label('Grupo')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('frontend, backend, despliegue...')
+                    ->helperText('Agrupa adjuntos parecidos dentro del proyecto.'),
 
                 TextInput::make('subtitulo')
                     ->label('Subtítulo')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Texto secundario opcional para dar más contexto.'),
 
                 Textarea::make('descripcion')
                     ->label('Descripción')
                     ->rows(4)
+                    ->helperText('Explica qué contiene o para qué sirve este adjunto.')
                     ->columnSpanFull(),
 
-                // Selector rápido de rutas conocidas.
                 Select::make('url_predefinida')
                     ->label('URL predefinida')
                     ->options(static::urlOptions())
@@ -87,13 +97,13 @@ class AdjuntosRelationManager extends RelationManager
                     ->native(false)
                     ->dehydrated(false)
                     ->placeholder('Selecciona una ruta predefinida')
+                    ->helperText('Atajo para rellenar la URL con rutas ya conocidas.')
                     ->afterStateUpdated(function ($state, callable $set) {
                         if (filled($state)) {
                             $set('url', trim($state));
                         }
                     }),
 
-                // Campo manual compatible con rutas locales o URLs completas.
                 TextInput::make('url')
                     ->label('URL o ruta')
                     ->placeholder('https://ejemplo.com/recurso o /backendDarkAvif.avif')
@@ -107,41 +117,51 @@ class AdjuntosRelationManager extends RelationManager
 
                 TextInput::make('nombre_archivo')
                     ->label('Nombre de archivo')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Nombre físico o lógico del archivo, si aplica.'),
 
                 TextInput::make('mime_type')
                     ->label('MIME type')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('image/png, application/pdf...')
+                    ->helperText('Tipo técnico del archivo. Útil para diferenciar imágenes, PDFs, vídeos, etc.'),
 
                 TextInput::make('icono')
                     ->label('Icono')
-                    ->maxLength(100),
+                    ->maxLength(100)
+                    ->helperText('Nombre del icono si usas uno para representarlo visualmente.'),
 
                 TextInput::make('origen')
                     ->label('Origen')
                     ->required()
                     ->default('manual')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('manual, importado, ia...')
+                    ->helperText('Indica de dónde salió este registro.'),
 
                 TextInput::make('orden')
                     ->label('Orden')
                     ->required()
                     ->numeric()
-                    ->default(0),
+                    ->default(0)
+                    ->helperText('Sirve para ordenar los adjuntos. Menor número = aparece antes.'),
 
                 Toggle::make('es_visible')
                     ->label('Visible')
-                    ->default(true),
+                    ->default(true)
+                    ->helperText('Actívalo si este adjunto debe mostrarse normalmente.'),
 
                 Toggle::make('es_destacado')
                     ->label('Destacado')
-                    ->default(false),
+                    ->default(false)
+                    ->helperText('Marca este adjunto si quieres resaltarlo sobre el resto.'),
 
                 KeyValue::make('metadata')
                     ->label('Metadata')
                     ->keyLabel('Clave')
                     ->valueLabel('Valor')
                     ->addActionLabel('Añadir metadata')
+                    ->helperText('Datos extra opcionales en pares clave/valor.')
                     ->columnSpanFull(),
             ])
             ->columns(2);
@@ -153,6 +173,11 @@ class AdjuntosRelationManager extends RelationManager
             ->recordTitleAttribute('titulo')
             ->defaultSort('orden')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('orden')
                     ->label('Orden')
                     ->numeric()
@@ -166,9 +191,7 @@ class AdjuntosRelationManager extends RelationManager
                 TextColumn::make('tipo')
                     ->label('Tipo')
                     ->badge()
-                    ->formatStateUsing(function ($state) {
-                        return static::tipoOptions()[$state] ?? $state;
-                    })
+                    ->formatStateUsing(fn($state) => static::tipoOptions()[$state] ?? $state)
                     ->sortable(),
 
                 TextColumn::make('grupo')
@@ -181,10 +204,20 @@ class AdjuntosRelationManager extends RelationManager
                     ->searchable()
                     ->toggleable(),
 
+                TextColumn::make('mime_type')
+                    ->label('MIME')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('url')
                     ->label('URL')
                     ->limit(50)
                     ->tooltip(fn($record) => $record->url)
+                    ->toggleable(),
+
+                TextColumn::make('origen')
+                    ->label('Origen')
+                    ->searchable()
                     ->toggleable(),
 
                 IconColumn::make('es_visible')

@@ -24,24 +24,37 @@ class DocumentacionRelationManager extends RelationManager
 {
     protected static string $relationship = 'documentacion';
 
+    protected static ?string $title = 'Documentación';
+
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
+                TextInput::make('id')
+                    ->label('ID')
+                    ->helperText('Identificador interno del registro.')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->visible(fn($record) => $record !== null),
+
                 TextInput::make('titulo')
                     ->label('Título')
                     ->required()
                     ->maxLength(255)
+                    ->helperText('Nombre principal del bloque de documentación.')
                     ->live(onBlur: true)
                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state))),
 
                 TextInput::make('slug')
                     ->label('Slug')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->helperText('Versión legible para URL o identificador interno.'),
 
                 TextInput::make('seccion')
                     ->label('Sección')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('overview, arquitectura, api...')
+                    ->helperText('Parte del proyecto a la que pertenece esta documentación.'),
 
                 Select::make('tipo')
                     ->label('Tipo')
@@ -55,49 +68,60 @@ class DocumentacionRelationManager extends RelationManager
                         'other' => 'Other',
                     ])
                     ->searchable()
-                    ->native(false),
+                    ->native(false)
+                    ->helperText('Clasifica el tipo de documentación para organizarla mejor.'),
 
                 Textarea::make('resumen')
                     ->label('Resumen')
                     ->rows(3)
+                    ->helperText('Descripción breve para entender rápido de qué trata.')
                     ->columnSpanFull(),
 
                 Textarea::make('contenido')
                     ->label('Contenido')
                     ->rows(10)
+                    ->helperText('Texto principal de la documentación.')
                     ->columnSpanFull(),
 
                 TextInput::make('url_referencia')
                     ->label('URL de referencia')
                     ->url()
                     ->maxLength(2048)
+                    ->placeholder('https://...')
+                    ->helperText('Enlace externo de apoyo o fuente relacionada.')
                     ->columnSpanFull(),
 
                 TextInput::make('origen')
                     ->label('Origen')
                     ->required()
                     ->default('manual')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->placeholder('manual, importado, ia...')
+                    ->helperText('Indica cómo se creó este registro.'),
 
                 TextInput::make('orden')
                     ->label('Orden')
                     ->required()
                     ->numeric()
-                    ->default(0),
+                    ->default(0)
+                    ->helperText('Sirve para ordenar visualmente la documentación.'),
 
                 Toggle::make('es_visible')
                     ->label('Visible')
-                    ->default(true),
+                    ->default(true)
+                    ->helperText('Actívalo si este contenido debe mostrarse normalmente.'),
 
                 Toggle::make('es_destacado')
                     ->label('Destacado')
-                    ->default(false),
+                    ->default(false)
+                    ->helperText('Úsalo para resaltar una pieza importante.'),
 
                 KeyValue::make('metadata')
                     ->label('Metadata')
                     ->keyLabel('Clave')
                     ->valueLabel('Valor')
                     ->addActionLabel('Añadir metadata')
+                    ->helperText('Datos extra opcionales en formato clave/valor.')
                     ->columnSpanFull(),
             ])
             ->columns(2);
@@ -109,6 +133,11 @@ class DocumentacionRelationManager extends RelationManager
             ->recordTitleAttribute('titulo')
             ->defaultSort('orden')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->numeric()
+                    ->sortable(),
+
                 TextColumn::make('orden')
                     ->label('Orden')
                     ->numeric()
@@ -119,6 +148,11 @@ class DocumentacionRelationManager extends RelationManager
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    ->searchable()
+                    ->toggleable(),
+
                 TextColumn::make('seccion')
                     ->label('Sección')
                     ->searchable()
@@ -128,6 +162,11 @@ class DocumentacionRelationManager extends RelationManager
                     ->label('Tipo')
                     ->badge()
                     ->sortable(),
+
+                TextColumn::make('origen')
+                    ->label('Origen')
+                    ->searchable()
+                    ->toggleable(),
 
                 IconColumn::make('es_visible')
                     ->label('Visible')
