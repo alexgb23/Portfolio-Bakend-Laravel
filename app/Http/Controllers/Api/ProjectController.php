@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProjectCardResource;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Http\Request;
@@ -11,15 +12,18 @@ use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
-    // Lista simple de proyectos para la API.
+    // Lista simple de proyectos para tarjetas.
     public function index()
     {
         $projects = Project::query()
-            ->with('laboratorioReal:id,titulo,slug,estado')
+            ->with([
+                'laboratorioReal:id,titulo,slug,estado',
+                'adjuntos:id,project_id,titulo,url,es_visible',
+            ])
             ->ordered()
             ->get();
 
-        return ProjectResource::collection($projects);
+        return ProjectCardResource::collection($projects);
     }
 
     // Detalle completo con relaciones.
@@ -75,6 +79,7 @@ class ProjectController extends Controller
         ));
 
         $project = Project::create($validated);
+
         $project->load([
             'laboratorioReal:id,titulo,slug,estado',
             'adjuntos',
@@ -131,6 +136,7 @@ class ProjectController extends Controller
         ));
 
         $project->update($validated);
+
         $project->load([
             'laboratorioReal:id,titulo,slug,estado',
             'adjuntos',
