@@ -1,0 +1,2806 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Portfolio Backend API",
+        "version": "1.0.0",
+        "description": "API p\u00fablica del portfolio y base evolutiva para un laboratorio t\u00e9cnico, documentaci\u00f3n y pruebas de integraci\u00f3n."
+    },
+    "servers": [
+        {
+            "url": "https://portfolio-api.syskovex.com/api",
+            "description": "Production"
+        },
+        {
+            "url": "http://localhost:8081/api",
+            "description": "Local"
+        }
+    ],
+    "paths": {
+        "/verify-auth": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "authenticated": {
+                                            "type": "boolean"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "authenticated",
+                                        "user"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "operationId": "auth.login",
+                "tags": [
+                    "Auth"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Login correcto"
+                                        },
+                                        "token_type": {
+                                            "type": "string",
+                                            "const": "Bearer"
+                                        },
+                                        "token": {
+                                            "type": "string"
+                                        },
+                                        "user": {
+                                            "$ref": "#/components/schemas/UserResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "message",
+                                        "token_type",
+                                        "token",
+                                        "user"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "operationId": "auth.logout",
+                "tags": [
+                    "Auth"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Logout correcto"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/contact-messages": {
+            "post": {
+                "operationId": "contactMessage.store",
+                "tags": [
+                    "ContactMessage"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ContactMessageStoreRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "anyOf": [
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Mensaje enviado correctamente"
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "status": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "status"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "message",
+                                                "data"
+                                            ]
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "Mensaje guardado, pero hubo un problema al enviar la notificaci\u00f3n por correo."
+                                                },
+                                                "data": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "status": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "status"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "message",
+                                                "data"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/laboratorios-reales/home": {
+            "get": {
+                "operationId": "laboratorioReal.home",
+                "description": "Pensado para home, previews o listados destacados.",
+                "summary": "Devuelve una selecci\u00f3n resumida de laboratorios reales visibles",
+                "tags": [
+                    "Laboratorios reales",
+                    "LaboratorioReal"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `LaboratorioRealHomeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LaboratorioRealHomeResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/laboratorios-reales": {
+            "get": {
+                "operationId": "laboratorioReal.index",
+                "summary": "Lista todos los laboratorios reales visibles en formato resumido",
+                "tags": [
+                    "Laboratorios reales",
+                    "LaboratorioReal"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `LaboratorioRealListResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/LaboratorioRealListResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/laboratorios-reales/{slug}": {
+            "get": {
+                "operationId": "laboratorioReal.show",
+                "summary": "Devuelve el detalle completo de un laboratorio real visible a partir de su slug",
+                "tags": [
+                    "Laboratorios reales",
+                    "LaboratorioReal"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LaboratorioRealResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/LaboratorioRealResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio-home": {
+            "get": {
+                "operationId": "portfolio.getHomeData",
+                "tags": [
+                    "Portfolio"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PortfolioHomeResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PortfolioHomeResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/portfolio-home/about": {
+            "get": {
+                "operationId": "portfolio.getAboutData",
+                "tags": [
+                    "Portfolio"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AboutResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AboutResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects": {
+            "get": {
+                "operationId": "project.index",
+                "tags": [
+                    "Project"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Array of `ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectResource"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "operationId": "project.store",
+                "tags": [
+                    "Project"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "laboratorio_real_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "slug": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "tipo_proyecto": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "area_principal": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "short_description": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 280
+                                    },
+                                    "resumen": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "notas_tecnicas": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "objetivo": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "resultado_actual": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "technologies": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "stack_summary": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "project_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "frontend_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "backend_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "api_base_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "staging_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "repo_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "referencia_externa": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "metadata": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "status": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 50
+                                    },
+                                    "is_featured": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "is_published": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "sort_order": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "fecha_inicio": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "fecha_fin": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "areas_relacionadas": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "maxLength": 255
+                                        }
+                                    },
+                                    "image_url": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    },
+                                    "galeria_urls": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    },
+                                    "documentacion_urls": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "technologies"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/projects/{slug}": {
+            "get": {
+                "operationId": "project.show",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/projects/{id}": {
+            "put": {
+                "operationId": "project.update",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "laboratorio_real_id": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ]
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "slug": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "tipo_proyecto": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "area_principal": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "short_description": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 280
+                                    },
+                                    "resumen": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "notas_tecnicas": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "objetivo": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "resultado_actual": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ]
+                                    },
+                                    "technologies": {
+                                        "type": "string",
+                                        "maxLength": 255
+                                    },
+                                    "stack_summary": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 255
+                                    },
+                                    "project_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "frontend_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "backend_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "api_base_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "staging_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "repo_url": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "referencia_externa": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "uri"
+                                    },
+                                    "metadata": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "status": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 50
+                                    },
+                                    "is_featured": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "is_published": {
+                                        "type": [
+                                            "boolean",
+                                            "null"
+                                        ]
+                                    },
+                                    "sort_order": {
+                                        "type": [
+                                            "integer",
+                                            "null"
+                                        ],
+                                        "minimum": 0
+                                    },
+                                    "fecha_inicio": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "fecha_fin": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "format": "date-time"
+                                    },
+                                    "areas_relacionadas": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "maxLength": 255
+                                        }
+                                    },
+                                    "image_url": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    },
+                                    "galeria_urls": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    },
+                                    "documentacion_urls": {
+                                        "type": [
+                                            "array",
+                                            "null"
+                                        ],
+                                        "items": {
+                                            "type": "string",
+                                            "format": "uri"
+                                        }
+                                    }
+                                },
+                                "required": [
+                                    "title",
+                                    "description",
+                                    "technologies"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ProjectResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectResource"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "project.destroy",
+                "tags": [
+                    "Project"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "const": "Proyecto eliminado correctamente"
+                                        }
+                                    },
+                                    "required": [
+                                        "message"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AboutResource": {
+                "type": "object",
+                "properties": {
+                    "skills": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SkillResource"
+                        }
+                    },
+                    "highlights": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "number": {
+                                    "type": "string"
+                                },
+                                "title": {
+                                    "type": "string"
+                                },
+                                "text": {
+                                    "type": "string"
+                                },
+                                "side": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "number",
+                                "title",
+                                "text",
+                                "side"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "skills",
+                    "highlights"
+                ],
+                "title": "AboutResource"
+            },
+            "AdjuntoLaboratorioResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "laboratorio_real_id": {
+                        "type": "integer"
+                    },
+                    "seccion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "fase": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tipo_adjunto": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "storage_driver": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "urls_relacionadas": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "nombre_archivo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "mime_type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "descripcion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "resumen_ia": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "origen": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "laboratorio_real_id",
+                    "seccion",
+                    "fase",
+                    "tipo_adjunto",
+                    "storage_driver",
+                    "url",
+                    "urls_relacionadas",
+                    "nombre_archivo",
+                    "mime_type",
+                    "descripcion",
+                    "resumen_ia",
+                    "origen",
+                    "metadata",
+                    "orden",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "AdjuntoLaboratorioResource"
+            },
+            "AvanceLaboratorioResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "laboratorio_real_id": {
+                        "type": "integer"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "descripcion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "fase": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seccion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tipo_avance": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "estado": {
+                        "type": "string"
+                    },
+                    "fecha_avance": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "urls_relacionadas": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "metadata": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "laboratorio_real_id",
+                    "titulo",
+                    "resumen",
+                    "descripcion",
+                    "fase",
+                    "seccion",
+                    "tipo_avance",
+                    "estado",
+                    "fecha_avance",
+                    "urls_relacionadas",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "AvanceLaboratorioResource"
+            },
+            "ContactMessageStoreRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "subject": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    },
+                    "message": {
+                        "type": "string",
+                        "maxLength": 5000
+                    }
+                },
+                "required": [
+                    "name",
+                    "email",
+                    "message"
+                ],
+                "title": "ContactMessageStoreRequest"
+            },
+            "DocumentacionLaboratorioResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "laboratorio_real_id": {
+                        "type": "integer"
+                    },
+                    "fase": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seccion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tipo_documentacion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "contenido": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "urls_relacionadas": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "estado": {
+                        "type": "string"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "origen": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "laboratorio_real_id",
+                    "fase",
+                    "seccion",
+                    "tipo_documentacion",
+                    "titulo",
+                    "resumen",
+                    "contenido",
+                    "urls_relacionadas",
+                    "orden",
+                    "estado",
+                    "es_visible",
+                    "origen",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "DocumentacionLaboratorioResource"
+            },
+            "IdeaLaboratorioResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "laboratorio_real_id": {
+                        "type": "integer"
+                    },
+                    "titulo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "idea": {
+                        "type": "string"
+                    },
+                    "detalle": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "fase": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seccion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "estado": {
+                        "type": "string"
+                    },
+                    "prioridad": {
+                        "type": "string"
+                    },
+                    "origen": {
+                        "type": "string"
+                    },
+                    "creada_por_ia": {
+                        "type": "boolean"
+                    },
+                    "urls_relacionadas": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "metadata": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "laboratorio_real_id",
+                    "titulo",
+                    "idea",
+                    "detalle",
+                    "fase",
+                    "seccion",
+                    "estado",
+                    "prioridad",
+                    "origen",
+                    "creada_por_ia",
+                    "urls_relacionadas",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "IdeaLaboratorioResource"
+            },
+            "LaboratorioRealHomeResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "categoria": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "Laboratorio"
+                                ]
+                            }
+                        ]
+                    },
+                    "area_principal": {
+                        "type": "string"
+                    },
+                    "estado": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "string",
+                                "enum": [
+                                    "activo"
+                                ]
+                            }
+                        ]
+                    },
+                    "resumen": {
+                        "type": "string"
+                    },
+                    "descripcion": {
+                        "type": "string"
+                    },
+                    "objetivo": {
+                        "type": "string"
+                    },
+                    "resultado_actual": {
+                        "type": "string"
+                    },
+                    "notas_tecnicas": {
+                        "type": "string"
+                    },
+                    "areas_relacionadas": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "metadata": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "documentacion_count": {
+                        "type": "integer"
+                    },
+                    "avances_count": {
+                        "type": "integer"
+                    },
+                    "ideas_count": {
+                        "type": "integer"
+                    },
+                    "adjuntos_count": {
+                        "type": "integer"
+                    },
+                    "adjuntos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdjuntoLaboratorioResource"
+                        }
+                    },
+                    "is_featured": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "slug",
+                    "categoria",
+                    "area_principal",
+                    "estado",
+                    "resumen",
+                    "descripcion",
+                    "objetivo",
+                    "resultado_actual",
+                    "notas_tecnicas",
+                    "areas_relacionadas",
+                    "metadata",
+                    "updated_at",
+                    "is_featured"
+                ],
+                "title": "LaboratorioRealHomeResource"
+            },
+            "LaboratorioRealListResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "tipo_proyecto": {
+                        "type": "string"
+                    },
+                    "area_principal": {
+                        "type": "string"
+                    },
+                    "areas_relacionadas": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "estado": {
+                        "type": "string"
+                    },
+                    "es_destacado": {
+                        "type": "boolean"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "orden": {
+                        "type": "string"
+                    },
+                    "resumen": {
+                        "type": "string"
+                    },
+                    "objetivo": {
+                        "type": "string"
+                    },
+                    "resultado_actual": {
+                        "type": "string"
+                    },
+                    "notas_tecnicas": {
+                        "type": "string"
+                    },
+                    "galeria_urls": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "documentacion_urls": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "origen": {
+                        "type": "string"
+                    },
+                    "referencia_externa": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "minItems": 0,
+                                "maxItems": 0,
+                                "additionalItems": false
+                            }
+                        ]
+                    },
+                    "fecha_inicio": {
+                        "type": "string"
+                    },
+                    "fecha_fin": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "documentacion_count": {
+                        "type": "integer"
+                    },
+                    "avances_count": {
+                        "type": "integer"
+                    },
+                    "adjuntos_count": {
+                        "type": "integer"
+                    },
+                    "ideas_count": {
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "slug",
+                    "tipo_proyecto",
+                    "area_principal",
+                    "areas_relacionadas",
+                    "estado",
+                    "es_destacado",
+                    "es_visible",
+                    "orden",
+                    "resumen",
+                    "objetivo",
+                    "resultado_actual",
+                    "notas_tecnicas",
+                    "galeria_urls",
+                    "documentacion_urls",
+                    "origen",
+                    "referencia_externa",
+                    "metadata",
+                    "fecha_inicio",
+                    "fecha_fin",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "LaboratorioRealListResource"
+            },
+            "LaboratorioRealResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "tipo_proyecto": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "area_principal": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "areas_relacionadas": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "estado": {
+                        "type": "string"
+                    },
+                    "es_destacado": {
+                        "type": "boolean"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "descripcion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "notas_tecnicas": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "objetivo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "resultado_actual": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "galeria_urls": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "documentacion_urls": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "origen": {
+                        "type": "string"
+                    },
+                    "referencia_externa": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metadata": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {}
+                    },
+                    "fecha_inicio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "fecha_fin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "documentacion": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/DocumentacionLaboratorioResource"
+                        }
+                    },
+                    "avances": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AvanceLaboratorioResource"
+                        }
+                    },
+                    "adjuntos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AdjuntoLaboratorioResource"
+                        }
+                    },
+                    "ideas": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IdeaLaboratorioResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "slug",
+                    "tipo_proyecto",
+                    "area_principal",
+                    "areas_relacionadas",
+                    "estado",
+                    "es_destacado",
+                    "es_visible",
+                    "orden",
+                    "resumen",
+                    "descripcion",
+                    "notas_tecnicas",
+                    "objetivo",
+                    "resultado_actual",
+                    "galeria_urls",
+                    "documentacion_urls",
+                    "origen",
+                    "referencia_externa",
+                    "metadata",
+                    "fecha_inicio",
+                    "fecha_fin",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "LaboratorioRealResource"
+            },
+            "LoginRequest": {
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "maxLength": 255
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 8,
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "title": "LoginRequest"
+            },
+            "PortfolioHomeResource": {
+                "type": "object",
+                "properties": {
+                    "social_links": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SocialLinkResource"
+                        }
+                    },
+                    "projects": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProjectCardResource"
+                        }
+                    },
+                    "laboratories": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/LaboratorioRealHomeResource"
+                        }
+                    }
+                },
+                "required": [
+                    "social_links",
+                    "projects",
+                    "laboratories"
+                ],
+                "title": "PortfolioHomeResource"
+            },
+            "ProjectCardResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string"
+                    },
+                    "short_description": {
+                        "type": "string"
+                    },
+                    "stack_summary": {
+                        "type": "string"
+                    },
+                    "technologies": {
+                        "type": "string"
+                    },
+                    "is_featured": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "slug",
+                    "short_description",
+                    "stack_summary",
+                    "technologies",
+                    "is_featured"
+                ],
+                "title": "ProjectCardResource"
+            },
+            "ProjectResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "laboratorio_real_id": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tipo_proyecto": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "area_principal": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "areas_relacionadas": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "short_description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "notas_tecnicas": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "objetivo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "resultado_actual": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "technologies": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "stack_summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "image_url": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "galeria_urls": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "documentacion_urls": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "project_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "frontend_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "backend_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "api_base_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "staging_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "repo_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "referencia_externa": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metadata": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "is_featured": {
+                        "type": "boolean"
+                    },
+                    "is_published": {
+                        "type": "boolean"
+                    },
+                    "sort_order": {
+                        "type": "integer"
+                    },
+                    "fecha_inicio": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "fecha_fin": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "laboratorio_origen": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "titulo": {
+                                "type": "string"
+                            },
+                            "slug": {
+                                "type": "string"
+                            },
+                            "estado": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "titulo",
+                            "slug",
+                            "estado"
+                        ]
+                    },
+                    "adjuntos": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProyectoAdjuntoResource"
+                        }
+                    },
+                    "documentacion": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProyectoDocumentacionResource"
+                        }
+                    },
+                    "secciones": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProyectoSeccionResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "laboratorio_real_id",
+                    "title",
+                    "slug",
+                    "tipo_proyecto",
+                    "area_principal",
+                    "areas_relacionadas",
+                    "short_description",
+                    "resumen",
+                    "description",
+                    "notas_tecnicas",
+                    "objetivo",
+                    "resultado_actual",
+                    "technologies",
+                    "stack_summary",
+                    "image_url",
+                    "galeria_urls",
+                    "documentacion_urls",
+                    "project_url",
+                    "frontend_url",
+                    "backend_url",
+                    "api_base_url",
+                    "staging_url",
+                    "repo_url",
+                    "referencia_externa",
+                    "metadata",
+                    "status",
+                    "is_featured",
+                    "is_published",
+                    "sort_order",
+                    "fecha_inicio",
+                    "fecha_fin",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ProjectResource"
+            },
+            "ProyectoAdjuntoResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "tipo": {
+                        "type": "string"
+                    },
+                    "grupo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "subtitulo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "descripcion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "origen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "nombre_archivo": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "mime_type": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "icono": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "es_destacado": {
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "tipo",
+                    "grupo",
+                    "subtitulo",
+                    "descripcion",
+                    "origen",
+                    "nombre_archivo",
+                    "mime_type",
+                    "url",
+                    "icono",
+                    "orden",
+                    "es_visible",
+                    "es_destacado",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ProyectoAdjuntoResource"
+            },
+            "ProyectoDocumentacionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "seccion": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "tipo": {
+                        "type": "string"
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "contenido": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "origen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "url_referencia": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "es_destacado": {
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "titulo",
+                    "slug",
+                    "seccion",
+                    "tipo",
+                    "resumen",
+                    "contenido",
+                    "origen",
+                    "url_referencia",
+                    "orden",
+                    "es_visible",
+                    "es_destacado",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ProyectoDocumentacionResource"
+            },
+            "ProyectoSeccionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "clave": {
+                        "type": "string"
+                    },
+                    "titulo": {
+                        "type": "string"
+                    },
+                    "tipo_contenido": {
+                        "type": "string"
+                    },
+                    "layout": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "resumen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "contenido": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "media_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "codigo_lenguaje": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "origen": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "orden": {
+                        "type": "integer"
+                    },
+                    "es_visible": {
+                        "type": "boolean"
+                    },
+                    "es_destacado": {
+                        "type": "boolean"
+                    },
+                    "metadata": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "clave",
+                    "titulo",
+                    "tipo_contenido",
+                    "layout",
+                    "resumen",
+                    "contenido",
+                    "items",
+                    "media_url",
+                    "codigo_lenguaje",
+                    "origen",
+                    "orden",
+                    "es_visible",
+                    "es_destacado",
+                    "metadata",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ProyectoSeccionResource"
+            },
+            "SkillResource": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "category": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "proficiency_level": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "proficiency_score": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "icon_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_featured": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name",
+                    "slug",
+                    "category",
+                    "proficiency_level",
+                    "proficiency_score",
+                    "icon_name",
+                    "description",
+                    "is_featured"
+                ],
+                "title": "SkillResource"
+            },
+            "SocialLinkResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "platform": {
+                        "type": "string"
+                    },
+                    "icon_key": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "label": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "text": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "url": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "platform",
+                    "icon_key",
+                    "label",
+                    "title",
+                    "text",
+                    "url"
+                ],
+                "title": "SocialLinkResource"
+            },
+            "UserResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "email_verified_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "email",
+                    "email_verified_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "UserResource"
+            }
+        },
+        "responses": {
+            "ValidationException": {
+                "description": "Validation error",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Errors overview."
+                                },
+                                "errors": {
+                                    "type": "object",
+                                    "description": "A detailed description of each field that failed validation.",
+                                    "additionalProperties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            },
+                            "required": [
+                                "message",
+                                "errors"
+                            ]
+                        }
+                    }
+                }
+            },
+            "AuthenticationException": {
+                "description": "Unauthenticated",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            },
+            "ModelNotFoundException": {
+                "description": "Not found",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "description": "Error overview."
+                                }
+                            },
+                            "required": [
+                                "message"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

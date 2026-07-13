@@ -27,7 +27,12 @@ class ProjectController extends Controller
     {
         $project = Project::query()
             ->published()
-            ->with('laboratorioReal:id,titulo,slug,estado')
+            ->with([
+                'laboratorioReal:id,titulo,slug,estado',
+                'adjuntos',
+                'documentacion',
+                'secciones',
+            ])
             ->where('slug', $slug)
             ->firstOrFail();
 

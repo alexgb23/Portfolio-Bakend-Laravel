@@ -4,6 +4,9 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ProyectoAdjuntoResource;
+use App\Http\Resources\ProyectoDocumentacionResource;
+use App\Http\Resources\ProyectoSeccionResource;
 
 class ProjectResource extends JsonResource
 {
@@ -26,7 +29,7 @@ class ProjectResource extends JsonResource
             'objetivo' => $this->objetivo,
             'resultado_actual' => $this->resultado_actual,
 
-            'technologies' => $this->technologies,
+            'technologies' => $this->technologies ?? [],
             'stack_summary' => $this->stack_summary,
 
             'image_url' => $this->image_url ?? [],
@@ -48,8 +51,8 @@ class ProjectResource extends JsonResource
             'is_published' => (bool) $this->is_published,
             'sort_order' => (int) $this->sort_order,
 
-            'fecha_inicio' => $this->fecha_inicio,
-            'fecha_fin' => $this->fecha_fin,
+            'fecha_inicio' => optional($this->fecha_inicio)?->toISOString(),
+            'fecha_fin' => optional($this->fecha_fin)?->toISOString(),
 
             'created_at' => optional($this->created_at)?->toISOString(),
             'updated_at' => optional($this->updated_at)?->toISOString(),
@@ -62,6 +65,18 @@ class ProjectResource extends JsonResource
                     'slug' => $this->laboratorioReal->slug,
                     'estado' => $this->laboratorioReal->estado,
                 ]
+            ),
+
+            'adjuntos' => ProyectoAdjuntoResource::collection(
+                $this->whenLoaded('adjuntos')
+            ),
+
+            'documentacion' => ProyectoDocumentacionResource::collection(
+                $this->whenLoaded('documentacion')
+            ),
+
+            'secciones' => ProyectoSeccionResource::collection(
+                $this->whenLoaded('secciones')
             ),
         ];
     }
