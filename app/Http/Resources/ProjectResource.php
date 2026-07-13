@@ -31,13 +31,22 @@ class ProjectResource extends JsonResource
             'stack_summary' => $this->stack_summary,
             'metadata' => $this->metadata ?? [],
 
+            /*
+             |-------------------------------------------------------------
+             | Fondos de tarjeta para frontend
+             |-------------------------------------------------------------
+             | Se envían siempre como arrays para que ProjectCard pueda
+             | resolver la imagen correcta según el tema dark/light.
+             */
+            'card_background_dark' => $this->card_background_dark ?? [],
+            'card_background_light' => $this->card_background_light ?? [],
+
             'fecha_inicio' => optional($this->fecha_inicio)?->toISOString(),
             'fecha_fin' => optional($this->fecha_fin)?->toISOString(),
 
             'created_at' => optional($this->created_at)?->toISOString(),
             'updated_at' => optional($this->updated_at)?->toISOString(),
 
-            // Relación opcional con laboratorio origen.
             'laboratorio_origen' => $this->when(
                 $this->relationLoaded('laboratorioReal') && $this->laboratorioReal,
                 fn() => [
@@ -48,7 +57,6 @@ class ProjectResource extends JsonResource
                 ]
             ),
 
-            // Recursos externos del proyecto.
             'adjuntos' => ProyectoAdjuntoResource::collection(
                 $this->whenLoaded('adjuntos')
             ),
