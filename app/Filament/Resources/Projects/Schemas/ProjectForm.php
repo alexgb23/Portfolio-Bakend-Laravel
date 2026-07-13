@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 
 class ProjectForm
 {
+    // Normaliza cualquier valor a array limpio para TagsInput.
     protected static function normalizeArrayState(mixed $state): array
     {
         if (is_array($state)) {
@@ -41,6 +42,7 @@ class ProjectForm
         return [];
     }
 
+    // Normaliza metadata a objeto asociativo válido.
     protected static function normalizeMetadataState(mixed $state): array
     {
         if (is_array($state)) {
@@ -177,9 +179,11 @@ class ProjectForm
 
                 Section::make('Imágenes y documentación')
                     ->schema([
+                        // Campo principal de imagen. Cada valor queda visible como tag editable.
                         TagsInput::make('image_url')
                             ->label('Image URL')
-                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->placeholder('Añade una ruta o URL y pulsa Enter')
+                            ->helperText('Ejemplo válido: /backendDarkAvif.avif')
                             ->splitKeys(['Enter', 'Tab', ','])
                             ->reorderable()
                             ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
@@ -188,7 +192,7 @@ class ProjectForm
 
                         TagsInput::make('galeria_urls')
                             ->label('Galería URLs')
-                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->placeholder('Añade una ruta o URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
                             ->reorderable()
                             ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))
@@ -197,7 +201,7 @@ class ProjectForm
 
                         TagsInput::make('documentacion_urls')
                             ->label('Documentación URLs')
-                            ->placeholder('Añade una URL y pulsa Enter')
+                            ->placeholder('Añade una ruta o URL y pulsa Enter')
                             ->splitKeys(['Enter', 'Tab', ','])
                             ->reorderable()
                             ->afterStateHydrated(fn($component, $state) => $component->state(self::normalizeArrayState($state)))

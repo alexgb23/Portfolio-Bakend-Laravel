@@ -12,29 +12,52 @@ use Filament\Tables\Table;
 
 class ProjectsTable
 {
-    protected static function stringifyArrayish(mixed $state): string
+    // Convierte arrays o JSON en una lista limpia de strings.
+    protected static function normalizeArrayish(mixed $state): array
     {
         if (is_array($state)) {
-            return implode(', ', array_filter($state, fn($item) => filled($item)));
+            return array_values(array_filter(
+                array_map(fn($item) => is_scalar($item) ? trim((string) $item) : '', $state),
+                fn($item) => filled($item)
+            ));
         }
 
         if (blank($state)) {
-            return '';
+            return [];
         }
 
         if (is_string($state)) {
             $decoded = json_decode($state, true);
 
             if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
-                return implode(', ', array_filter($decoded, fn($item) => filled($item)));
+                return array_values(array_filter(
+                    array_map(fn($item) => is_scalar($item) ? trim((string) $item) : '', $decoded),
+                    fn($item) => filled($item)
+                ));
             }
 
-            return $state;
+            return array_values(array_filter(
+                array_map('trim', explode(',', $state)),
+                fn($item) => filled($item)
+            ));
         }
 
-        return '';
+        return [];
     }
 
+    // Devuelve arrays en varias líneas para que se lean mejor en tabla.
+    protected static function multilineArrayish(mixed $state): string
+    {
+        $items = self::normalizeArrayish($state);
+
+        if ($items === []) {
+            return '—';
+        }
+
+        return implode(PHP_EOL, $items);
+    }
+
+    // Devuelve un JSON bonito y legible si existe.
     protected static function stringifyJson(mixed $state): string
     {
         if (is_array($state)) {
@@ -96,7 +119,8 @@ class ProjectsTable
 
                 TextColumn::make('areas_relacionadas')
                     ->label('Áreas relacionadas')
-                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
+                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
+                    ->lineClamp(3)
                     ->wrap(),
 
                 TextColumn::make('description')
@@ -137,7 +161,8 @@ class ProjectsTable
 
                 TextColumn::make('technologies')
                     ->label('Tecnologías')
-                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
+                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
+                    ->lineClamp(4)
                     ->wrap(),
 
                 TextColumn::make('stack_summary')
@@ -146,19 +171,34 @@ class ProjectsTable
                     ->wrap()
                     ->searchable(),
 
+                // Muestra cada imagen en una línea para ver qué hay dentro del array.
                 TextColumn::make('image_url')
                     ->label('Image URL')
-                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
+                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
+                    ->listWithLineBreaks()
+                    ->limitList(3)
+                    ->expandableLimitedList()
+                    ->copyable()
                     ->wrap(),
 
+                // Igual para la galería.
                 TextColumn::make('galeria_urls')
                     ->label('Galería URLs')
-                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
+                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
+                    ->listWithLineBreaks()
+                    ->limitList(4)
+                    ->expandableLimitedList()
+                    ->copyable()
                     ->wrap(),
 
+                // Igual para documentación.
                 TextColumn::make('documentacion_urls')
                     ->label('Documentación URLs')
-                    ->formatStateUsing(fn($state): string => self::stringifyArrayish($state))
+                    ->formatStateUsing(fn($state): string => self::multilineArrayish($state))
+                    ->listWithLineBreaks()
+                    ->limitList(4)
+                    ->expandableLimitedList()
+                    ->copyable()
                     ->wrap(),
 
                 TextColumn::make('project_url')
