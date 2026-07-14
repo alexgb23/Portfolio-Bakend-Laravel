@@ -12,9 +12,8 @@ class Project extends Model
     /**
      * Campos permitidos para asignación masiva.
      *
-     * Importante:
-     * añadimos card_background_dark y card_background_light
-     * para que puedan guardarse desde store/update.
+     * Solo deben ir atributos que existan realmente
+     * en la tabla projects.
      */
     protected $fillable = [
         'laboratorio_real_id',
@@ -30,30 +29,20 @@ class Project extends Model
         'technologies',
         'stack_summary',
         'metadata',
-        'card_background_dark',
-        'card_background_light',
         'fecha_inicio',
         'fecha_fin',
     ];
 
     /**
      * Valores por defecto para atributos JSON/array.
-     *
-     * Así evitamos null innecesarios y garantizamos que
-     * el frontend reciba arrays vacíos cuando no haya datos.
      */
     protected $attributes = [
         'technologies' => '[]',
         'metadata' => '[]',
-        'card_background_dark' => '[]',
-        'card_background_light' => '[]',
     ];
 
     /**
      * Casts automáticos de Eloquent.
-     *
-     * Laravel convertirá estos campos JSON a arrays PHP
-     * al leerlos, y de arrays a JSON al guardarlos.
      */
     protected function casts(): array
     {
@@ -61,8 +50,6 @@ class Project extends Model
             'laboratorio_real_id' => 'integer',
             'technologies' => 'array',
             'metadata' => 'array',
-            'card_background_dark' => 'array',
-            'card_background_light' => 'array',
             'fecha_inicio' => 'date',
             'fecha_fin' => 'date',
         ];
