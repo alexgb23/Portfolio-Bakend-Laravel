@@ -19,7 +19,7 @@ class ProjectCardResource extends JsonResource
 
             $lightAdjunto = $this->adjuntos
                 ->where('es_visible', true)
-                ->firstWhere('titulo', 'fondo_tarjeta_Light');
+                ->firstWhere('titulo', 'fondo_tarjeta_light');
 
             $darkPaths = $darkAdjunto?->url
                 ? collect(explode(',', $darkAdjunto->url))
@@ -46,7 +46,6 @@ class ProjectCardResource extends JsonResource
             'short_description' => $this->short_description,
             'stack_summary' => $this->stack_summary,
             'technologies' => $this->technologies ?? [],
-
             'card_background_dark' => $darkPaths,
             'card_background_light' => $lightPaths,
         ];
