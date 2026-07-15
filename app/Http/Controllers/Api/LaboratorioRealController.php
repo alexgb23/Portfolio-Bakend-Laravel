@@ -7,6 +7,7 @@ use App\Http\Resources\LaboratorioRealHomeResource;
 use App\Http\Resources\LaboratorioRealListResource;
 use App\Http\Resources\LaboratorioRealResource;
 use App\Models\LaboratorioReal;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /**
@@ -19,7 +20,7 @@ class LaboratorioRealController extends Controller
      *
      * Pensado para home, previews o listados destacados.
      */
-    public function home()
+    public function home(): JsonResponse
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
@@ -37,12 +38,19 @@ class LaboratorioRealController extends Controller
 
         $allStacks = $statsSource
             ->pluck('metadata.stack')
-            ->flatten()
+            ->filter()
+            ->flatten(1)
             ->filter()
             ->values();
 
         $uniqueTechnologies = $allStacks
-            ->map(fn($item) => is_array($item) ? ($item['label'] ?? $item['icon'] ?? null) : $item)
+            ->map(function ($item) {
+                if (is_array($item)) {
+                    return $item['label'] ?? null;
+                }
+
+                return is_string($item) ? $item : null;
+            })
             ->filter()
             ->unique()
             ->values();
