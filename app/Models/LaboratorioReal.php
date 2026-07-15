@@ -52,13 +52,13 @@ class LaboratorioReal extends Model
     {
         return $this->hasMany(IdeaLaboratorio::class, 'laboratorio_real_id')
             ->orderByRaw("
-            CASE prioridad
-                WHEN 'alta' THEN 1
-                WHEN 'media' THEN 2
-                WHEN 'baja' THEN 3
-                ELSE 4
-            END
-        ")
+                CASE prioridad
+                    WHEN 'alta' THEN 1
+                    WHEN 'media' THEN 2
+                    WHEN 'baja' THEN 3
+                    ELSE 4
+                END
+            ")
             ->orderByDesc('created_at')
             ->orderByDesc('id');
     }
@@ -80,5 +80,11 @@ class LaboratorioReal extends Model
     {
         return $this->hasMany(DocumentacionLaboratorio::class, 'laboratorio_real_id')
             ->orderBy('orden');
+    }
+
+    public function projects(): HasMany
+    {
+        return $this->hasMany(Project::class, 'laboratorio_real_id')
+            ->orderBy('title');
     }
 }

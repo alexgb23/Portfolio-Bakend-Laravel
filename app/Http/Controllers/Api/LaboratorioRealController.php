@@ -19,22 +19,48 @@ class LaboratorioRealController extends Controller
      *
      * Pensado para home, previews o listados destacados.
      */
-    public function home(): AnonymousResourceCollection
+    public function home()
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
-            ->with([
-                'ideas:id,laboratorio_real_id,titulo,idea,estado,prioridad,created_at,updated_at',
-                'adjuntos:id,laboratorio_real_id,nombre_archivo,descripcion,url,metadata,orden,created_at,updated_at',
-            ])
-            ->withCount(['documentacion', 'avances', 'ideas', 'adjuntos'])
-            ->orderByDesc('es_destacado')
+            ->where('es_destacado', true)
+            ->withCount(['projects'])
             ->orderBy('orden')
             ->orderByDesc('id')
-            ->limit(5)
+            ->limit(6)
             ->get();
 
-        return LaboratorioRealHomeResource::collection($laboratorios);
+        $statsSource = LaboratorioReal::query()
+            ->where('es_visible', true)
+            ->withCount(['documentacion', 'projects'])
+            ->get();
+
+        $allStacks = $statsSource
+            ->pluck('metadata.stack')
+            ->flatten()
+            ->filter()
+            ->values();
+
+        $uniqueTechnologies = $allStacks
+            ->map(fn($item) => is_array($item) ? ($item['label'] ?? $item['icon'] ?? null) : $item)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $topTechnologies = $uniqueTechnologies
+            ->take(8)
+            ->values();
+
+        return response()->json([
+            'stats' => [
+                'active_laboratories' => $statsSource->where('estado', 'activo')->count(),
+                'technologies_count' => $uniqueTechnologies->count(),
+                'documents_count' => $statsSource->sum('documentacion_count'),
+                'projects_count' => $statsSource->sum('projects_count'),
+            ],
+            'top_technologies' => $topTechnologies,
+            'featured_laboratories' => LaboratorioRealHomeResource::collection($laboratorios),
+        ]);
     }
 
     /**
@@ -44,7 +70,7 @@ class LaboratorioRealController extends Controller
     {
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
-            ->withCount(['documentacion', 'avances', 'adjuntos', 'ideas'])
+            ->withCount(['documentacion', 'avances', 'adjuntos', 'ideas', 'projects'])
             ->orderBy('orden')
             ->orderByDesc('id')
             ->get();
@@ -60,7 +86,7 @@ class LaboratorioRealController extends Controller
         $laboratorio = LaboratorioReal::query()
             ->where('slug', $slug)
             ->where('es_visible', true)
-            ->with(['documentacion', 'avances', 'adjuntos', 'ideas'])
+            ->with(['documentacion', 'avances', 'adjuntos', 'ideas', 'projects'])
             ->firstOrFail();
 
         return new LaboratorioRealResource($laboratorio);
