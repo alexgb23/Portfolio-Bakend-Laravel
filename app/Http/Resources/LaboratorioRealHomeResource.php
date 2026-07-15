@@ -9,43 +9,18 @@ class LaboratorioRealHomeResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $iconMap = [
-            'Laravel' => 'laravel',
-            'PHP 8.4' => 'php',
-            'PHP' => 'php',
-            'Docker' => 'docker',
-            'Docker Compose' => 'docker',
-            'Render' => 'render',
-            'Neon PostgreSQL' => 'postgresql',
-            'PostgreSQL' => 'postgresql',
-            'Filament' => 'filament',
-            'Sanctum' => 'laravel',
-            'Resend' => 'resend',
-            'React' => 'react',
-            'Vite' => 'vite',
-            'Python' => 'python',
-            'Linux' => 'linux',
-            'Kubernetes' => 'kubernetes',
-            'Proxmox' => 'proxmox',
-            'Home Assistant' => 'homeassistant',
-            'PfSense' => 'pfsense',
-        ];
-
         $stack = collect(data_get($this, 'metadata.stack', []))
-            ->map(function ($item) use ($iconMap) {
-                if (is_array($item)) {
-                    return [
-                        'label' => $item['label'] ?? $item['icon'] ?? 'Tecnología',
-                        'icon' => $item['icon'] ?? null,
-                    ];
+            ->map(function ($item) {
+                if (!is_array($item)) {
+                    return null;
                 }
 
                 return [
-                    'label' => $item,
-                    'icon' => $iconMap[$item] ?? null,
+                    'label' => $item['label'] ?? null,
+                    'slug' => $item['slug'] ?? null,
                 ];
             })
-            ->filter(fn($item) => !empty($item['icon']))
+            ->filter(fn($item) => !empty($item['label']) && !empty($item['slug']))
             ->take(6)
             ->values();
 
