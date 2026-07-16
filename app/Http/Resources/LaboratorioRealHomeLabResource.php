@@ -30,11 +30,11 @@ class LaboratorioRealHomeLabResource extends JsonResource
         if ($this->relationLoaded('adjuntos')) {
             $darkAdjunto = $this->adjuntos
                 ->where('es_visible', true)
-                ->firstWhere('tipo_adjunto', 'fondo_tarjeta_dark');
+                ->firstWhere('nombre_archivo', 'fondo_tarjeta_dark');
 
             $lightAdjunto = $this->adjuntos
                 ->where('es_visible', true)
-                ->firstWhere('tipo_adjunto', 'fondo_tarjeta_light');
+                ->firstWhere('nombre_archivo', 'fondo_tarjeta_light');
 
             $darkPaths = $darkAdjunto?->url
                 ? collect(explode(',', $darkAdjunto->url))
