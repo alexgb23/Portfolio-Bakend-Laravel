@@ -24,13 +24,34 @@ class LaboratorioRealHomeLabResource extends JsonResource
             ->take(6)
             ->values();
 
-        $adjuntos = $this->whenLoaded('adjuntos');
+        $darkPaths = [];
+        $lightPaths = [];
 
-        $fondoDark = collect($adjuntos)
-            ->firstWhere('clave', 'fondo_tarjeta_dark');
+        if ($this->relationLoaded('adjuntos')) {
+            $darkAdjunto = $this->adjuntos
+                ->where('es_visible', true)
+                ->firstWhere('tipo_adjunto', 'fondo_tarjeta_dark');
 
-        $fondoLight = collect($adjuntos)
-            ->firstWhere('clave', 'fondo_tarjeta_light');
+            $lightAdjunto = $this->adjuntos
+                ->where('es_visible', true)
+                ->firstWhere('tipo_adjunto', 'fondo_tarjeta_light');
+
+            $darkPaths = $darkAdjunto?->url
+                ? collect(explode(',', $darkAdjunto->url))
+                    ->map(fn ($item) => trim($item))
+                    ->filter()
+                    ->values()
+                    ->all()
+                : [];
+
+            $lightPaths = $lightAdjunto?->url
+                ? collect(explode(',', $lightAdjunto->url))
+                    ->map(fn ($item) => trim($item))
+                    ->filter()
+                    ->values()
+                    ->all()
+                : [];
+        }
 
         return [
             'id' => $this->id,
@@ -43,9 +64,8 @@ class LaboratorioRealHomeLabResource extends JsonResource
             'areas_relacionadas' => $this->areas_relacionadas ?? [],
             'stack' => $stack,
             'documentacion_count' => $this->whenCounted('documentacion'),
-
-            'fondo_tarjeta_dark' => $fondoDark?->archivo_url ?? null,
-            'fondo_tarjeta_light' => $fondoLight?->archivo_url ?? null,
+            'fondo_tarjeta_dark' => $darkPaths,
+            'fondo_tarjeta_light' => $lightPaths,
             'target_color' => data_get($this, 'metadata.target_color'),
         ];
     }
