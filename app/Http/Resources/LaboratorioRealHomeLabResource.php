@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class LaboratorioRealHomeResource extends JsonResource
+class LaboratorioRealHomeLabResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
@@ -20,9 +20,17 @@ class LaboratorioRealHomeResource extends JsonResource
                     'slug' => $item['slug'] ?? null,
                 ];
             })
-            ->filter(fn($item) => !empty($item['label']) && !empty($item['slug']))
+            ->filter(fn ($item) => !empty($item['label']) && !empty($item['slug']))
             ->take(6)
             ->values();
+
+        $adjuntos = $this->whenLoaded('adjuntos');
+
+        $fondoDark = collect($adjuntos)
+            ->firstWhere('clave', 'fondo_tarjeta_dark');
+
+        $fondoLight = collect($adjuntos)
+            ->firstWhere('clave', 'fondo_tarjeta_light');
 
         return [
             'id' => $this->id,
@@ -34,8 +42,11 @@ class LaboratorioRealHomeResource extends JsonResource
             'resumen' => $this->resumen ?: $this->descripcion,
             'areas_relacionadas' => $this->areas_relacionadas ?? [],
             'stack' => $stack,
-            'projects_count' => $this->whenCounted('projects'),
             'documentacion_count' => $this->whenCounted('documentacion'),
+
+            'fondo_tarjeta_dark' => $fondoDark?->archivo_url ?? null,
+            'fondo_tarjeta_light' => $fondoLight?->archivo_url ?? null,
+            'target_color' => data_get($this, 'metadata.target_color'),
         ];
     }
 }

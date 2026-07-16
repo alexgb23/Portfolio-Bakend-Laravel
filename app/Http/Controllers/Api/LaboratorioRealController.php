@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\LaboratorioRealHomeResource;
+use App\Http\Resources\LaboratorioRealHomeLabResource;
 use App\Http\Resources\LaboratorioRealListResource;
 use App\Http\Resources\LaboratorioRealResource;
 use App\Models\LaboratorioReal;
@@ -25,7 +26,7 @@ class LaboratorioRealController extends Controller
         $laboratorios = LaboratorioReal::query()
             ->where('es_visible', true)
             ->where('es_destacado', true)
-            ->withCount(['projects'])
+            ->withCount(['projects', 'documentacion'])
             ->orderBy('orden')
             ->orderByDesc('id')
             ->limit(6)
@@ -70,6 +71,59 @@ class LaboratorioRealController extends Controller
             'featured_laboratories' => LaboratorioRealHomeResource::collection($laboratorios),
         ]);
     }
+
+    public function homeLab(): JsonResponse
+{
+    $laboratorios = LaboratorioReal::query()
+        ->where('es_visible', true)
+        ->where('es_destacado', true)
+        ->with(['adjuntos'])
+        ->withCount(['projects', 'documentacion'])
+        ->orderBy('orden')
+        ->orderByDesc('id')
+        ->limit(6)
+        ->get();
+
+    $statsSource = LaboratorioReal::query()
+        ->where('es_visible', true)
+        ->withCount(['documentacion', 'projects'])
+        ->get();
+
+    $allStacks = $statsSource
+        ->pluck('metadata.stack')
+        ->filter()
+        ->flatten(1)
+        ->filter()
+        ->values();
+
+    $uniqueTechnologies = $allStacks
+        ->map(function ($item) {
+            if (is_array($item)) {
+                return $item['label'] ?? null;
+            }
+
+            return is_string($item) ? $item : null;
+        })
+        ->filter()
+        ->unique()
+        ->values();
+
+    $topTechnologies = $uniqueTechnologies
+        ->take(8)
+        ->values();
+
+    return response()->json([
+        'stats' => [
+            'active_laboratories' => $statsSource->where('estado', 'activo')->count(),
+            'technologies_count' => $uniqueTechnologies->count(),
+            'documents_count' => $statsSource->sum('documentacion_count'),
+            'projects_count' => $statsSource->sum('projects_count'),
+        ],
+        'top_technologies' => $topTechnologies,
+        'featured_laboratories' => LaboratorioRealHomeLabResource::collection($laboratorios),
+    ]);
+}
+
 
     /**
      * Lista todos los laboratorios reales visibles en formato resumido.
