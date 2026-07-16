@@ -26,6 +26,7 @@ class LaboratorioRealHomeLabResource extends JsonResource
 
         $darkPaths = [];
         $lightPaths = [];
+        $targetColorPaths = [];
 
         if ($this->relationLoaded('adjuntos')) {
             $darkAdjunto = $this->adjuntos
@@ -33,6 +34,9 @@ class LaboratorioRealHomeLabResource extends JsonResource
 
             $lightAdjunto = $this->adjuntos
                 ->firstWhere('nombre_archivo', 'fondo_tarjeta_light');
+
+            $targetColorAdjunto = $this->adjuntos
+                ->firstWhere('nombre_archivo', 'target_color');
 
             $darkPaths = $darkAdjunto?->url
                 ? collect(explode(',', $darkAdjunto->url))
@@ -44,6 +48,14 @@ class LaboratorioRealHomeLabResource extends JsonResource
 
             $lightPaths = $lightAdjunto?->url
                 ? collect(explode(',', $lightAdjunto->url))
+                    ->map(fn ($item) => trim($item))
+                    ->filter()
+                    ->values()
+                    ->all()
+                : [];
+
+            $targetColorPaths = $targetColorAdjunto?->url
+                ? collect(explode(',', $targetColorAdjunto->url))
                     ->map(fn ($item) => trim($item))
                     ->filter()
                     ->values()
@@ -64,7 +76,7 @@ class LaboratorioRealHomeLabResource extends JsonResource
             'documentacion_count' => $this->whenCounted('documentacion'),
             'fondo_tarjeta_dark' => $darkPaths,
             'fondo_tarjeta_light' => $lightPaths,
-            'target_color' => data_get($this, 'metadata.target_color'),
+            'target_color' => $targetColorPaths,
         ];
     }
 }
