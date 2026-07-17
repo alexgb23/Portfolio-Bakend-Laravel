@@ -73,6 +73,7 @@ class LaboratorioRealHomeLabResource extends JsonResource
             'resumen' => $this->resumen ?: $this->descripcion,
             'areas_relacionadas' => $this->areas_relacionadas ?? [],
             'stack' => $stack,
+            'projects_count' => $this->whenCounted('projects'),
             'documentacion_count' => $this->whenCounted('documentacion'),
             'fondo_tarjeta_dark' => $darkPaths,
             'fondo_tarjeta_light' => $lightPaths,
