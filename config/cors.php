@@ -10,6 +10,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        'https://syskovex.com',
         'https://alex.syskovex.com',
         'https://portfolio-api.syskovex.com',
         'http://localhost:5173',
