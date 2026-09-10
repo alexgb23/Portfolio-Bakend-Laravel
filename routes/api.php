@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ContactMessageController;
 use App\Http\Controllers\Api\LaboratorioRealController;
 use App\Http\Controllers\Api\PortfolioController;
 use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\HealthMetricsController;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,7 @@ Route::get('/laboratorios-reales/home', [LaboratorioRealController::class, 'home
 Route::get('/laboratorios-reales/home-lab', [LaboratorioRealController::class, 'homeLab']);
 Route::get('/laboratorios-reales', [LaboratorioRealController::class, 'index']);
 Route::get('/laboratorios-reales/{slug}', [LaboratorioRealController::class, 'show']);
+Route::get('/health/metrics', HealthMetricsController::class);
 
 // Privadas
 Route::middleware('auth:sanctum')->group(function () {

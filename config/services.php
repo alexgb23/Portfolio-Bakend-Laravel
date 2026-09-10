@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'render' => [
+        'base_url' => env('RENDER_API_BASE_URL', 'https://api.render.com'),
+        'api_key' => env('RENDER_API_KEY'),
+        'service_id' => env('RENDER_SERVICE_ID'),
+    ],
+
+    'cloudflare' => [
+        'base_url' => env('CLOUDFLARE_API_BASE_URL', 'https://api.cloudflare.com/client/v4'),
+        'graphql_url' => env('CLOUDFLARE_GRAPHQL_URL', 'https://api.cloudflare.com/client/v4/graphql'),
+        'api_token' => env('CLOUDFLARE_API_TOKEN'),
+        'zone_id' => env('CLOUDFLARE_ZONE_ID'),
+    ],
+
 ];
