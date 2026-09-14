@@ -24,8 +24,6 @@
     - Portfolio: https://alex.syskovex.com
     - Web: https://syskovex.com
 
-    <div style="margin-top: 25px; margin-bottom: 10px; background-color: #030712; padding: 12px; width: fit-content; border-radius: 4px;">
-        <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png" width="1138" height="349" style="display: block; width: 1138px; max-width: 100%; height: auto;" alt="Alexander Galvez - Syskovex">
-    </div>
+    <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png" width="1138" height="349" style="max-width: 100%; height: auto;" alt="Alexander Galvez - Syskovex">
 
 </x-mail::message>
