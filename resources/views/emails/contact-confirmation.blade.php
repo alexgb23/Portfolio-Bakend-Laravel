@@ -7,21 +7,13 @@
 
     Mientras tanto, te invito a seguir de cerca mi trabajo y conectar conmigo a través de mis redes oficiales:
 
-    <x-mail::button :url="'https://www.linkedin.com/in/alexander-galvez-benavides-450917281/'" color="primary">
-        Ver Perfil en LinkedIn
-    </x-mail::button>
+    [Ver Perfil en LinkedIn](https://www.linkedin.com/in/alexander-galvez-benavides-450917281/)
 
-    <x-mail::button :url="'https://github.com/alexgb23'" color="success">
-        Explorar Proyectos en GitHub
-    </x-mail::button>
+    [Explorar Proyectos en GitHub](https://github.com/alexgb23)
 
-    <x-mail::button :url="'https://alex.syskovex.com'" color="blue">
-        Ver Portfolio Profesional
-    </x-mail::button>
+    [Ver Portfolio Profesional](https://alex.syskovex.com)
 
-    <x-mail::button :url="'https://syskovex.com'" color="gray">
-        Sitio Web Oficial
-    </x-mail::button>
+    [Sitio Web Oficial](https://syskovex.com)
 
     Un cordial saludo,
 
@@ -29,11 +21,7 @@
     *Infrastructure & System Engineer*
 
     <div style="margin-top: 25px; margin-bottom: 10px; background-color: #030712; padding: 12px; width: fit-content; border-radius: 4px;">
-        <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png"
-            width="1138"
-            height="349"
-            style="display: block; width: 1138px; max-width: 100%; height: auto;"
-            alt="Alexander Galvez - Syskovex">
+        <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png" width="1138" height="349" style="display: block; width: 1138px; max-width: 100%; height: auto;" alt="Alexander Galvez - Syskovex">
     </div>
 
 </x-mail::message>
