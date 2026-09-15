@@ -20,6 +20,8 @@
     **Alex | Syskovex**
     *Infrastructure & System Engineer*
 
-    <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png" width="1138" height="349" style="max-width: 100%; height: auto;" alt="Alexander Galvez - Syskovex">
+    ---
+
+    ![Alexander Galvez - Syskovex](https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png)
 
 </x-mail::message>
