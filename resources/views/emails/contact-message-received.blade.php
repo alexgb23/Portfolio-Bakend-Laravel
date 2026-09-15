@@ -1,42 +1,198 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo mensaje desde el portfolio</title>
 </head>
 
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-    <h1 style="color: #2563eb;">Nuevo mensaje desde el portfolio</h1>
+<body style="margin:0; padding:0; background-color:#050912; color:#f1f5f9; font-family:Arial, Helvetica, sans-serif;">
 
-    <p><strong>Nombre:</strong> {{ $contactMessage->name }}</p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%; background-color:#050912;">
+        <tr>
+            <td align="center" style="padding:32px 16px;">
 
-    <p><strong>Email:</strong> {{ $contactMessage->email }}</p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                    style="width:100%; max-width:600px; background-color:#080e18; border:1px solid #1d3048; border-radius:14px;">
 
-    <p><strong>Asunto:</strong> {{ $contactMessage->subject ?: 'Sin asunto' }}</p>
+                    <tr>
+                        <td style="height:4px; background-color:#1677ff; font-size:0; line-height:0;">
+                            &nbsp;
+                        </td>
+                    </tr>
 
-    <p><strong>Mensaje:</strong></p>
-    <div style="background-color: #f3f4f6; padding: 15px; border-radius: 4px; margin: 15px 0;">
-        {{ $contactMessage->message }}
-    </div>
+                    <tr>
+                        <td style="padding:36px 32px 32px;">
 
-    <div style="background-color: #e0e7ff; padding: 10px; border-radius: 4px; margin: 15px 0;">
-        <strong>Recibido:</strong> {{ $contactMessage->created_at?->format('d/m/Y H:i') }}
-    </div>
+                            <p style="margin:0 0 10px; color:#2d8cff; font-size:12px; font-weight:700; line-height:18px; letter-spacing:1px; text-transform:uppercase;">
+                                Syskovex · Contacto entrante
+                            </p>
 
-    <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+                            <h1 style="margin:0 0 24px; color:#f1f5f9; font-size:28px; font-weight:700; line-height:34px;">
+                                Nuevo mensaje desde el portfolio
+                            </h1>
 
-    <p><strong>Enlaces:</strong></p>
-    <ul style="padding-left: 20px;">
-        <li>LinkedIn: <a href="https://www.linkedin.com/in/alexander-galvez-benavides-450917281/">https://www.linkedin.com/in/alexander-galvez-benavides-450917281/</a></li>
-        <li>GitHub: <a href="https://github.com/alexgb23">https://github.com/alexgb23</a></li>
-        <li>Portfolio: <a href="https://alex.syskovex.com">https://alex.syskovex.com</a></li>
-        <li>Web: <a href="https://syskovex.com">https://syskovex.com</a></li>
-    </ul>
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="width:100%; background-color:#0d1624; border:1px solid #1d3048; border-radius:10px;">
 
-    <div style="margin-top: 25px; background-color: #030712; padding: 12px; width: fit-content; border-radius: 4px;">
-        <img src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png" width="1138" height="349" style="display: block; width: 100%; max-width: 1138px; height: auto;" alt="Alexander Galvez - Syskovex">
-    </div>
+                                <tr>
+                                    <td style="padding:20px;">
+
+                                        <p style="margin:0 0 14px; color:#e0e7ff; font-size:14px; line-height:22px;">
+                                            <strong style="display:inline-block; width:76px; color:#bec8fa;">
+                                                Nombre
+                                            </strong>
+                                            <span style="color:#f1f5f9;">
+                                                {{ $contactMessage->name }}
+                                            </span>
+                                        </p>
+
+                                        <p style="margin:0 0 14px; color:#e0e7ff; font-size:14px; line-height:22px;">
+                                            <strong style="display:inline-block; width:76px; color:#bec8fa;">
+                                                Email
+                                            </strong>
+                                            <a href="mailto:{{ $contactMessage->email }}"
+                                                style="color:#2d8cff; text-decoration:underline;">
+                                                {{ $contactMessage->email }}
+                                            </a>
+                                        </p>
+
+                                        <p style="margin:0; color:#e0e7ff; font-size:14px; line-height:22px;">
+                                            <strong style="display:inline-block; width:76px; color:#bec8fa;">
+                                                Asunto
+                                            </strong>
+                                            <span style="color:#f1f5f9;">
+                                                {{ $contactMessage->subject ?: 'Sin asunto' }}
+                                            </span>
+                                        </p>
+
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin:28px 0 10px; color:#bec8fa; font-size:13px; font-weight:700; line-height:20px; letter-spacing:0.8px; text-transform:uppercase;">
+                                Mensaje
+                            </p>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="width:100%; background-color:#101c2c; border:1px solid #2a4567; border-radius:10px;">
+                                <tr>
+                                    <td style="padding:20px; color:#f1f5f9; font-size:15px; line-height:24px; white-space:pre-wrap;">
+                                        {{ $contactMessage->message }}
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="width:100%; margin-top:18px; background-color:#0d1624; border:1px solid #1d3048; border-radius:8px;">
+                                <tr>
+                                    <td style="padding:13px 16px; color:#e0e7ff; font-size:13px; line-height:20px;">
+                                        <strong style="color:#5eea7a;">Recibido</strong>
+                                        <span> · {{ $contactMessage->created_at?->format('d/m/Y H:i') }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="width:100%; margin-top:28px;">
+
+                                <tr>
+                                    <td style="padding-top:24px; border-top:1px solid #1d3048;">
+                                        <p style="margin:0 0 12px; color:#bec8fa; font-size:13px; font-weight:700; line-height:20px; letter-spacing:0.8px; text-transform:uppercase;">
+                                            Enlaces oficiales
+                                        </p>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:0 0 10px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                                            <tr>
+                                                <td align="center" bgcolor="#1677ff" style="background-color:#1677ff; border-radius:8px;">
+                                                    <a href="https://www.linkedin.com/in/alexander-galvez-benavides-450917281/"
+                                                        target="_blank"
+                                                        style="display:block; padding:14px 20px; border:1px solid #1677ff; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        Abrir LinkedIn&nbsp; →
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:0 0 10px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                                            <tr>
+                                                <td align="center" bgcolor="#1677ff" style="background-color:#1677ff; border-radius:8px;">
+                                                    <a href="https://github.com/alexgb23"
+                                                        target="_blank"
+                                                        style="display:block; padding:14px 20px; border:1px solid #1677ff; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        Abrir GitHub&nbsp; →
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="padding:0 0 10px;">
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                                            <tr>
+                                                <td align="center" bgcolor="#1677ff" style="background-color:#1677ff; border-radius:8px;">
+                                                    <a href="https://alex.syskovex.com"
+                                                        target="_blank"
+                                                        style="display:block; padding:14px 20px; border:1px solid #1677ff; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        Abrir portfolio&nbsp; →
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;">
+                                            <tr>
+                                                <td align="center" bgcolor="#1677ff" style="background-color:#1677ff; border-radius:8px;">
+                                                    <a href="https://syskovex.com"
+                                                        target="_blank"
+                                                        style="display:block; padding:14px 20px; border:1px solid #1677ff; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        Abrir Syskovex&nbsp; →
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+                                style="width:100%; margin-top:28px;">
+                                <tr>
+                                    <td align="center" style="padding:16px; background-color:#030712; border:1px solid #1d3048; border-radius:10px;">
+                                        <img
+                                            src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png"
+                                            width="1138"
+                                            height="349"
+                                            alt="Alexander Galvez - Syskovex"
+                                            style="display:block; width:100%; max-width:536px; height:auto; border:0;">
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    </table>
+
 </body>
 
 </html>
