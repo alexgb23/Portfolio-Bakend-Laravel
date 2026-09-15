@@ -33,7 +33,7 @@ class ContactMessageReceived extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.contact-message-received',
+            view: 'emails.contact-message-received', // Cambiado de 'markdown' a 'view'
             with: [
                 'contactMessage' => $this->contactMessage,
             ],
