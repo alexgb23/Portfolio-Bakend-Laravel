@@ -27,7 +27,8 @@
                         <td style="padding:36px 32px 32px;">
 
                             <p style="margin:0 0 10px; color:#7fb3ff; font-size:12px; font-weight:700; line-height:18px; letter-spacing:1px; text-transform:uppercase;">
-                                Syskovex · Portfolio
+                                Alex · Syskovex
+                                Técnico IT · Infraestructura, sistemas y automatización
                             </p>
 
                             <h1 style="margin:0 0 20px; color:#f1f5f9; font-size:30px; font-weight:700; line-height:36px;">
