@@ -12,30 +12,33 @@
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
         style="width:100%; margin:0; padding:0; background-color:#050912;">
         <tr>
-            <td align="center" style="padding:32px 16px;">
+            <td align="center" style="padding:12px 8px;">
 
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                    style="width:100%; max-width:600px; background-color:#080e18; border:1px solid #1d3048; border-radius:14px;">
+                    style="width:100%; max-width:680px; background-color:#080e18; border:1px solid #1d3048; border-radius:14px; overflow:hidden;">
 
                     <tr>
-                        <td style="height:4px; background-color:#0d5fc2; font-size:0; line-height:0;">
+                        <td style="height:4px; background-color:#0d5fc2; border-radius:14px 14px 0 0; font-size:0; line-height:0;">
                             &nbsp;
                         </td>
                     </tr>
 
                     <tr>
-                        <td style="padding:36px 32px 32px;">
+                        <td style="padding:24px 26px 26px;">
 
-                            <p style="margin:0 0 10px; color:#7fb3ff; font-size:12px; font-weight:700; line-height:18px; letter-spacing:1px; text-transform:uppercase;">
+                            <p style="margin:0; color:#f1f5f9; font-size:15px; font-weight:700; line-height:22px;">
                                 Alex · Syskovex
+                            </p>
+
+                            <p style="margin:0 0 22px; color:#bec8fa; font-size:13px; font-style:italic; line-height:20px;">
                                 Técnico IT · Infraestructura, sistemas y automatización
                             </p>
 
-                            <h1 style="margin:0 0 20px; color:#f1f5f9; font-size:30px; font-weight:700; line-height:36px;">
+                            <h1 style="margin:0 0 14px; color:#f1f5f9; font-size:28px; font-weight:700; line-height:34px;">
                                 ¡Hola, {{ $contactMessage->name }}!
                             </h1>
 
-                            <p style="margin:0 0 16px; color:#e0e7ff; font-size:16px; line-height:25px;">
+                            <p style="margin:0 0 12px; color:#e0e7ff; font-size:16px; line-height:25px;">
                                 Gracias por ponerte en contacto conmigo a través de mi portfolio web.
                             </p>
 
@@ -48,11 +51,11 @@
                             </p>
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="width:100%; margin:28px 0;">
+                                style="width:100%; margin:20px 0;">
                                 <tr>
-                                    <td style="padding:20px; background-color:#0d1624; border:1px solid #1d3048; border-radius:10px;">
+                                    <td style="padding:16px; background-color:#0d1624; border:1px solid #1d3048; border-radius:10px;">
 
-                                        <p style="margin:0 0 6px; color:#bec8fa; font-size:14px; font-weight:700; line-height:20px;">
+                                        <p style="margin:0 0 5px; color:#bec8fa; font-size:14px; font-weight:700; line-height:20px;">
                                             Mientras tanto
                                         </p>
 
@@ -68,7 +71,7 @@
                                 style="width:100%;">
 
                                 <tr>
-                                    <td style="padding:0 0 10px;">
+                                    <td style="padding:0 0 8px;">
                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                                             style="width:100%;">
                                             <tr>
@@ -77,7 +80,7 @@
 
                                                     <a href="https://www.linkedin.com/in/alexander-galvez-benavides-450917281/"
                                                         target="_blank"
-                                                        style="display:block; padding:14px 20px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        style="display:block; padding:12px 18px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
                                                         Ver perfil en LinkedIn&nbsp; →
                                                     </a>
 
@@ -88,7 +91,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td style="padding:0 0 10px;">
+                                    <td style="padding:0 0 8px;">
                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                                             style="width:100%;">
                                             <tr>
@@ -97,7 +100,7 @@
 
                                                     <a href="https://github.com/alexgb23"
                                                         target="_blank"
-                                                        style="display:block; padding:14px 20px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        style="display:block; padding:12px 18px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
                                                         Explorar proyectos en GitHub&nbsp; →
                                                     </a>
 
@@ -108,7 +111,7 @@
                                 </tr>
 
                                 <tr>
-                                    <td style="padding:0 0 10px;">
+                                    <td style="padding:0 0 8px;">
                                         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                                             style="width:100%;">
                                             <tr>
@@ -117,7 +120,7 @@
 
                                                     <a href="https://alex.syskovex.com"
                                                         target="_blank"
-                                                        style="display:block; padding:14px 20px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        style="display:block; padding:12px 18px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
                                                         Ver portfolio profesional&nbsp; →
                                                     </a>
 
@@ -137,7 +140,7 @@
 
                                                     <a href="https://syskovex.com"
                                                         target="_blank"
-                                                        style="display:block; padding:14px 20px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
+                                                        style="display:block; padding:12px 18px; border-radius:8px; color:#ffffff; font-size:14px; font-weight:700; line-height:20px; text-align:center; text-decoration:none;">
                                                         Visitar Syskovex&nbsp; →
                                                     </a>
 
@@ -150,32 +153,15 @@
                             </table>
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-                                style="width:100%; margin-top:32px;">
-                                <tr>
-                                    <td style="padding-top:24px; border-top:1px solid #1d3048;">
-
-                                        <p style="margin:0 0 4px; color:#f1f5f9; font-size:15px; font-weight:700; line-height:22px;">
-                                            Alex · Syskovex
-                                        </p>
-
-                                        <p style="margin:0; color:#bec8fa; font-size:13px; font-style:italic; line-height:20px;">
-                                            Infrastructure &amp; System Engineer
-                                        </p>
-
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
                                 style="width:100%; margin-top:18px;">
                                 <tr>
                                     <td align="left" style="padding:0;">
 
                                         <img
                                             src="https://syskovex.com/images/Tarjeta_FirmaDigital_Mail.png"
-                                            width="536"
+                                            width="632"
                                             alt="Alexander Galvez - Syskovex"
-                                            style="display:block; width:100%; max-width:536px; height:auto; border:0; outline:none; text-decoration:none;">
+                                            style="display:block; width:100%; max-width:632px; height:auto; border:0; outline:none; text-decoration:none;">
 
                                     </td>
                                 </tr>
