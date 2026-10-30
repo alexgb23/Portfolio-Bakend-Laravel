@@ -51,7 +51,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
 });
-
-// Sincronización automática desde GitHub Actions
-Route::middleware([\App\Http\Middleware\ValidatePortfolioSyncToken::class])
-    ->post('/projects/sync', \App\Http\Controllers\Api\ProjectSyncController::class);
