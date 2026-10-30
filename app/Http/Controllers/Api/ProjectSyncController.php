@@ -13,7 +13,7 @@ class ProjectSyncController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $validated = $request->validate([
+        $rules = [
             'title' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['required', 'string'],
@@ -42,8 +42,66 @@ class ProjectSyncController extends Controller
             'metadata.card_background_light.*' => ['nullable', 'string', 'max:2048'],
 
             'laboratorio_real_slug' => ['nullable', 'string', 'exists:laboratorios_reales,slug'],
-        ]);
+        ];
 
+        foreach (['resumen', 'objetivo', 'notas_tecnicas', 'resultado_actual'] as $field) {
+            $rules[$field] = ['sometimes', 'nullable', 'string'];
+        }
+
+        foreach (['fecha_inicio', 'fecha_fin'] as $field) {
+            $rules[$field] = ['sometimes', 'nullable', 'date'];
+        }
+
+        $contentFields = [
+            'secciones' => [
+                'clave', 'titulo', 'tipo_contenido', 'layout', 'resumen',
+                'contenido', 'items', 'media_url', 'codigo_lenguaje',
+                'orden', 'es_visible', 'es_destacado', 'metadata',
+            ],
+            'adjuntos' => [
+                'titulo', 'tipo', 'grupo', 'subtitulo', 'descripcion',
+                'nombre_archivo', 'mime_type', 'url', 'icono',
+                'orden', 'es_visible', 'es_destacado', 'metadata',
+            ],
+            'documentacion' => [
+                'titulo', 'slug', 'seccion', 'tipo', 'resumen',
+                'contenido', 'url_referencia', 'orden',
+                'es_visible', 'es_destacado', 'metadata',
+            ],
+        ];
+
+        foreach ($contentFields as $collection => $fields) {
+            $rules[$collection] = ['sometimes', 'array', 'max:100'];
+            $rules[$collection . '.*'] = ['array:' . implode(',', $fields)];
+
+            foreach ($fields as $field) {
+                $fieldRules = ['sometimes', 'nullable', 'string', 'max:255'];
+
+                if (in_array($field, ['contenido', 'resumen', 'descripcion'], true)) {
+                    $fieldRules = ['sometimes', 'nullable', 'string'];
+                } elseif (in_array($field, ['items', 'metadata'], true)) {
+                    $fieldRules = ['sometimes', 'nullable', 'array'];
+                } elseif (in_array($field, ['es_visible', 'es_destacado'], true)) {
+                    $fieldRules = ['sometimes', 'boolean'];
+                } elseif ($field === 'orden') {
+                    $fieldRules = ['sometimes', 'integer', 'min:0'];
+                } elseif (in_array($field, ['url', 'url_referencia', 'media_url'], true)) {
+                    $fieldRules = ['sometimes', 'nullable', 'url:http,https', 'max:2048'];
+                }
+
+                $rules[$collection . '.*.' . $field] = $fieldRules;
+            }
+
+            $rules[$collection . '.*.titulo'] = ['required', 'string', 'max:255'];
+        }
+
+        $rules['secciones.*.clave'] = ['required', 'string', 'max:255', 'distinct'];
+        $rules['adjuntos.*.titulo'] = ['required', 'string', 'max:255', 'distinct'];
+        $rules['documentacion.*.slug'] = ['required', 'string', 'max:255', 'distinct'];
+
+        $validated = $request->validate($rules);
+
+        $project = \Illuminate\Support\Facades\DB::transaction(function () use ($validated) {
         $repoUrl = $validated['metadata']['repo_url'];
 
         $laboratorioId = null;
@@ -77,9 +135,22 @@ class ProjectSyncController extends Controller
         $project->stack_summary = $validated['stack_summary'] ?? null;
         $project->area_principal = $validated['area_principal'] ?? null;
         $project->metadata = array_merge($project->metadata ?? [], $validated['metadata']);
-        $project->laboratorio_real_id = $laboratorioId;
+        if (array_key_exists('laboratorio_real_slug', $validated)) {
+            $project->laboratorio_real_id = $laboratorioId;
+        }
+
+        foreach ([
+            'resumen', 'objetivo', 'notas_tecnicas',
+            'resultado_actual', 'fecha_inicio', 'fecha_fin',
+        ] as $field) {
+            if (array_key_exists($field, $validated)) {
+                $project->{$field} = $validated[$field];
+            }
+        }
 
         $project->save();
+
+        $this->syncPortfolioContent($project, $validated);
 
         $this->syncScreenshots($project, $validated['capturas'] ?? []);
 
@@ -103,6 +174,9 @@ class ProjectSyncController extends Controller
             $project,
             $validated['metadata']
         );
+
+        return $project;
+        });
 
         $project->load([
             'laboratorioReal:id,titulo,slug,estado',
@@ -132,6 +206,20 @@ class ProjectSyncController extends Controller
         ];
 
         foreach ($backgrounds as $titulo => $url) {
+            $metadataKey = $titulo === 'fondo_tarjeta_dark'
+                ? 'card_background_dark'
+                : 'card_background_light';
+
+            if (!array_key_exists($metadataKey, $metadata)) {
+                continue;
+            }
+
+            if (strlen($url) > 2048) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'metadata.' . $metadataKey => 'Las URLs combinadas superan los 2048 caracteres.',
+                ]);
+            }
+
             if ($url === '') {
                 $project->adjuntos()
                     ->where('titulo', $titulo)
@@ -179,6 +267,38 @@ class ProjectSyncController extends Controller
                         'automatico' => true,
                     ],
                 ]
+            );
+        }
+    }
+
+    private function syncPortfolioContent(Project $project, array $data): void
+    {
+        foreach ($data['secciones'] ?? [] as $item) {
+            // La clave identifica la sección dentro de este proyecto.
+            $project->secciones()->updateOrCreate(
+                ['clave' => $item['clave']],
+                array_merge($item, ['origen' => 'portfolio-json'])
+            );
+        }
+
+        foreach ($data['adjuntos'] ?? [] as $item) {
+            // No modifica capturas ni adjuntos manuales con el mismo título.
+            $project->adjuntos()->updateOrCreate(
+                [
+                    'titulo' => $item['titulo'],
+                    'origen' => 'portfolio-json',
+                ],
+                array_merge($item, ['origen' => 'portfolio-json'])
+            );
+        }
+
+        foreach ($data['documentacion'] ?? [] as $item) {
+            $project->documentacion()->updateOrCreate(
+                [
+                    'slug' => $item['slug'],
+                    'origen' => 'portfolio-json',
+                ],
+                array_merge($item, ['origen' => 'portfolio-json'])
             );
         }
     }
