@@ -55,3 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
 // Sincronización automática desde GitHub Actions
 Route::middleware([\App\Http\Middleware\ValidatePortfolioSyncToken::class])
     ->post('/projects/sync', \App\Http\Controllers\Api\ProjectSyncController::class);
+
+// Auditoría temporal de base de datos, protegida por token
+Route::middleware([\App\Http\Middleware\ValidatePortfolioSyncToken::class])
+    ->get('/database-audit', \App\Http\Controllers\Api\DatabaseAuditController::class);
