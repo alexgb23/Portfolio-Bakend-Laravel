@@ -27,6 +27,7 @@ class ProjectSyncController extends Controller
             'metadata' => ['required', 'array'],
             'metadata.repo_url' => ['required', 'url'],
 
+            'capturas_completas' => ['sometimes', 'boolean'],
             'capturas' => ['sometimes', 'array', 'max:100'],
             'capturas.*.clave' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9-]+$/', 'distinct'],
             'capturas.*.titulo' => ['required', 'string', 'max:255'],
@@ -81,6 +82,21 @@ class ProjectSyncController extends Controller
         $project->save();
 
         $this->syncScreenshots($project, $validated['capturas'] ?? []);
+
+        if (
+            ($validated['capturas_completas'] ?? false)
+            && !empty($validated['capturas'])
+        ) {
+            $project->adjuntos()
+                ->where('origen', 'cloudinary-auto')
+                ->where('grupo', 'capturas')
+                ->whereNotIn(
+                    'nombre_archivo',
+                    array_column($validated['capturas'], 'clave')
+                )
+                ->delete();
+        }
+
 
 
         $this->syncCardBackgrounds(
