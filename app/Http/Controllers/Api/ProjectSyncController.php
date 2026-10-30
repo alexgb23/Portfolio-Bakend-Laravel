@@ -27,6 +27,13 @@ class ProjectSyncController extends Controller
             'metadata' => ['required', 'array'],
             'metadata.repo_url' => ['required', 'url'],
 
+            'capturas' => ['sometimes', 'array', 'max:100'],
+            'capturas.*.clave' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9-]+$/', 'distinct'],
+            'capturas.*.titulo' => ['required', 'string', 'max:255'],
+            'capturas.*.url' => ['required', 'url:https', 'max:2048'],
+            'capturas.*.public_id' => ['required', 'string', 'max:255'],
+
+
             'metadata.card_background_dark' => ['nullable', 'array'],
             'metadata.card_background_dark.*' => ['nullable', 'string', 'max:2048'],
 
@@ -72,6 +79,9 @@ class ProjectSyncController extends Controller
         $project->laboratorio_real_id = $laboratorioId;
 
         $project->save();
+
+        $this->syncScreenshots($project, $validated['capturas'] ?? []);
+
 
         $this->syncCardBackgrounds(
             $project,
@@ -126,6 +136,32 @@ class ProjectSyncController extends Controller
                     'orden' => $titulo === 'fondo_tarjeta_dark' ? 1 : 2,
                     'es_visible' => true,
                     'es_destacado' => false,
+                ]
+            );
+        }
+    }
+
+    private function syncScreenshots(Project $project, array $capturas): void
+    {
+        foreach ($capturas as $index => $captura) {
+            $project->adjuntos()->updateOrCreate(
+                [
+                    'origen' => 'cloudinary-auto',
+                    'nombre_archivo' => $captura['clave'],
+                ],
+                [
+                    'titulo' => $captura['titulo'],
+                    'tipo' => 'image',
+                    'grupo' => 'capturas',
+                    'url' => $captura['url'],
+                    'mime_type' => 'image/webp',
+                    'orden' => 100 + $index,
+                    'es_visible' => true,
+                    'es_destacado' => false,
+                    'metadata' => [
+                        'public_id' => $captura['public_id'],
+                        'automatico' => true,
+                    ],
                 ]
             );
         }
