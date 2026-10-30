@@ -1,0 +1,209 @@
+========================================
+AUDITORÍA BACKEND LARAVEL
+Fecha: Fri Oct 30 09:25:26     2026
+Directorio: /c/Portfolio-Bakend-Laravel
+========================================
+
+### LARAVEL / PHP
+bash: php: command not found
+bash: composer: command not found
+bash: php: command not found
+
+### PAQUETES COMPOSER RELEVANTES
+
+### CONEXIÓN DE BASE DE DATOS (sin credenciales)
+bash: php: command not found
+
+### ESTADO DE MIGRACIONES
+bash: php: command not found
+
+### LISTA DE TABLAS
+bash: php: command not found
+
+### ESTRUCTURA DE CADA TABLA
+bash: php: command not found
+
+### MODELOS
+app/Models/AdjuntoLaboratorio.php
+app/Models/AvanceLaboratorio.php
+app/Models/ContactMessage.php
+app/Models/DocumentacionLaboratorio.php
+app/Models/IdeaLaboratorio.php
+app/Models/LaboratorioReal.php
+app/Models/ProfileExpertise.php
+app/Models/ProfileHighlight.php
+app/Models/Project.php
+app/Models/ProyectoAdjunto.php
+app/Models/ProyectoDocumentacion.php
+app/Models/ProyectoSeccion.php
+app/Models/Skill.php
+app/Models/SocialLink.php
+app/Models/User.php
+
+### FILLABLE, CASTS Y RELACIONES DE LOS MODELOS
+
+--- app/Models/AdjuntoLaboratorio.php ---
+8:class AdjuntoLaboratorio extends Model
+10:    protected $table = "adjuntos_laboratorio";
+12:    protected $fillable = [
+39:    public function laboratorioReal(): BelongsTo
+
+--- app/Models/AvanceLaboratorio.php ---
+8:class AvanceLaboratorio extends Model
+10:    protected $table = "avances_laboratorio";
+12:    protected $fillable = [
+36:    public function laboratorioReal(): BelongsTo
+
+--- app/Models/ContactMessage.php ---
+8:class ContactMessage extends Model
+10:    protected $fillable = [
+19:    protected $casts = [
+23:    public function scopeUnread(Builder $query): Builder
+28:    public function scopeRead(Builder $query): Builder
+33:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/DocumentacionLaboratorio.php ---
+8:class DocumentacionLaboratorio extends Model
+10:    protected $table = "documentacion_laboratorio";
+12:    protected $fillable = [
+39:    public function laboratorioReal(): BelongsTo
+
+--- app/Models/IdeaLaboratorio.php ---
+8:class IdeaLaboratorio extends Model
+10:    protected $table = "ideas_laboratorio";
+12:    protected $fillable = [
+37:    public function laboratorioReal(): BelongsTo
+
+--- app/Models/LaboratorioReal.php ---
+8:class LaboratorioReal extends Model
+10:    protected $table = 'laboratorios_reales';
+12:    protected $fillable = [
+51:    public function ideas(): HasMany
+66:    public function avances(): HasMany
+73:    public function adjuntos(): HasMany
+79:    public function documentacion(): HasMany
+85:    public function projects(): HasMany
+
+--- app/Models/ProfileExpertise.php ---
+8:class ProfileExpertise extends Model
+10:    protected $table = 'profile_expertise';
+12:    protected $fillable = [
+21:    protected $casts = [
+26:    public function scopeVisible(Builder $query): Builder
+31:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/ProfileHighlight.php ---
+8:class ProfileHighlight extends Model
+10:    protected $fillable = [
+19:    protected $casts = [
+24:    public function scopeVisible(Builder $query): Builder
+29:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/Project.php ---
+10:class Project extends Model
+18:    protected $fillable = [
+61:    public function laboratorioReal(): BelongsTo
+69:    public function adjuntos(): HasMany
+77:    public function documentacion(): HasMany
+85:    public function secciones(): HasMany
+93:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/ProyectoAdjunto.php ---
+8:class ProyectoAdjunto extends Model
+10:    protected $table = 'proyecto_adjuntos';
+12:    protected $fillable = [
+40:    public function project(): BelongsTo
+
+--- app/Models/ProyectoDocumentacion.php ---
+8:class ProyectoDocumentacion extends Model
+10:    protected $table = 'proyecto_documentacion';
+12:    protected $fillable = [
+38:    public function project(): BelongsTo
+
+--- app/Models/ProyectoSeccion.php ---
+8:class ProyectoSeccion extends Model
+10:    protected $table = 'proyecto_secciones';
+12:    protected $fillable = [
+41:    public function project(): BelongsTo
+
+--- app/Models/Skill.php ---
+8:class Skill extends Model
+10:    protected $fillable = [
+23:    protected $casts = [
+30:    public function scopeVisible(Builder $query): Builder
+35:    public function scopeFeatured(Builder $query): Builder
+40:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/SocialLink.php ---
+8:class SocialLink extends Model
+10:    protected $fillable = [
+21:    protected $casts = [
+26:    public function scopeVisible(Builder $query): Builder
+31:    public function scopeOrdered(Builder $query): Builder
+
+--- app/Models/User.php ---
+13:class User extends Authenticatable implements FilamentUser
+18:    protected $fillable = [
+37:   public function canAccessPanel(Panel $panel): bool
+
+### MIGRACIONES
+database/migrations/0001_01_01_000000_create_users_table.php
+database/migrations/0001_01_01_000001_create_cache_table.php
+database/migrations/0001_01_01_000002_create_jobs_table.php
+database/migrations/2026_05_27_094830_create_personal_access_tokens_table.php
+database/migrations/2026_06_23_143346_create_profile_settings_table.php
+database/migrations/2026_06_23_143356_create_social_links_table.php
+database/migrations/2026_06_23_143406_create_skills_table.php
+database/migrations/2026_06_23_143436_create_contact_messages_table.php
+database/migrations/2026_06_23_143447_add_portfolio_fields_to_projects_table.php
+database/migrations/2026_06_26_113804_add_hero_about_fields_to_profile_settings_table.php
+database/migrations/2026_06_26_113812_create_profile_highlights_table.php
+database/migrations/2026_06_26_113820_create_profile_expertise_table.php
+database/migrations/2026_07_02_182525_drop_profile_settings_table.php
+database/migrations/2026_07_03_125254_create_laboratorios_reales_table.php
+database/migrations/2026_07_03_125302_create_ideas_laboratorio_table.php
+database/migrations/2026_07_03_125309_create_avances_laboratorio_table.php
+database/migrations/2026_07_03_125316_create_adjuntos_laboratorio_table.php
+database/migrations/2026_07_03_125323_create_documentacion_laboratorio_table.php
+database/migrations/2026_07_11_181150_add_advanced_fields_to_projects_table.php
+database/migrations/2026_07_11_185512_create_proyecto_documentacion_table.php
+database/migrations/2026_07_11_185528_create_proyecto_adjuntos_table.php
+database/migrations/2026_07_11_185544_create_proyecto_secciones_table.php
+database/migrations/2026_07_11_185616_add_categoria_to_projects_table.php
+database/migrations/2026_07_13_124330_drop_unused_columns_from_projects_table.php
+database/migrations/2026_07_13_125200_clean_projects_columns_and_fix_technologies.php
+
+### RUTAS API
+bash: php: command not found
+
+### RUTAS WEB
+bash: php: command not found
+
+### CONTROLADORES
+app/Http/Controllers/Api/AdjuntoLaboratorioController.php
+app/Http/Controllers/Api/AuthController.php
+app/Http/Controllers/Api/AvanceLaboratorioController.php
+app/Http/Controllers/Api/ContactMessageController.php
+app/Http/Controllers/Api/DocumentacionLaboratorioController.php
+app/Http/Controllers/Api/HomeLabResumenController.php
+app/Http/Controllers/Api/IdeaLaboratorioController.php
+app/Http/Controllers/Api/LaboratorioRealController.php
+app/Http/Controllers/Api/PortfolioController.php
+app/Http/Controllers/Api/ProjectController.php
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/Controller.php
+app/Http/Controllers/HealthMetricsController.php
+
+### MIDDLEWARE
+
+### CONFIGURACIÓN RELEVANTE (sin secretos)
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+DB_CONNECTION=pgsql
+SESSION_DRIVER=database
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=sync
+CACHE_STORE=database
+
+### FIN DE AUDITORÍA
