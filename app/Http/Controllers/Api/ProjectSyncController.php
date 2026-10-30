@@ -27,6 +27,12 @@ class ProjectSyncController extends Controller
             'metadata' => ['required', 'array'],
             'metadata.repo_url' => ['required', 'url'],
 
+            'metadata.card_background_dark' => ['nullable', 'array'],
+            'metadata.card_background_dark.*' => ['nullable', 'string', 'max:2048'],
+
+            'metadata.card_background_light' => ['nullable', 'array'],
+            'metadata.card_background_light.*' => ['nullable', 'string', 'max:2048'],
+
             'laboratorio_real_slug' => ['nullable', 'string', 'exists:laboratorios_reales,slug'],
         ]);
 
@@ -67,6 +73,11 @@ class ProjectSyncController extends Controller
 
         $project->save();
 
+        $this->syncCardBackgrounds(
+            $project,
+            $validated['metadata']
+        );
+
         $project->load([
             'laboratorioReal:id,titulo,slug,estado',
             'adjuntos',
@@ -78,5 +89,45 @@ class ProjectSyncController extends Controller
             'message' => 'Proyecto sincronizado correctamente.',
             'project' => new ProjectResource($project),
         ]);
+    }
+
+    private function syncCardBackgrounds(Project $project, array $metadata): void
+    {
+        $backgrounds = [
+            'fondo_tarjeta_dark' => collect($metadata['card_background_dark'] ?? [])
+                ->filter()
+                ->values()
+                ->implode(','),
+
+            'fondo_tarjeta_light' => collect($metadata['card_background_light'] ?? [])
+                ->filter()
+                ->values()
+                ->implode(','),
+        ];
+
+        foreach ($backgrounds as $titulo => $url) {
+            if ($url === '') {
+                $project->adjuntos()
+                    ->where('titulo', $titulo)
+                    ->delete();
+
+                continue;
+            }
+
+            $project->adjuntos()->updateOrCreate(
+                [
+                    'project_id' => $project->id,
+                    'titulo' => $titulo,
+                ],
+                [
+                    'tipo' => 'imagen',
+                    'grupo' => 'fondo_tarjeta',
+                    'url' => $url,
+                    'orden' => $titulo === 'fondo_tarjeta_dark' ? 1 : 2,
+                    'es_visible' => true,
+                    'es_destacado' => false,
+                ]
+            );
+        }
     }
 }
