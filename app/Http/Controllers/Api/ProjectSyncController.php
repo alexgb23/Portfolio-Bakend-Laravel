@@ -281,7 +281,14 @@ class ProjectSyncController extends Controller
             );
         }
 
-        foreach ($data['adjuntos'] ?? [] as $item) {
+        $jsonAdjuntos = collect($data['adjuntos'] ?? []);
+        $jsonAdjuntoTitles = $jsonAdjuntos
+            ->pluck('titulo')
+            ->filter()
+            ->values()
+            ->all();
+
+        foreach ($jsonAdjuntos as $item) {
             // No modifica capturas ni adjuntos manuales con el mismo título.
             $project->adjuntos()->updateOrCreate(
                 [
@@ -291,6 +298,13 @@ class ProjectSyncController extends Controller
                 array_merge($item, ['origen' => 'portfolio-json'])
             );
         }
+
+        // Elimina únicamente adjuntos obsoletos procedentes del JSON.
+        // Conserva capturas automáticas, fondos y adjuntos manuales.
+        $project->adjuntos()
+            ->where('origen', 'portfolio-json')
+            ->whereNotIn('titulo', $jsonAdjuntoTitles)
+            ->delete();
 
         foreach ($data['documentacion'] ?? [] as $item) {
             $project->documentacion()->updateOrCreate(
