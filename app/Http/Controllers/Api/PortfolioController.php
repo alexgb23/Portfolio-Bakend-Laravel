@@ -31,6 +31,7 @@ class PortfolioController extends Controller
             ->get();
 
         $laboratories = LaboratorioReal::query()
+            ->with(['adjuntos'])
             ->where('es_visible', true)
             ->orderByDesc('es_destacado')
             ->orderBy('orden')

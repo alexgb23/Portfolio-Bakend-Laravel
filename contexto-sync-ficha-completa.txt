@@ -1,0 +1,435 @@
+
+========== app/Models/ProyectoSeccion.php ==========
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ProyectoSeccion extends Model
+{
+    protected $table = 'proyecto_secciones';
+
+    protected $fillable = [
+        'project_id',
+        'clave',
+        'titulo',
+        'tipo_contenido',
+        'layout',
+        'resumen',
+        'contenido',
+        'items',
+        'media_url',
+        'codigo_lenguaje',
+        'origen',
+        'orden',
+        'es_visible',
+        'es_destacado',
+        'metadata',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'items' => 'array',
+            'orden' => 'integer',
+            'es_visible' => 'boolean',
+            'es_destacado' => 'boolean',
+            'metadata' => 'array',
+        ];
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+}
+
+========== app/Models/ProyectoDocumentacion.php ==========
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class ProyectoDocumentacion extends Model
+{
+    protected $table = 'proyecto_documentacion';
+
+    protected $fillable = [
+        'project_id',
+        'titulo',
+        'slug',
+        'seccion',
+        'tipo',
+        'resumen',
+        'contenido',
+        'origen',
+        'url_referencia',
+        'orden',
+        'es_visible',
+        'es_destacado',
+        'metadata',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'orden' => 'integer',
+            'es_visible' => 'boolean',
+            'es_destacado' => 'boolean',
+            'metadata' => 'array',
+        ];
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
+    }
+}
+
+========== app/Http/Resources/ProyectoSeccionResource.php ==========
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ProyectoSeccionResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'clave' => $this->clave,
+            'titulo' => $this->titulo,
+            'tipo_contenido' => $this->tipo_contenido,
+            'layout' => $this->layout,
+            'resumen' => $this->resumen,
+            'contenido' => $this->contenido,
+            'items' => $this->items ?? [],
+            'media_url' => $this->media_url,
+            'codigo_lenguaje' => $this->codigo_lenguaje,
+            'origen' => $this->origen,
+            'orden' => (int) $this->orden,
+            'es_visible' => (bool) $this->es_visible,
+            'es_destacado' => (bool) $this->es_destacado,
+            'metadata' => $this->metadata ?? [],
+            'created_at' => optional($this->created_at)?->toISOString(),
+            'updated_at' => optional($this->updated_at)?->toISOString(),
+        ];
+    }
+}
+
+========== app/Http/Resources/ProyectoDocumentacionResource.php ==========
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ProyectoDocumentacionResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'titulo' => $this->titulo,
+            'slug' => $this->slug,
+            'seccion' => $this->seccion,
+            'tipo' => $this->tipo,
+            'resumen' => $this->resumen,
+            'contenido' => $this->contenido,
+            'origen' => $this->origen,
+            'url_referencia' => $this->url_referencia,
+            'orden' => (int) $this->orden,
+            'es_visible' => (bool) $this->es_visible,
+            'es_destacado' => (bool) $this->es_destacado,
+            'metadata' => $this->metadata ?? [],
+            'created_at' => optional($this->created_at)?->toISOString(),
+            'updated_at' => optional($this->updated_at)?->toISOString(),
+        ];
+    }
+}
+
+========== app/Http/Controllers/Api/ProjectSyncController.php ==========
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Resources\ProjectResource;
+use App\Models\LaboratorioReal;
+use App\Models\Project;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class ProjectSyncController extends Controller
+{
+    public function __invoke(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'slug' => ['nullable', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'short_description' => ['nullable', 'string', 'max:280'],
+
+            'technologies' => ['nullable', 'array'],
+            'technologies.*' => ['string', 'max:255'],
+            'stack_summary' => ['nullable', 'string', 'max:255'],
+
+            'area_principal' => ['nullable', 'string', 'max:255'],
+            'metadata' => ['required', 'array'],
+            'metadata.repo_url' => ['required', 'url'],
+
+            'capturas_completas' => ['sometimes', 'boolean'],
+            'capturas' => ['sometimes', 'array', 'max:100'],
+            'capturas.*.clave' => ['required', 'string', 'max:120', 'regex:/^[a-z0-9-]+$/', 'distinct'],
+            'capturas.*.titulo' => ['required', 'string', 'max:255'],
+            'capturas.*.url' => ['required', 'url:https', 'max:2048'],
+            'capturas.*.public_id' => ['required', 'string', 'max:255'],
+
+
+            'metadata.card_background_dark' => ['nullable', 'array'],
+            'metadata.card_background_dark.*' => ['nullable', 'string', 'max:2048'],
+
+            'metadata.card_background_light' => ['nullable', 'array'],
+            'metadata.card_background_light.*' => ['nullable', 'string', 'max:2048'],
+
+            'laboratorio_real_slug' => ['nullable', 'string', 'exists:laboratorios_reales,slug'],
+        ]);
+
+        $repoUrl = $validated['metadata']['repo_url'];
+
+        $laboratorioId = null;
+
+        if (! empty($validated['laboratorio_real_slug'])) {
+            $laboratorioId = LaboratorioReal::query()
+                ->where('slug', $validated['laboratorio_real_slug'])
+                ->value('id');
+        }
+
+        $project = Project::query()
+            ->where('metadata->repo_url', $repoUrl)
+            ->first();
+
+        if (! $project) {
+            $project = new Project();
+
+            $slug = $validated['slug'] ?? Str::slug($validated['title']);
+
+            if (Project::query()->where('slug', $slug)->exists()) {
+                $slug .= '-' . Str::random(6);
+            }
+
+            $project->slug = $slug;
+        }
+
+        $project->title = $validated['title'];
+        $project->description = $validated['description'];
+        $project->short_description = $validated['short_description'] ?? null;
+        $project->technologies = array_values(array_filter($validated['technologies'] ?? []));
+        $project->stack_summary = $validated['stack_summary'] ?? null;
+        $project->area_principal = $validated['area_principal'] ?? null;
+        $project->metadata = array_merge($project->metadata ?? [], $validated['metadata']);
+        $project->laboratorio_real_id = $laboratorioId;
+
+        $project->save();
+
+        $this->syncScreenshots($project, $validated['capturas'] ?? []);
+
+        if (
+            ($validated['capturas_completas'] ?? false)
+            && !empty($validated['capturas'])
+        ) {
+            $project->adjuntos()
+                ->where('origen', 'cloudinary-auto')
+                ->where('grupo', 'capturas')
+                ->whereNotIn(
+                    'nombre_archivo',
+                    array_column($validated['capturas'], 'clave')
+                )
+                ->delete();
+        }
+
+
+
+        $this->syncCardBackgrounds(
+            $project,
+            $validated['metadata']
+        );
+
+        $project->load([
+            'laboratorioReal:id,titulo,slug,estado',
+            'adjuntos',
+            'documentacion',
+            'secciones',
+        ]);
+
+        return response()->json([
+            'message' => 'Proyecto sincronizado correctamente.',
+            'project' => new ProjectResource($project),
+        ]);
+    }
+
+    private function syncCardBackgrounds(Project $project, array $metadata): void
+    {
+        $backgrounds = [
+            'fondo_tarjeta_dark' => collect($metadata['card_background_dark'] ?? [])
+                ->filter()
+                ->values()
+                ->implode(','),
+
+            'fondo_tarjeta_light' => collect($metadata['card_background_light'] ?? [])
+                ->filter()
+                ->values()
+                ->implode(','),
+        ];
+
+        foreach ($backgrounds as $titulo => $url) {
+            if ($url === '') {
+                $project->adjuntos()
+                    ->where('titulo', $titulo)
+                    ->delete();
+
+                continue;
+            }
+
+            $project->adjuntos()->updateOrCreate(
+                [
+                    'project_id' => $project->id,
+                    'titulo' => $titulo,
+                ],
+                [
+                    'tipo' => 'imagen',
+                    'grupo' => 'fondo_tarjeta',
+                    'url' => $url,
+                    'orden' => $titulo === 'fondo_tarjeta_dark' ? 1 : 2,
+                    'es_visible' => true,
+                    'es_destacado' => false,
+                ]
+            );
+        }
+    }
+
+    private function syncScreenshots(Project $project, array $capturas): void
+    {
+        foreach ($capturas as $index => $captura) {
+            $project->adjuntos()->updateOrCreate(
+                [
+                    'origen' => 'cloudinary-auto',
+                    'nombre_archivo' => $captura['clave'],
+                ],
+                [
+                    'titulo' => $captura['titulo'],
+                    'tipo' => 'image',
+                    'grupo' => 'capturas',
+                    'url' => $captura['url'],
+                    'mime_type' => 'image/webp',
+                    'orden' => 100 + $index,
+                    'es_visible' => true,
+                    'es_destacado' => false,
+                    'metadata' => [
+                        'public_id' => $captura['public_id'],
+                        'automatico' => true,
+                    ],
+                ]
+            );
+        }
+    }
+}
+
+========== database/migrations/2026_07_11_185512_create_proyecto_documentacion_table.php ==========
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('proyecto_documentacion', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('project_id')
+                ->constrained('projects')
+                ->cascadeOnDelete();
+
+            $table->string('titulo');
+            $table->string('slug')->nullable()->index();
+            $table->string('seccion')->nullable();
+            $table->string('tipo')->default('general');
+
+            $table->text('resumen')->nullable();
+            $table->longText('contenido')->nullable();
+
+            $table->string('origen')->nullable(); // local, drive, github, externo
+            $table->string('url_referencia', 2048)->nullable();
+
+            $table->unsignedInteger('orden')->default(0);
+            $table->boolean('es_visible')->default(true);
+            $table->boolean('es_destacado')->default(false);
+
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('proyecto_documentacion');
+    }
+};
+
+========== database/migrations/2026_07_11_185544_create_proyecto_secciones_table.php ==========
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('proyecto_secciones', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('project_id')
+                ->constrained('projects')
+                ->cascadeOnDelete();
+
+            $table->string('clave')->index();
+            $table->string('titulo');
+            $table->string('tipo_contenido')->default('texto');
+            $table->string('layout')->nullable();
+
+            $table->text('resumen')->nullable();
+            $table->longText('contenido')->nullable();
+
+            $table->json('items')->nullable();
+            $table->string('media_url', 2048)->nullable();
+            $table->string('codigo_lenguaje')->nullable();
+
+            $table->string('origen')->nullable(); // local, drive, github, externo
+
+            $table->unsignedInteger('orden')->default(0);
+            $table->boolean('es_visible')->default(true);
+            $table->boolean('es_destacado')->default(false);
+
+            $table->json('metadata')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('proyecto_secciones');
+    }
+};
